@@ -85,6 +85,7 @@ class Exporter {
       }
     } else {
       $data = $isFieldInstance ? $input->value() : $input;
+      $data = KirbytagParser::toXML($data);
     }
 
     return $data;
