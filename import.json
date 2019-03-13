@@ -1,0 +1,51 @@
+{
+  "site":{
+    "title":"Икаров",
+    "artSections":[
+      {
+        "text":"Натурално усещане<br>за вечна красота"
+      }
+    ],
+    "footerDescription":"Нашето разбиране about the perfection of nature and its beneficial effect on preserving the beauty and health of the human body is decisive in our work."
+  },
+  "pages":{
+    "series\/botanical-face-care":{
+      "description":"Sed ut **много важно** unde <kirby link=\"https://example.com\">нашия линк</kirby> error sit voluptatem *accusantium* doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.  Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.  ",
+      "title":"Ботаникал Фейс Кер"
+    },
+    "series\/botanical-face-care\/winter-nourishing-face-oil":{
+      "title":"",
+      "description":""
+    },
+    "series\/botanical-face-care\/summer-refreshing-face-oil":{
+      "title":"",
+      "description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    },
+    "series\/botanical-hair-care":{
+      "description":"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.   ",
+      "title":""
+    },
+    "series\/botanical-hair-care\/soothing-face-oil":{
+      "title":"",
+      "description":"  "
+    },
+    "series\/summer-super-care":{
+      "title":"Summer Super Care"
+    }
+  },
+  "files":[
+
+  ],
+  "variables":{
+    "button":{
+      "label":{
+        "view_series":"Виж<br>Всички Серии",
+        "previous_article":"",
+        "next_article":""
+      }
+    },
+    "title":{
+      "articles":""
+    }
+  }
+}
