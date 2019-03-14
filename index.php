@@ -11,21 +11,34 @@ include_once 'src/Variables.php';
     'routes' => [
       [
         'pattern' => 'export',
-        'action' => function () {
-          $exporter = new Exporter('en', ['page' => 'series']);
+        'method' => 'GET',
+        'action' => function () use ($kirby) {
+          $exporter = new Exporter($kirby->defaultLanguage()->code(), [
+            'page' => $_GET['page'] ?? null,
+            'variables' => ($_GET['variables'] ?? 'true') != 'false'
+          ]);
+
           return $exporter->export();
         }
       ],
       [
         'pattern' => 'import',
-        'method' => 'GET',
+        'method' => 'POST',
         'action' => function () {
-          // $postData = file_get_contents('php://input');
-          $postData = file_get_contents(__DIR__ . DS . 'import.json');
+          // $postData = file_get_contents(__DIR__ . DS . 'import.json');
+          $postData = file_get_contents('php://input');
           $input = json_decode($postData, true);
+
+          if (empty($input['language'])) {
+            throw new \Exception('Missing language', 400);
+          }
+
+          if (empty($input['content'])) {
+            throw new \Exception('Missing content', 400);
+          }
           
-          $importer = new Importer('bg');
-          return $importer->import($input);
+          $importer = new Importer($input['language']);
+          return $importer->import($input['content']);
         }
       ]
     ]
