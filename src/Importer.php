@@ -30,6 +30,10 @@ class Importer {
     // Get default language data to obtain translate:false fields; also parse
     // structure fields to arrays.
     foreach ($fieldBlueprints as $key => $blueprint) {
+      if (isset($blueprint['translate']) && $blueprint['translate'] === false) {
+        continue;
+      }
+
       $field = $defaultContent->$key();
 
       if ($blueprint['type'] === 'structure') {
@@ -53,7 +57,7 @@ class Importer {
       }
     }
 
-    $object->update($mergedData, $this->language);
+    $object->writeContent($mergedData, $this->language);
   }
 
   public function import ($data) {
