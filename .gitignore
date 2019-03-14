@@ -1,3 +1,4 @@
+*.json
 composer.phar
 /vendor/
 

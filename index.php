@@ -4,6 +4,7 @@ namespace KirbyExporter;
 include_once 'src/Exporter.php';
 include_once 'src/Importer.php';
 include_once 'src/KirbytagParser.php';
+include_once 'src/Variables.php';
 
 \Kirby::plugin('oblik/exporter', [
   'api' => [

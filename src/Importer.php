@@ -5,9 +5,11 @@ use yaml;
 
 class Importer {
   private $language = null;
+  private $defaultLanguage = null;
 
   function __construct ($language) {
     $this->language = $language;
+    $this->defaultLanguage = kirby()->defaultLanguage()->code();
   }
 
   public static function clean ($data) {
@@ -20,32 +22,15 @@ class Importer {
     return array_filter($data);
   }
 
-  public static function revertKirbytagXML ($data) {
-    foreach ($data as $key => $value) {
-      if (is_array($value)) {
-        $data[$key] = static::revertKirbytagXML($value);
-      } else if (is_string($value)) {
-        $data[$key] = KirbytagXML::revert($value);
-      }
-    }
-
-    return $data;
-  }
-
-  public function updatePage ($page, $data) {
-    // Clean the input data so that empty strings won't overwrite the non-
-    // empty default language values later.
-    $data = static::clean($data);
-
-    if (empty($data)) {
-      return; // nothing to update
-    }
-
-    $fieldBlueprints = $page->blueprint()->fields();
+  public function update ($object, $data) {
     $defaultData = [];
+    $defaultContent = $object->content($this->defaultLanguage);
+    $fieldBlueprints = $object->blueprint()->fields();
 
+    // Get default language data to obtain translate:false fields; also parse
+    // structure fields to arrays.
     foreach ($fieldBlueprints as $key => $blueprint) {
-      $field = $page->$key();
+      $field = $defaultContent->$key();
 
       if ($blueprint['type'] === 'structure') {
         $defaultData[$key] = $field->yaml();
@@ -54,10 +39,11 @@ class Importer {
       }
     }
 
+    // If https://forum.getkirby.com/t/page-update-copies-fields-on-non-default-languages/13367
+    // is resolved, it would be enough to only merge structure fields.
     $mergedData = array_replace_recursive($defaultData, $data);
 
-    // Encode all arrays back to YAML because that's how Kirby stores
-    // them. If they are not pased, an empty value will be saved.
+    // Encode all arrays back to YAML.
     foreach ($mergedData as $key => $value) {
       if (
         isset($fieldBlueprints[$key]) &&
@@ -67,54 +53,45 @@ class Importer {
       }
     }
 
-    // static::revertKirbytagXML($mergedData)
-    $page->update($mergedData, $this->language);
-  }
-
-  public function importPages ($data) {
-    foreach ($data as $pageId => $value) {
-      $page = null;
-
-      if ($pageId === '$site') {
-        $page = site();
-      } else {
-        $page = site()->children()->find($pageId);
-      }
-
-      if ($page) {
-        $this->updatePage($page, $value, $this->lang);
-      }
-    }
-  }
-
-  public function importVariables ($data) {
-    $dir = kirby()->roots()->languages();
-
-    if (!is_dir($dir)) {
-      mkdir($dir);
-    }
-
-    $file = $dir . DS . $this->lang . '.yml';
-    $encoded = Yaml::encode($data);
-
-    file_put_contents($file, $encoded);
+    $object->update($mergedData, $this->language);
   }
 
   public function import ($data) {
+    $site = site();
     $data = static::clean($data);
 
-    $this->defaultLang = kirby()->defaultLanguage()->code();
+    array_walk_recursive($data, function (&$value) {
+      $value = KirbytagParser::parse($value);
+    });
 
-    if (isset($data['site'])) {
-      $this->updatePage(site(), $data['site']);
+    if (!empty($data['site'])) {
+      $this->update($site, $data['site']);
     }
 
-    // if (isset($data['pages'])) {
-    //   $this->importPages($data['pages']);
-    // }
+    if (!empty($data['pages'])) {
+      foreach ($data['pages'] as $id => $pageData) {
+        $page = $site->page($id);
 
-    // if (isset($data['variables'])) {
-    //   $this->importVariables($data['variables']);
-    // }
+        if ($page) {
+          $this->update($page, $pageData);
+        }
+      }
+    }
+
+    if (!empty($data['files'])) {
+      foreach ($data['files'] as $id => $fileData) {
+        $file = $site->file($id);
+
+        if ($file) {
+          $this->update($file, $fileData);
+        }
+      }
+    }
+
+    if (!empty($data['variables'])) {
+      Variables::update($this->language, $data['variables']);
+    }
+
+    return true;
   }
 }

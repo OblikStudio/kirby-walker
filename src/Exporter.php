@@ -1,9 +1,6 @@
 <?php
 namespace KirbyExporter;
 
-use F;
-use yaml;
-
 class Exporter {
   private $language = null;
   private $filters = [
@@ -20,23 +17,6 @@ class Exporter {
 
     if ($filters) {
       $this->filters = array_replace($this->filters, $filters);
-    }
-  }
-
-  public function extractVariables () {
-    $filePath = kirby()->root('languages');
-    $folder = option('oblik.easyvars.folder');
-
-    if (!empty($folder)) {
-      $filePath .= DS . $folder;
-    }
-
-    $filePath .= DS . $this->language . '.yml';
-
-    if (file_exists($filePath)) {
-      return yaml::decode(F::read($filePath));
-    } else {
-      return [];
     }
   }
 
@@ -160,7 +140,11 @@ class Exporter {
     $data['files'] = $files;
 
     if ($this->filters['variables']) {
-      $data['variables'] = $this->extractVariables();
+      $variables = Variables::get($this->language);
+
+      if (!empty($variables)) {
+        $data['variables'] = $variables;
+      }
     }
 
     return $data;
