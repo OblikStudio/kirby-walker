@@ -22,30 +22,36 @@ class Importer {
     return array_filter($data);
   }
 
-  public function update ($object, $data) {
-    $defaultData = [];
-    $defaultContent = $object->content($this->defaultLanguage);
-    $fieldBlueprints = $object->blueprint()->fields();
+  public function parseContent ($content, $fieldBlueprints) {
+    $data = [];
 
-    // Get default language data to obtain translate:false fields; also parse
-    // structure fields to arrays.
     foreach ($fieldBlueprints as $key => $blueprint) {
+      // Instead of checking `translate` here, it can save all fields and then
+      // clear the unnecessary data based on blueprints after it's merged.
       if (isset($blueprint['translate']) && $blueprint['translate'] === false) {
         continue;
       }
 
-      $field = $defaultContent->$key();
+      $field = $content->$key();
 
       if ($blueprint['type'] === 'structure') {
-        $defaultData[$key] = $field->yaml();
+        $data[$key] = $field->yaml();
       } else {
-        $defaultData[$key] = $field->value();
+        $data[$key] = $field->value();
       }
     }
 
+    return $data;
+  }
+
+  public function update ($object, $data) {
+    $fieldBlueprints = $object->blueprint()->fields();
+    $defaultContent = $this->parseContent($object->content($this->defaultLanguage), $fieldBlueprints);
+    $translatedContent = $this->parseContent($object->content($this->language), $fieldBlueprints);
+
     // If https://forum.getkirby.com/t/page-update-copies-fields-on-non-default-languages/13367
     // is resolved, it would be enough to only merge structure fields.
-    $mergedData = array_replace_recursive($defaultData, $data);
+    $mergedData = array_replace_recursive($defaultContent, $translatedContent, $data);
 
     // Encode all arrays back to YAML.
     foreach ($mergedData as $key => $value) {
@@ -72,29 +78,29 @@ class Importer {
       $this->update($site, $data['site']);
     }
 
-    if (!empty($data['pages'])) {
-      foreach ($data['pages'] as $id => $pageData) {
-        $page = $site->page($id);
+    // if (!empty($data['pages'])) {
+    //   foreach ($data['pages'] as $id => $pageData) {
+    //     $page = $site->page($id);
 
-        if ($page) {
-          $this->update($page, $pageData);
-        }
-      }
-    }
+    //     if ($page) {
+    //       $this->update($page, $pageData);
+    //     }
+    //   }
+    // }
 
-    if (!empty($data['files'])) {
-      foreach ($data['files'] as $id => $fileData) {
-        $file = $site->file($id);
+    // if (!empty($data['files'])) {
+    //   foreach ($data['files'] as $id => $fileData) {
+    //     $file = $site->file($id);
 
-        if ($file) {
-          $this->update($file, $fileData);
-        }
-      }
-    }
+    //     if ($file) {
+    //       $this->update($file, $fileData);
+    //     }
+    //   }
+    // }
 
-    if (!empty($data['variables'])) {
-      Variables::update($this->language, $data['variables']);
-    }
+    // if (!empty($data['variables'])) {
+    //   Variables::update($this->language, $data['variables']);
+    // }
 
     return true;
   }

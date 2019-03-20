@@ -23,10 +23,10 @@ include_once 'src/Variables.php';
       ],
       [
         'pattern' => 'import',
-        'method' => 'POST',
+        'method' => 'GET',
         'action' => function () {
-          // $postData = file_get_contents(__DIR__ . DS . 'import.json');
           $postData = file_get_contents('php://input');
+          $postData = file_get_contents(__DIR__ . DS . 'import.json');
           $input = json_decode($postData, true);
 
           if (empty($input['language'])) {
