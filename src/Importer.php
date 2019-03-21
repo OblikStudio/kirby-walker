@@ -26,12 +26,6 @@ class Importer {
     $data = [];
 
     foreach ($fieldBlueprints as $key => $blueprint) {
-      // Instead of checking `translate` here, it can save all fields and then
-      // clear the unnecessary data based on blueprints after it's merged.
-      if (isset($blueprint['translate']) && $blueprint['translate'] === false) {
-        continue;
-      }
-
       $field = $content->$key();
 
       if ($blueprint['type'] === 'structure') {
@@ -53,13 +47,24 @@ class Importer {
     // is resolved, it would be enough to only merge structure fields.
     $mergedData = array_replace_recursive($defaultContent, $translatedContent, $data);
 
-    // Encode all arrays back to YAML.
     foreach ($mergedData as $key => $value) {
-      if (
-        isset($fieldBlueprints[$key]) &&
-        $fieldBlueprints[$key]['type'] === 'structure'
-      ) {
-        $mergedData[$key] = yaml::encode($value);
+      $blueprint = $fieldBlueprints[$key] ?? null;
+      $shouldUnset = false;
+
+      if ($blueprint) {
+        if ($blueprint['type'] === 'structure') {
+          $mergedData[$key] = yaml::encode($value);
+        }
+
+        if (($blueprint['translate'] ?? true) === false) {
+          $shouldUnset = true;
+        }
+      } else {
+        $shouldUnset = true;
+      }
+
+      if ($shouldUnset) {
+        unset($mergedData[$key]);
       }
     }
 
@@ -78,29 +83,29 @@ class Importer {
       $this->update($site, $data['site']);
     }
 
-    // if (!empty($data['pages'])) {
-    //   foreach ($data['pages'] as $id => $pageData) {
-    //     $page = $site->page($id);
+    if (!empty($data['pages'])) {
+      foreach ($data['pages'] as $id => $pageData) {
+        $page = $site->page($id);
 
-    //     if ($page) {
-    //       $this->update($page, $pageData);
-    //     }
-    //   }
-    // }
+        if ($page) {
+          $this->update($page, $pageData);
+        }
+      }
+    }
 
-    // if (!empty($data['files'])) {
-    //   foreach ($data['files'] as $id => $fileData) {
-    //     $file = $site->file($id);
+    if (!empty($data['files'])) {
+      foreach ($data['files'] as $id => $fileData) {
+        $file = $site->file($id);
 
-    //     if ($file) {
-    //       $this->update($file, $fileData);
-    //     }
-    //   }
-    // }
+        if ($file) {
+          $this->update($file, $fileData);
+        }
+      }
+    }
 
-    // if (!empty($data['variables'])) {
-    //   Variables::update($this->language, $data['variables']);
-    // }
+    if (!empty($data['variables'])) {
+      Variables::update($this->language, $data['variables']);
+    }
 
     return true;
   }
