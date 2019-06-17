@@ -36,7 +36,7 @@ include_once 'src/Variables.php';
           if (empty($input['content'])) {
             throw new \Exception('Missing content', 400);
           }
-          
+
           $importer = new Importer($input['language']);
           return $importer->import($input['content']);
         }
