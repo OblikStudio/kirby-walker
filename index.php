@@ -7,6 +7,9 @@ include_once 'src/KirbytagParser.php';
 include_once 'src/Variables.php';
 
 \Kirby::plugin('oblik/exporter', [
+  'options' => [
+    'yamlFields' => null
+  ],
   'api' => [
     'routes' => [
       [
@@ -15,7 +18,8 @@ include_once 'src/Variables.php';
         'action' => function () use ($kirby) {
           $exporter = new Exporter($kirby->defaultLanguage()->code(), [
             'page' => $_GET['page'] ?? null,
-            'variables' => ($_GET['variables'] ?? 'true') != 'false'
+            'variables' => ($_GET['variables'] ?? 'true') != 'false',
+            'yamlFields' => option('oblik.exporter.yamlFields')
           ]);
 
           return $exporter->export();

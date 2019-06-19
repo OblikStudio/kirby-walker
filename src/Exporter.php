@@ -5,7 +5,8 @@ class Exporter {
   private $language = null;
   private $filters = [
     'page' => null,
-    'variables' => true
+    'variables' => true,
+    'yamlFields' => null
   ];
 
   function __construct ($language = null, $filters = null) {
@@ -18,6 +19,8 @@ class Exporter {
     if ($filters) {
       $this->filters = array_replace($this->filters, $filters);
     }
+
+    $this->yamlFields = $this->filters['yamlFields'] ?? [];
   }
 
   public function isFieldTranslatable ($blueprint) {
@@ -37,9 +40,10 @@ class Exporter {
       return null;
     }
 
+    $fieldType = $blueprint['type'];
     $isFieldInstance = is_object($input);
 
-    if ($blueprint['type'] === 'structure') {
+    if ($fieldType === 'structure') {
       $data = [];
       $content = $isFieldInstance ? $input->yaml() : $input;
 
@@ -64,8 +68,28 @@ class Exporter {
         }
       }
     } else {
-      $data = $isFieldInstance ? $input->value() : $input;
-      $data = KirbytagParser::toXML($data);
+      $data = $input;
+      $yamlFieldKeys = $this->yamlFields[$fieldType] ?? null;
+
+      if ($isFieldInstance) {
+        if ($yamlFieldKeys) {
+          $data = $data->yaml();
+        } else {
+          $data = $data->value();
+        }
+      }
+
+      if (is_array($data)) {
+        foreach ($data as $key => $value) {
+          if ($yamlFieldKeys && !in_array($key, $yamlFieldKeys)) {
+            unset($data[$key]);
+          } else {
+            $data[$key] = KirbytagParser::toXML($value);
+          }
+        }
+      } else {
+        $data = KirbytagParser::toXML($data);
+      }
     }
 
     return $data;
