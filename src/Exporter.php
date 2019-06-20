@@ -3,36 +3,39 @@ namespace KirbyExporter;
 
 class Exporter {
   private $language = null;
-  private $filters = [
+  private $settings = [
     'page' => null,
     'variables' => true,
-    'yamlFields' => null
+    'yamlFields' => null,
+    'blueprints' => [],
+    'fields' => []
   ];
 
-  function __construct ($language = null, $filters = null) {
+  function __construct ($language = null, $settings = null) {
     if ($language) {
       $this->language = $language;
-    } else {
-      $this->language = kirby()->defaultLanguage()->code();
     }
 
-    if ($filters) {
-      $this->filters = array_replace($this->filters, $filters);
+    if ($settings) {
+      $this->settings = array_replace($this->settings, $settings);
     }
-
-    $this->yamlFields = $this->filters['yamlFields'] ?? [];
   }
 
   public function isFieldTranslatable ($blueprint) {
-    $isTranslate = $blueprint['translate'] ?? true;
-    $isFiles = $blueprint['type'] === 'files';
-    $isPages = $blueprint['type'] === 'pages';
+    $outcome = null;
 
-    return (
-      $isTranslate &&
-      !$isFiles &&
-      !$isPages
-    );
+    $outcome = $blueprint['translate'] ?? true;
+    $options = $blueprint['exporter'] ?? null;
+
+    if ($options) {
+      $ignore = $options['ignore'] ?? false;
+
+      if ($ignore) {
+        $outcome = false;
+      }
+    }
+
+    return $outcome;
   }
 
   public function extractFieldData ($blueprint, $input) {
@@ -95,10 +98,27 @@ class Exporter {
     return $data;
   }
 
+  public function processBlueprints ($prints) {
+    $fields = $this->settings['fields'];
+    $blueprints = $this->settings['blueprints'];
+    $prints = array_merge_recursive($prints, $blueprints);
+
+    foreach ($prints as $key => $value) {
+      $fieldType = $value['type'] ?? null;
+      $fieldData = $fields[$fieldType] ?? null;
+
+      if ($fieldData) {
+        $prints[$key] = array_merge_recursive($prints[$key], $fieldData);
+      }
+    }
+
+    return $prints;
+  }
+
   public function extractEntity ($entity) {
     $data = [];
     $content = $entity->content($this->language);
-    $fieldBlueprints = $entity->blueprint()->fields();
+    $fieldBlueprints = $this->processBlueprints($entity->blueprint()->fields());
 
     foreach ($fieldBlueprints as $fieldName => $fieldBlueprint) {
       $field = $content->$fieldName();
@@ -138,7 +158,7 @@ class Exporter {
 
     $pages = [];
     $files = [];
-    $filterPage = $this->filters['page'];
+    $filterPage = $this->settings['page'];
 
     $siteData = $this->extractPageContent(site());
     $files = array_replace($files, $siteData['files']);
@@ -163,7 +183,7 @@ class Exporter {
     $data['pages'] = $pages;
     $data['files'] = $files;
 
-    if ($this->filters['variables']) {
+    if ($this->settings['variables']) {
       $variables = Variables::get($this->language);
 
       if (!empty($variables)) {

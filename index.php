@@ -8,7 +8,26 @@ include_once 'src/Variables.php';
 
 \Kirby::plugin('oblik/exporter', [
   'options' => [
-    'yamlFields' => null
+    'page' => null,
+    'variables' => true,
+    'yamlFields' => null,
+    'blueprints' => [
+      'title' => [
+        'type' => 'text'
+      ]
+    ],
+    'fields' => [
+      'files' => [
+        'exporter' => [
+          'ignore' => true
+        ]
+      ],
+      'pages' => [
+        'exporter' => [
+          'ignore' => true
+        ]
+      ]
+    ]
   ],
   'api' => [
     'routes' => [
@@ -16,10 +35,17 @@ include_once 'src/Variables.php';
         'pattern' => 'export',
         'method' => 'GET',
         'action' => function () use ($kirby) {
-          $exporter = new Exporter($kirby->defaultLanguage()->code(), [
-            'page' => $_GET['page'] ?? null,
-            'variables' => ($_GET['variables'] ?? 'true') != 'false',
-            'yamlFields' => option('oblik.exporter.yamlFields')
+          $exportLanguage = null;
+
+          if ($kirby->multilang()) {
+            $exportLanguage = $kirby->defaultLanguage()->code();
+          }
+
+          $exporter = new Exporter($exportLanguage, [
+            'page' => $_GET['page'] ?? option('oblik.exporter.page'),
+            'variables' => $_GET['variables'] ?? option('oblik.exporter.variables'),
+            'blueprints' => option('oblik.exporter.blueprints'),
+            'fields' => option('oblik.exporter.fields'),
           ]);
 
           return $exporter->export();
