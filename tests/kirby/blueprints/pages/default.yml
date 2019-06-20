@@ -1,0 +1,11 @@
+title: Default Page
+preset: page
+fields:
+  text:
+    label: Text
+    type: textarea
+    size: large
+  link:
+    type: select
+  featured:
+    type: pages

@@ -3,11 +3,13 @@
 use PHPUnit\Framework\TestCase;
 use KirbyExporter\Exporter;
 
-$exporter = new Exporter('en');
-var_dump($exporter->export());
+$exporter = new Exporter();
+$data = $exporter->export();
 
 final class EmailTest extends TestCase {
   public function testFoo (): void {
-    $this->assertEquals(site()->title()->value(), 'Nexo');
+    global $data;
+
+    $this->assertEquals($data['pages']['home']['text'], 'testbar');
   }
 }
