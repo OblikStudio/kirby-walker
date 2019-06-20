@@ -1,0 +1,15 @@
+{
+    "name": "oblik/kirby-exporter",
+    "type": "kirby-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hristiyan Dodov",
+            "email": "h.dodov@gmail.com"
+        }
+    ],
+    "require": {},
+    "scripts": {
+      "test": "phpunit ./tests/Exporter --bootstrap ./tests/kirby/bootstrap.php"
+    }
+}

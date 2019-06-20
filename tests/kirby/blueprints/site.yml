@@ -1,0 +1,4 @@
+preset: page
+fields:
+  foo:
+    type: text
