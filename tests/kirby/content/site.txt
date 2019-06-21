@@ -1,1 +1,34 @@
-Title: Site Title
+Title: Plugin Title
+
+----
+
+Yamlfield: 
+
+type: url
+value: >
+  https://github.com/OblikStudio/kirby-link-field
+text: Link Text
+popup: true
+hash: kirby-link-field
+
+----
+
+Yamlfieldall: 
+
+type: url
+value: https://example.com/
+text: Example
+
+----
+
+Nottranslated: Non translated text
+
+----
+
+Struct: 
+
+- 
+  yamlfield:
+    type: url
+    value: https://example.com/
+    text: Structure link

@@ -10,7 +10,6 @@ include_once 'src/Variables.php';
   'options' => [
     'page' => null,
     'variables' => true,
-    'yamlFields' => null,
     'blueprints' => [
       'title' => [
         'type' => 'text'
@@ -41,7 +40,8 @@ include_once 'src/Variables.php';
             $exportLanguage = $kirby->defaultLanguage()->code();
           }
 
-          $exporter = new Exporter($exportLanguage, [
+          $exporter = new Exporter([
+            'language' => $exportLanguage,
             'page' => $_GET['page'] ?? option('oblik.exporter.page'),
             'variables' => $_GET['variables'] ?? option('oblik.exporter.variables'),
             'blueprints' => option('oblik.exporter.blueprints'),

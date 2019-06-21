@@ -2,44 +2,36 @@
 namespace KirbyExporter;
 
 class Exporter {
-  private $language = null;
   private $settings = [
+    'language' => null,
     'page' => null,
     'variables' => true,
-    'yamlFields' => null,
     'blueprints' => [],
-    'fields' => []
+    'fields' => [],
+    'fieldPredicate' => null
   ];
 
-  function __construct ($language = null, $settings = null) {
-    if ($language) {
-      $this->language = $language;
-    }
-
-    if ($settings) {
-      $this->settings = array_replace($this->settings, $settings);
-    }
+  function __construct ($settings = []) {
+    $this->settings = array_replace($this->settings, $settings);
   }
 
-  public function isFieldTranslatable ($blueprint) {
-    $outcome = null;
+  public function isFieldEligible ($blueprint) {
+    $ignored = $blueprint['exporter']['ignore'] ?? false;
+    $predicate = $this->settings['fieldPredicate'] ?? null;
 
-    $outcome = $blueprint['translate'] ?? true;
-    $options = $blueprint['exporter'] ?? null;
-
-    if ($options) {
-      $ignore = $options['ignore'] ?? false;
-
-      if ($ignore) {
-        $outcome = false;
-      }
+    if ($ignored) {
+      return false;
     }
 
-    return $outcome;
+    if (is_callable($predicate)) {
+      return $predicate($blueprint);
+    }
+
+    return true;
   }
 
   public function extractFieldData ($blueprint, $input) {
-    if (!$this->isFieldTranslatable($blueprint)) {
+    if (!$this->isFieldEligible($blueprint)) {
       return null;
     }
 
@@ -72,10 +64,10 @@ class Exporter {
       }
     } else {
       $data = $input;
-      $yamlFieldKeys = $this->yamlFields[$fieldType] ?? null;
+      $parseYaml = $blueprint['exporter']['yaml'] ?? null;
 
       if ($isFieldInstance) {
-        if ($yamlFieldKeys) {
+        if ($parseYaml) {
           $data = $data->yaml();
         } else {
           $data = $data->value();
@@ -83,8 +75,14 @@ class Exporter {
       }
 
       if (is_array($data)) {
+        $whitelist = null;
+
+        if (is_array($parseYaml)) {
+          $whitelist = $parseYaml;
+        }
+
         foreach ($data as $key => $value) {
-          if ($yamlFieldKeys && !in_array($key, $yamlFieldKeys)) {
+          if ($whitelist && !in_array($key, $whitelist)) {
             unset($data[$key]);
           } else {
             $data[$key] = KirbytagParser::toXML($value);
@@ -117,7 +115,7 @@ class Exporter {
 
   public function extractEntity ($entity) {
     $data = [];
-    $content = $entity->content($this->language);
+    $content = $entity->content($this->settings['language']);
     $fieldBlueprints = $this->processBlueprints($entity->blueprint()->fields());
 
     foreach ($fieldBlueprints as $fieldName => $fieldBlueprint) {
@@ -184,7 +182,7 @@ class Exporter {
     $data['files'] = $files;
 
     if ($this->settings['variables']) {
-      $variables = Variables::get($this->language);
+      $variables = Variables::get($this->settings['language']);
 
       if (!empty($variables)) {
         $data['variables'] = $variables;

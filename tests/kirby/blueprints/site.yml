@@ -1,3 +1,24 @@
 title: Site
-preset: pages
+preset: page
 unlisted: true
+fields:
+  yamlField:
+    type: link
+    exporter:
+      yaml:
+        - text
+  yamlFieldAll:
+    type: link
+    exporter:
+      yaml: true
+  notTranslated:
+    type: text
+    translate: false
+  struct:
+    type: structure
+    fields:
+      yamlField:
+        type: link
+        exporter:
+          yaml:
+            - text
