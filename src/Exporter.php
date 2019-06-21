@@ -1,7 +1,6 @@
 <?php
 namespace KirbyExporter;
 
-// loop over content instead of blueprint
 // remove page [content, files], use class attributes to push into
 
 class Exporter {
@@ -98,7 +97,9 @@ class Exporter {
   public function processBlueprints ($prints) {
     $fields = $this->settings['fields'];
     $blueprints = $this->settings['blueprints'];
+
     $prints = array_merge_recursive($prints, $blueprints);
+    $prints = array_change_key_case($prints, CASE_LOWER);
 
     foreach ($prints as $key => $value) {
       $fieldType = $value['type'] ?? null;
@@ -113,22 +114,24 @@ class Exporter {
   }
 
   public function extractEntity ($entity, $fieldBlueprints = null) {
-    $data = [];
-    $content = $entity->content($this->settings['language']);
+    $data = null;
+    $language = $this->settings['language'] ?? null;
+    $content = $entity->content($language);
 
     if (!$fieldBlueprints) {
-      $fieldBlueprints = $entity->blueprint()->fields();
-      $fieldBlueprints = $this->processBlueprints($fieldBlueprints);
+      $fieldBlueprints = $this->processBlueprints(
+        $entity->blueprint()->fields()
+      );
     }
 
-    foreach ($fieldBlueprints as $fieldName => $fieldBlueprint) {
-      $field = $content->$fieldName();
+    foreach ($content->fields() as $key => $field) {
+      $blueprint = $fieldBlueprints[$key] ?? null;
 
-      if ($field->value() !== null) {
-        $fieldData = $this->extractField($fieldBlueprint, $field);
+      if ($blueprint) {
+        $fieldData = $this->extractField($blueprint, $field);
 
         if ($fieldData !== null) {
-          $data[$fieldName] = $fieldData;
+          $data[$key] = $fieldData;
         }
       }
     }

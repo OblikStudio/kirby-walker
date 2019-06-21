@@ -34,21 +34,21 @@ final class ExporterTest extends TestCase {
   }
 
   public function testIgnoredField () {
-    $this->assertArrayNotHasKey('ignoredField', $GLOBALS['data']['site']);
+    $this->assertArrayNotHasKey('ignoredfield', $GLOBALS['data']['site']);
   }
 
   public function testFieldPredicate () {
-    $this->assertArrayNotHasKey('notTranslated', $GLOBALS['data']['site']);
+    $this->assertArrayNotHasKey('nottranslated', $GLOBALS['data']['site']);
   }
 
   public function testEmptyStructure () {
-    $this->assertArrayNotHasKey('emptyStruct', $GLOBALS['data']['site']);
+    $this->assertArrayNotHasKey('emptystruct', $GLOBALS['data']['site']);
   }
 
   public function testYamlWhitelist () {
     $keys = array_keys(site()->yamlField()->yaml());
     $whitelist = site()->blueprint()->fields()['yamlField']['exporter']['yaml'];
-    $data = $GLOBALS['data']['site']['yamlField'];
+    $data = $GLOBALS['data']['site']['yamlfield'];
 
     foreach ($keys as $key) {
       if (in_array($key, $whitelist)) {
@@ -61,15 +61,15 @@ final class ExporterTest extends TestCase {
 
   public function testYamlAllKeys () {
     $keys = site()->yamlFieldAll()->yaml();
-    $this->assertEquals($GLOBALS['data']['site']['yamlFieldAll'], $keys);
+    $this->assertEquals($GLOBALS['data']['site']['yamlfieldall'], $keys);
   }
 
   public function testYamlInStructure () {
-    $keys = array_keys($GLOBALS['data']['site']['struct'][0]['yamlField']);
+    $keys = array_keys($GLOBALS['data']['site']['struct'][0]['yamlfield']);
     $this->assertEquals($keys, ['text']);
   }
 
   public function testFalsyValueInStructure () {
-    $this->assertArrayHasKey('falsyStructureField', $GLOBALS['data']['site']['struct'][0]);
+    $this->assertArrayHasKey('falsystructurefield', $GLOBALS['data']['site']['struct'][0]);
   }
 }
