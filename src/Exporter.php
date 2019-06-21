@@ -1,9 +1,8 @@
 <?php
 namespace KirbyExporter;
 
-// remove isFieldInstance
-// remove page [content, files], use class attributes to push into
 // loop over content instead of blueprint
+// remove page [content, files], use class attributes to push into
 
 class Exporter {
   private $settings = [
@@ -34,61 +33,66 @@ class Exporter {
     return true;
   }
 
-  public function extractFieldData ($blueprint, $input) {
-    if (!$this->isFieldEligible($blueprint)) {
-      return null;
-    }
+  // Extracts the data from a Structure, treating entries as content entities
+  // like Page or File.
+  private function extractStructure ($structure, $blueprint) {
+    $data = null;
+    $fieldBlueprints = $this->processBlueprints($blueprint['fields']);
 
-    $fieldType = $blueprint['type'];
-    $isFieldInstance = is_object($input);
+    foreach ($structure as $entry) {
+      $childData = $this->extractEntity($entry, $fieldBlueprints);
 
-    if ($fieldType === 'structure') {
-      $data = [];
-
-      $fields = $this->processBlueprints($blueprint['fields']);
-      foreach ($input->toStructure() as $entry) {
-        $childData = $this->extractEntity($entry, $fields);
-
-        if (!empty($childData)) {
-          array_push($data, $childData);
-        }
-      }
-
-      if (empty($data)) {
-        $data = null;
-      }
-    } else {
-      $data = $input;
-      $parseYaml = $blueprint['exporter']['yaml'] ?? null;
-
-      if ($isFieldInstance) {
-        if ($parseYaml) {
-          $data = $data->yaml();
-        } else {
-          $data = $data->value();
-        }
-      }
-
-      if (is_array($data)) {
-        $whitelist = null;
-
-        if (is_array($parseYaml)) {
-          $whitelist = $parseYaml;
-        }
-
-        foreach ($data as $key => $value) {
-          if ($whitelist && !in_array($key, $whitelist)) {
-            unset($data[$key]);
-          } else {
-            $data[$key] = KirbytagParser::toXML($value);
-          }
-        }
-      } else {
-        $data = KirbytagParser::toXML($data);
+      if (!empty($childData)) {
+        $data[] = $childData;
       }
     }
 
     return $data;
+  }
+
+  // Extracts the value of a content entity. Note that it handles Structure
+  // fields, but not structures themselves.
+  private function extractValue ($field, $blueprint) {
+    $parseYaml = $blueprint['exporter']['yaml'] ?? null;
+
+    if ($parseYaml) {
+      $data = $field->yaml();
+    } else {
+      $data = $field->value();
+    }
+
+    if (is_array($data)) {
+      $whitelist = null;
+
+      if (is_array($parseYaml)) {
+        $whitelist = $parseYaml;
+      }
+
+      foreach ($data as $key => $value) {
+        if ($whitelist && !in_array($key, $whitelist)) {
+          unset($data[$key]);
+        } else {
+          $data[$key] = KirbytagParser::toXML($value);
+        }
+      }
+    } else {
+      $data = KirbytagParser::toXML($data);
+    }
+
+    return $data;
+  }
+
+  // Extracts ModelWithContent fields based on eligibility and type.
+  public function extractField ($blueprint, $input) {
+    if ($this->isFieldEligible($blueprint)) {
+      if ($blueprint['type'] === 'structure') {
+        return $this->extractStructure($input->toStructure(), $blueprint);
+      } else {
+        return $this->extractValue($input, $blueprint);
+      }
+    }
+
+    return null;
   }
 
   public function processBlueprints ($prints) {
@@ -119,13 +123,9 @@ class Exporter {
 
     foreach ($fieldBlueprints as $fieldName => $fieldBlueprint) {
       $field = $content->$fieldName();
-      relog('field', $fieldName, $field->value());
 
       if ($field->value() !== null) {
-        $fieldData = $this->extractFieldData(
-          $fieldBlueprint,
-          $field
-        );
+        $fieldData = $this->extractField($fieldBlueprint, $field);
 
         if ($fieldData !== null) {
           $data[$fieldName] = $fieldData;
