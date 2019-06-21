@@ -1,6 +1,10 @@
 <?php
 namespace KirbyExporter;
 
+// remove isFieldInstance
+// remove page [content, files], use class attributes to push into
+// loop over content instead of blueprint
+
 class Exporter {
   private $settings = [
     'language' => null,
@@ -40,27 +44,18 @@ class Exporter {
 
     if ($fieldType === 'structure') {
       $data = [];
-      $content = $isFieldInstance ? $input->yaml() : $input;
 
-      foreach ($content as $index => $entry) {
-        $childData = [];
-
-        foreach ($blueprint['fields'] as $fieldName => $fieldBlueprint) {
-          $fieldKey = strtolower($fieldName);
-
-          if (isset($entry[$fieldKey])) {
-            $fieldValue = $entry[$fieldKey];
-            $extractedValue = $this->extractFieldData($fieldBlueprint, $fieldValue);
-
-            if (!empty($extractedValue)) {
-              $childData[$fieldName] = $extractedValue;
-            }
-          }
-        }
+      $fields = $this->processBlueprints($blueprint['fields']);
+      foreach ($input->toStructure() as $entry) {
+        $childData = $this->extractEntity($entry, $fields);
 
         if (!empty($childData)) {
-          $data[$index] = $childData;
+          array_push($data, $childData);
         }
+      }
+
+      if (empty($data)) {
+        $data = null;
       }
     } else {
       $data = $input;
@@ -113,20 +108,28 @@ class Exporter {
     return $prints;
   }
 
-  public function extractEntity ($entity) {
+  public function extractEntity ($entity, $fieldBlueprints = null) {
     $data = [];
     $content = $entity->content($this->settings['language']);
-    $fieldBlueprints = $this->processBlueprints($entity->blueprint()->fields());
+
+    if (!$fieldBlueprints) {
+      $fieldBlueprints = $entity->blueprint()->fields();
+      $fieldBlueprints = $this->processBlueprints($fieldBlueprints);
+    }
 
     foreach ($fieldBlueprints as $fieldName => $fieldBlueprint) {
       $field = $content->$fieldName();
-      $fieldData = $this->extractFieldData(
-        $fieldBlueprint,
-        $field
-      );
+      relog('field', $fieldName, $field->value());
 
-      if (!empty($fieldData)) {
-        $data[$fieldName] = $fieldData;
+      if ($field->value() !== null) {
+        $fieldData = $this->extractFieldData(
+          $fieldBlueprint,
+          $field
+        );
+
+        if ($fieldData !== null) {
+          $data[$fieldName] = $fieldData;
+        }
       }
     }
 

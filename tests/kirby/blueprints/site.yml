@@ -2,6 +2,11 @@ title: Site
 preset: page
 unlisted: true
 fields:
+  text: true
+  ignoredField:
+    type: text
+    exporter:
+      ignore: true
   yamlField:
     type: link
     exporter:
@@ -22,3 +27,13 @@ fields:
         exporter:
           yaml:
             - text
+      falsyStructureField:
+        type: number
+      optionsIgnoredField:
+        type: pages
+  emptyStruct:
+    type: structure
+    fields:
+      text:
+        exporter:
+          ignore: true

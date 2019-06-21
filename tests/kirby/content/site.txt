@@ -2,7 +2,15 @@ Title: Plugin Title
 
 ----
 
-Yamlfield: 
+Text: Empty blueprint
+
+----
+
+Ignoredfield: Ignored
+
+----
+
+Yamlfield:
 
 type: url
 value: >
@@ -13,7 +21,7 @@ hash: kirby-link-field
 
 ----
 
-Yamlfieldall: 
+Yamlfieldall:
 
 type: url
 value: https://example.com/
@@ -25,10 +33,22 @@ Nottranslated: Non translated text
 
 ----
 
-Struct: 
+Struct:
 
-- 
+-
   yamlfield:
     type: url
     value: https://example.com/
     text: Structure link
+  falsystructurefield: 0
+  optionsignoredfield:
+    - home
+  id: foo
+  title: Struct title
+
+----
+
+Emptystruct:
+
+-
+  text: Ignored text
