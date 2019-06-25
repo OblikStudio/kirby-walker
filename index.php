@@ -8,7 +8,6 @@ include_once 'src/Variables.php';
 
 \Kirby::plugin('oblik/exporter', [
   'options' => [
-    'page' => null,
     'variables' => true,
     'blueprints' => [
       'title' => [
@@ -26,6 +25,10 @@ include_once 'src/Variables.php';
           'ignore' => true
         ]
       ]
+    ],
+    'filters' => [
+      'pages' => null, // predicate function
+      'files' => null, // predicate function
     ]
   ],
   'api' => [
@@ -34,6 +37,8 @@ include_once 'src/Variables.php';
         'pattern' => 'export',
         'method' => 'GET',
         'action' => function () use ($kirby) {
+          $pagesQuery = $_GET['page'] ?? null;
+          $filesQuery = $_GET['file'] ?? null;
           $exportLanguage = null;
 
           if ($kirby->multilang()) {
@@ -46,6 +51,14 @@ include_once 'src/Variables.php';
             'variables' => $_GET['variables'] ?? option('oblik.exporter.variables'),
             'blueprints' => option('oblik.exporter.blueprints'),
             'fields' => option('oblik.exporter.fields'),
+            'filters' => [
+              'pages' => function ($page) use ($pagesQuery) {
+                return (!$pagesQuery || strpos($page->id(), $pagesQuery) !== false);
+              },
+              'files' => function ($file) use ($filesQuery) {
+                return (!$filesQuery || strpos($file->id(), $filesQuery) !== false);
+              }
+            ]
           ]);
 
           return $exporter->export();

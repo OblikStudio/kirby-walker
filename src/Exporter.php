@@ -1,16 +1,14 @@
 <?php
 namespace KirbyExporter;
 
-// remove page [content, files], use class attributes to push into
-
 class Exporter {
-  private $settings = [
+  public $settings = [
     'language' => null,
-    'page' => null,
     'variables' => true,
     'blueprints' => [],
     'fields' => [],
-    'fieldPredicate' => null
+    'fieldPredicate' => null,
+    'filters' => []
   ];
 
   function __construct ($settings = []) {
@@ -139,15 +137,24 @@ class Exporter {
     return $data;
   }
 
+  // Extracts all content of a Page. Can be used by its own in case you need
+  // to export a single page.
   public function extractPageContent ($page) {
     $data = $this->extractEntity($page);
     $files = [];
+    $filesFilter = $this->settings['filters']['files'] ?? null;
 
     foreach ($page->files() as $file) {
+      if (is_callable($filesFilter) && $filesFilter($file) === false) {
+        // The file has been filtered out.
+        continue;
+      }
+
+      $fileId = $file->id();
       $fileData = $this->extractEntity($file);
 
       if (!empty($fileData)) {
-        $files[$file->id()] = $fileData;
+        $files[$fileId] = $fileData;
       }
     }
 
@@ -162,18 +169,18 @@ class Exporter {
 
     $pages = [];
     $files = [];
-    $filterPage = $this->settings['page'];
 
     $siteData = $this->extractPageContent(site());
     $files = array_replace($files, $siteData['files']);
+    $pagesFilter = $this->settings['filters']['pages'] ?? null;
 
     foreach (site()->index() as $page) {
-      $pageId = $page->id();
-
-      if ($filterPage && strpos($pageId, $filterPage) === false) {
+      if (is_callable($pagesFilter) && $pagesFilter($page) === false) {
+        // The page has been filtered out.
         continue;
       }
 
+      $pageId = $page->id();
       $pageData = $this->extractPageContent($page);
 
       if (!empty($pageData['content'])) {
