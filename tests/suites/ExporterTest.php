@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use KirbyExporter\Exporter;
+use KirbyOutsource\Exporter;
 
 // add test for blueprint title
 

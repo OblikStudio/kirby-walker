@@ -1,10 +1,12 @@
 <?php
-namespace KirbyExporter;
+namespace KirbyOutsource;
 
 include_once 'src/Exporter.php';
 include_once 'src/Importer.php';
 include_once 'src/KirbytagParser.php';
 include_once 'src/Variables.php';
+include_once 'src/Formatter.php';
+include_once 'src/Walker.php';
 
 \Kirby::plugin('oblik/exporter', [
   'options' => [

@@ -1,5 +1,5 @@
 <?php
-namespace KirbyExporter;
+namespace KirbyOutsource;
 
 class KirbytagParser {
   public static function tagToXML($tag) {

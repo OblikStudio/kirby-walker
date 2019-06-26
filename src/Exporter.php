@@ -1,5 +1,9 @@
 <?php
-namespace KirbyExporter;
+
+namespace KirbyOutsource;
+
+use KirbyOutsource\Formatter;
+use KirbyOutsource\Variables;
 
 class Exporter {
   public $settings = [
@@ -13,134 +17,28 @@ class Exporter {
 
   function __construct ($settings = []) {
     $this->settings = array_replace($this->settings, $settings);
-  }
+    $this->settings['predicate'] = function ($blueprint, $input) {
+      $ignored = $blueprint['exporter']['ignore'] ?? false;
+      $predicate = $this->settings['fieldPredicate'] ?? null;
 
-  public function isFieldEligible ($blueprint) {
-    $ignored = $blueprint['exporter']['ignore'] ?? false;
-    $predicate = $this->settings['fieldPredicate'] ?? null;
-
-    if ($ignored) {
-      return false;
-    }
-
-    if (is_callable($predicate)) {
-      return $predicate($blueprint);
-    }
-
-    return true;
-  }
-
-  // Extracts the data from a Structure, treating entries as content entities
-  // like Page or File.
-  private function extractStructure ($structure, $blueprint) {
-    $data = null;
-    $fieldBlueprints = $this->processBlueprints($blueprint['fields']);
-
-    foreach ($structure as $entry) {
-      $childData = $this->extractEntity($entry, $fieldBlueprints);
-
-      if (!empty($childData)) {
-        $data[] = $childData;
-      }
-    }
-
-    return $data;
-  }
-
-  // Extracts the value of a content entity. Note that it handles Structure
-  // fields, but not structures themselves.
-  private function extractValue ($field, $blueprint) {
-    $parseYaml = $blueprint['exporter']['yaml'] ?? null;
-
-    if ($parseYaml) {
-      $data = $field->yaml();
-    } else {
-      $data = $field->value();
-    }
-
-    if (is_array($data)) {
-      $whitelist = null;
-
-      if (is_array($parseYaml)) {
-        $whitelist = $parseYaml;
+      if ($ignored) {
+        return false;
       }
 
-      foreach ($data as $key => $value) {
-        if ($whitelist && !in_array($key, $whitelist)) {
-          unset($data[$key]);
-        } else {
-          $data[$key] = KirbytagParser::toXML($value);
-        }
+      if (is_callable($predicate)) {
+        return $predicate($blueprint);
       }
-    } else {
-      $data = KirbytagParser::toXML($data);
-    }
 
-    return $data;
-  }
+      return true;
+    };
 
-  // Extracts ModelWithContent fields based on eligibility and type.
-  public function extractField ($blueprint, $input) {
-    if ($this->isFieldEligible($blueprint)) {
-      if ($blueprint['type'] === 'structure') {
-        return $this->extractStructure($input->toStructure(), $blueprint);
-      } else {
-        return $this->extractValue($input, $blueprint);
-      }
-    }
-
-    return null;
-  }
-
-  public function processBlueprints ($prints) {
-    $fields = $this->settings['fields'];
-    $blueprints = $this->settings['blueprints'];
-
-    $prints = array_merge_recursive($prints, $blueprints);
-    $prints = array_change_key_case($prints, CASE_LOWER);
-
-    foreach ($prints as $key => $value) {
-      $fieldType = $value['type'] ?? null;
-      $fieldData = $fields[$fieldType] ?? null;
-
-      if ($fieldData) {
-        $prints[$key] = array_merge_recursive($prints[$key], $fieldData);
-      }
-    }
-
-    return $prints;
-  }
-
-  public function extractEntity ($entity, $fieldBlueprints = null) {
-    $data = null;
-    $language = $this->settings['language'] ?? null;
-    $content = $entity->content($language);
-
-    if (!$fieldBlueprints) {
-      $fieldBlueprints = $this->processBlueprints(
-        $entity->blueprint()->fields()
-      );
-    }
-
-    foreach ($content->fields() as $key => $field) {
-      $blueprint = $fieldBlueprints[$key] ?? null;
-
-      if ($blueprint) {
-        $fieldData = $this->extractField($blueprint, $field);
-
-        if ($fieldData !== null) {
-          $data[$key] = $fieldData;
-        }
-      }
-    }
-
-    return $data;
+    $this->formatter = new Formatter($this->settings);
   }
 
   // Extracts all content of a Page. Can be used by its own in case you need
   // to export a single page.
   public function extractPageContent ($page) {
-    $data = $this->extractEntity($page);
+    $data = $this->formatter->decode($page);
     $files = [];
     $filesFilter = $this->settings['filters']['files'] ?? null;
 
@@ -151,7 +49,7 @@ class Exporter {
       }
 
       $fileId = $file->id();
-      $fileData = $this->extractEntity($file);
+      $fileData = $this->formatter->decode($file);
 
       if (!empty($fileData)) {
         $files[$fileId] = $fileData;

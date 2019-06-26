@@ -1,5 +1,5 @@
 <?php
-namespace KirbyExporter;
+namespace KirbyOutsource;
 
 use yaml;
 
@@ -10,16 +10,6 @@ class Importer {
   function __construct ($language = null) {
     $this->language = $language;
     $this->defaultLanguage = kirby()->defaultLanguage()->code();
-  }
-
-  public static function clean ($data) {
-    foreach ($data as $key => $value) {
-      if (is_array($value)) {
-        $data[$key] = static::clean($value);
-      }
-    }
-
-    return array_filter($data);
   }
 
   public function parseContent ($content, $fieldBlueprints) {
@@ -40,12 +30,12 @@ class Importer {
 
   public function update ($object, $data) {
     $fieldBlueprints = $object->blueprint()->fields();
-    $defaultContent = $this->parseContent($object->content($this->defaultLanguage), $fieldBlueprints);
     $translatedContent = $this->parseContent($object->content($this->language), $fieldBlueprints);
 
     // If https://forum.getkirby.com/t/page-update-copies-fields-on-non-default-languages/13367
     // is resolved, it would be enough to only merge structure fields.
-    $mergedData = array_replace_recursive($defaultContent, $translatedContent, $data);
+    $mergedData = array_replace_recursive($translatedContent, $data);
+    relog($translatedContent, $data, $mergedData);
 
     foreach ($mergedData as $key => $value) {
       $blueprint = $fieldBlueprints[$key] ?? null;
@@ -73,7 +63,6 @@ class Importer {
 
   public function import ($data) {
     $site = site();
-    $data = static::clean($data);
 
     array_walk_recursive($data, function (&$value) {
       $value = KirbytagParser::parse($value);

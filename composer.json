@@ -10,6 +10,11 @@
   ],
   "require": {},
   "scripts": {
-    "test": "phpunit --bootstrap ./tests/bootstrap.php --testdox ./tests/suites"
+    "test-run": "phpunit --bootstrap ./tests/bootstrap.php --testdox ./tests/suites",
+    "test-clean": "for /R %i in (*.bg.txt) do (rm \"%i\")",
+    "test": [
+      "@test-clean",
+      "@test-run"
+    ]
   }
 }

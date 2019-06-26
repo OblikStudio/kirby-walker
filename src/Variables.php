@@ -1,5 +1,5 @@
 <?php
-namespace KirbyExporter;
+namespace KirbyOutsource;
 
 use F;
 use yaml;
@@ -37,7 +37,7 @@ class Variables {
 
     $filePath = static::getFilePath($language);
     $encodedData = yaml::encode($data);
-    
+
     file_put_contents($filePath, $encodedData);
   }
 }
