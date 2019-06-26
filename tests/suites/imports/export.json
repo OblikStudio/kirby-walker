@@ -1,0 +1,40 @@
+{
+  "site": {
+    "title": "Заглавието на Плугина",
+    "text": "Празен блупринт",
+    "yamlfield": {
+      "text": "Текст на линка"
+    },
+    "yamlfieldall": {
+      "type": "url",
+      "value": "https://example.bg/",
+      "text": "Пример"
+    },
+    "struct": [
+      {
+        "yamlfield": {
+          "text": "Линк в структура"
+        },
+        "title": "Заглавие на структурата"
+      }
+    ]
+  },
+  "pages": {
+    "error": {
+      "title": "Грешка"
+    },
+    "home": {
+      "title": "Начало",
+      "text": "тестбар",
+      "link": ""
+    }
+  },
+  "files": {
+    "home/sample.svg": {
+      "name": "Примерна снимка"
+    },
+    "home/test.svg": {
+      "name": "Тестово файлово съдържание"
+    }
+  }
+}

@@ -7,7 +7,7 @@ class Importer {
   private $language = null;
   private $defaultLanguage = null;
 
-  function __construct ($language) {
+  function __construct ($language = null) {
     $this->language = $language;
     $this->defaultLanguage = kirby()->defaultLanguage()->code();
   }
