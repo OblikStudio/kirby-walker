@@ -6,6 +6,6 @@ fields:
     type: textarea
     size: large
   link:
-    type: select
+    type: link
   featured:
     type: pages

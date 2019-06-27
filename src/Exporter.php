@@ -4,6 +4,7 @@ namespace KirbyOutsource;
 
 use KirbyOutsource\Formatter;
 use KirbyOutsource\Variables;
+use KirbyOutsource\Walker;
 
 class Exporter {
   public $settings = [
@@ -32,13 +33,13 @@ class Exporter {
       return true;
     };
 
-    $this->formatter = new Formatter($this->settings);
+    $this->walker = new Walker($this->settings, ['KirbyOutsource\Formatter', 'decode']);
   }
 
   // Extracts all content of a Page. Can be used by its own in case you need
   // to export a single page.
   public function extractPageContent ($page) {
-    $data = $this->formatter->decode($page);
+    $data = $this->walker->walk($page);
     $files = [];
     $filesFilter = $this->settings['filters']['files'] ?? null;
 
@@ -49,7 +50,7 @@ class Exporter {
       }
 
       $fileId = $file->id();
-      $fileData = $this->formatter->decode($file);
+      $fileData = $this->walker->walk($file);
 
       if (!empty($fileData)) {
         $files[$fileId] = $fileData;
