@@ -5,7 +5,7 @@ namespace KirbyOutsource;
 class Walker {
   public $settings = [
     'language' => null,
-    'predicate' => null,
+    'fieldPredicate' => null,
     'blueprints' => [],
     'fields' => []
   ];
@@ -14,6 +14,21 @@ class Walker {
   function __construct ($settings = [], $callback) {
     $this->settings = array_replace($this->settings, $settings);
     $this->callback = $callback;
+  }
+
+  public function isFieldEligible ($field, $blueprint) {
+    $ignored = $blueprint['exporter']['ignore'] ?? false;
+    $predicate = $this->settings['fieldPredicate'] ?? null;
+
+    if ($ignored) {
+      return false;
+    }
+
+    if (is_callable($predicate)) {
+      return $predicate($field, $blueprint);
+    }
+
+    return true;
   }
 
   public function processBlueprints ($prints) {
@@ -51,17 +66,12 @@ class Walker {
   }
 
   public function walkField ($blueprint, $input) {
-    if (
-      is_callable($this->settings['predicate']) &&
-      $this->settings['predicate']($blueprint, $input) === false
-    ) {
-      return null;
-    }
-
-    if ($blueprint['type'] === 'structure') {
-      return $this->walkStructure($input->toStructure(), $blueprint);
-    } else {
-      return ($this->callback)($input, $blueprint);
+    if ($this->isFieldEligible($input, $blueprint)) {
+      if ($blueprint['type'] === 'structure') {
+        return $this->walkStructure($input->toStructure(), $blueprint);
+      } else {
+        return ($this->callback)($input, $blueprint);
+      }
     }
 
     return null;

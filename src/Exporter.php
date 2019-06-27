@@ -18,21 +18,6 @@ class Exporter {
 
   function __construct ($settings = []) {
     $this->settings = array_replace($this->settings, $settings);
-    $this->settings['predicate'] = function ($blueprint, $input) {
-      $ignored = $blueprint['exporter']['ignore'] ?? false;
-      $predicate = $this->settings['fieldPredicate'] ?? null;
-
-      if ($ignored) {
-        return false;
-      }
-
-      if (is_callable($predicate)) {
-        return $predicate($blueprint);
-      }
-
-      return true;
-    };
-
     $this->walker = new Walker($this->settings, ['KirbyOutsource\Formatter', 'decode']);
   }
 

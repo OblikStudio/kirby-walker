@@ -1,0 +1,36 @@
+Title: Заглавието на Плугина
+
+----
+
+Text: Празен блупринт
+
+----
+
+Ignoredfield: Ignored
+
+----
+
+Yamlfieldall:
+
+type: url
+value: https://example.bg/
+text: Пример
+
+----
+
+Struct:
+
+- 
+  yamlfield: null
+  falsystructurefield: null
+  optionsignoredfield: [ ]
+  title: >
+    Заглавие на
+    структурата
+
+----
+
+Emptystruct:
+
+- 
+  text: Ignored text

@@ -18,7 +18,7 @@ $exporter = new Exporter([
       ]
     ]
   ],
-  'fieldPredicate' => function ($blueprint) {
+  'fieldPredicate' => function ($field, $blueprint) {
     return $blueprint['translate'] ?? true;
   }
 ]);
