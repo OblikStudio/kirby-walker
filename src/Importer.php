@@ -17,14 +17,13 @@ class Importer {
   public function merge ($dest, $source, $blueprint) {
     $data = null;
 
-    foreach ($source as $key => $sourceFieldData) {
+    foreach ($blueprint as $key => $fieldBlueprint) {
       $fieldData = null;
+      $sourceFieldData = $source[$key] ?? null;
       $destFieldData = $dest[$key] ?? null;
-      $fieldBlueprint = $blueprint[$key] ?? null;
+      $fieldType = $fieldBlueprint['type'] ?? null;
 
-      if ($fieldBlueprint) {
-        $fieldType = $fieldBlueprint['type'] ?? null;
-
+      if ($sourceFieldData && $destFieldData) {
         if ($fieldType === 'structure' && is_array($destFieldData)) {
           $structureFieldsBlueprints = $this->decodeWalker->processBlueprints($fieldBlueprint['fields']);
 
@@ -43,21 +42,32 @@ class Importer {
             $fieldData = $sourceFieldData;
           }
         }
+      } else if ($destFieldData) {
+        // Save any old data in case there was nothing to merge it with.
+        $fieldData = $destFieldData;
       }
 
-      $data[$key] = $fieldData;
+      if ($fieldData !== null) {
+        $data[$key] = $fieldData;
+      }
     }
 
     return $data;
   }
 
   public function update ($model, $data) {
+    // Holds the current (decoded) model values for the given translation
+    // (language specified in Walker settings). If there's no value for a
+    // certain field or no content at all, Kirby pulls from the default txt.
     $currentData = $this->decodeWalker->walk($model);
-    $prints = $this->decodeWalker->processBlueprints($model->blueprint()->fields());
-    $mergedData = $this->merge($currentData, $data, $prints);
 
-    $model->update($mergedData, $this->settings['language']);
-    relog($currentData, $data, $mergedData);
+    // Uses the Walker to create blueprints with the same settings.
+    $fieldsBlueprint = $this->decodeWalker->processBlueprints(
+      $model->blueprint()->fields()
+    );
+
+    $mergedData = $this->merge($currentData, $data, $fieldsBlueprint);
+    $model->writeContent($mergedData, $this->settings['language']);
   }
 
   public function import ($data) {

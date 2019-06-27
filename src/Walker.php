@@ -35,7 +35,7 @@ class Walker {
     $blueprints = $this->settings['blueprints'];
     $fields = $this->settings['fields'];
 
-    $prints = array_merge_recursive($prints, $blueprints);
+    $prints = array_replace_recursive($prints, $blueprints);
     $prints = array_change_key_case($prints, CASE_LOWER);
 
     foreach ($prints as $key => $value) {
@@ -43,7 +43,7 @@ class Walker {
       $fieldData = $fields[$fieldType] ?? null;
 
       if ($fieldData) {
-        $prints[$key] = array_merge_recursive($prints[$key], $fieldData);
+        $prints[$key] = array_replace_recursive($prints[$key], $fieldData);
       }
     }
 

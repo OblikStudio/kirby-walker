@@ -1,0 +1,19 @@
+title: Import
+fields:
+  title:
+    type: text
+  heading:
+    type: text
+  grin:
+    type: text
+  description:
+    type: textarea
+  items:
+    type: structure
+    fields:
+      structTitle:
+        type: text
+      structHeading:
+        type: text
+      structDescription:
+        type: textarea

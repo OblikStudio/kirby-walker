@@ -1,0 +1,14 @@
+{
+  "pages": {
+    "import": {
+      "title": "Импорт",
+      "description": "Това е моя импорт тест.",
+      "items": [
+        {
+          "structtitle": "Едно",
+          "structdescription": "Текст първа структура"
+        }
+      ]
+    }
+  }
+}

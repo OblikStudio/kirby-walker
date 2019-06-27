@@ -3,11 +3,9 @@
 use PHPUnit\Framework\TestCase;
 use KirbyOutsource\Importer;
 
-// add test for blueprint title
-
 kirby()->impersonate('kirby');
 
-$import = json_decode(file_get_contents(__DIR__ . '/imports/export.json'), true);
+$import = json_decode(file_get_contents(__DIR__ . '/imports/export2.json'), true);
 $importer = new Importer([
   'language' => 'bg',
   'blueprints' => [
