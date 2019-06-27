@@ -14,28 +14,41 @@ class Importer {
     $this->decodeWalker = new Walker($this->settings, ['KirbyOutsource\Formatter', 'decode']);
   }
 
-  public function merge (&$a, &$b, $blueprint) {
-    $type = $blueprint['type'] ?? null;
+  public function merge ($dest, $source, $blueprint) {
+    $data = null;
 
-    if ($type === 'structure') {
-      $structurePrints = $this->decodeWalker->processBlueprints($blueprint['fields']);
+    foreach ($source as $key => $sourceFieldData) {
+      $fieldData = null;
+      $destFieldData = $dest[$key] ?? null;
+      $fieldBlueprint = $blueprint[$key] ?? null;
 
-      foreach ($a as $index => $currentEntry) {
-        $inputEntry = $b[$index] ?? null;
+      if ($fieldBlueprint) {
+        $fieldType = $fieldBlueprint['type'] ?? null;
 
-        if ($inputEntry) {
-          foreach ($currentEntry as $key => $currentValue) {
-            $inputValue = $inputEntry[$key] ?? null;
+        if ($fieldType === 'structure' && is_array($destFieldData)) {
+          $structureFieldsBlueprints = $this->decodeWalker->processBlueprints($fieldBlueprint['fields']);
 
-            if ($inputValue) {
-              $currentEntry[$key] = $this->merge($currentValue, $inputValue, $structurePrints);
+          foreach ($sourceFieldData as $index => $sourceEntry) {
+            $destEntry = $destFieldData[$index] ?? null; // id maps go here
+
+            if ($destEntry) {
+              $fieldData[] = $this->merge($destEntry, $sourceEntry, $structureFieldsBlueprints);
             }
+          }
+        } else {
+          // custom merges here
+          if (is_array($sourceFieldData) && is_array($destFieldData)) {
+            $fieldData = array_replace_recursive($destFieldData, $sourceFieldData);
+          } else {
+            $fieldData = $sourceFieldData;
           }
         }
       }
+
+      $data[$key] = $fieldData;
     }
 
-    return $b;
+    return $data;
   }
 
   public function update ($model, $data) {
@@ -44,38 +57,7 @@ class Importer {
     $mergedData = $this->merge($currentData, $data, $prints);
 
     $model->update($mergedData, $this->settings['language']);
-
     relog($currentData, $data, $mergedData);
-    // $fieldBlueprints = $object->blueprint()->fields();
-    // $translatedContent = $this->parseContent($object->content($this->language), $fieldBlueprints);
-
-    // // If https://forum.getkirby.com/t/page-update-copies-fields-on-non-default-languages/13367
-    // // is resolved, it would be enough to only merge structure fields.
-    // $mergedData = array_replace_recursive($translatedContent, $data);
-    // relog($translatedContent, $data, $mergedData);
-
-    // foreach ($mergedData as $key => $value) {
-    //   $blueprint = $fieldBlueprints[$key] ?? null;
-    //   $shouldUnset = false;
-
-    //   if ($blueprint) {
-    //     if ($blueprint['type'] === 'structure') {
-    //       $mergedData[$key] = Yaml::encode($value);
-    //     }
-
-    //     if (($blueprint['translate'] ?? true) === false) {
-    //       $shouldUnset = true;
-    //     }
-    //   } else {
-    //     $shouldUnset = true;
-    //   }
-
-    //   if ($shouldUnset) {
-    //     unset($mergedData[$key]);
-    //   }
-    // }
-
-    // $object->writeContent($mergedData, $this->language);
   }
 
   public function import ($data) {
@@ -85,29 +67,29 @@ class Importer {
       $this->update($site, $data['site']);
     }
 
-    // if (!empty($data['pages'])) {
-    //   foreach ($data['pages'] as $id => $pageData) {
-    //     $page = $site->page($id);
+    if (!empty($data['pages'])) {
+      foreach ($data['pages'] as $id => $pageData) {
+        $page = $site->page($id);
 
-    //     if ($page) {
-    //       $this->update($page, $pageData);
-    //     }
-    //   }
-    // }
+        if ($page) {
+          $this->update($page, $pageData);
+        }
+      }
+    }
 
-    // if (!empty($data['files'])) {
-    //   foreach ($data['files'] as $id => $fileData) {
-    //     $file = $site->file($id);
+    if (!empty($data['files'])) {
+      foreach ($data['files'] as $id => $fileData) {
+        $file = $site->file($id);
 
-    //     if ($file) {
-    //       $this->update($file, $fileData);
-    //     }
-    //   }
-    // }
+        if ($file) {
+          $this->update($file, $fileData);
+        }
+      }
+    }
 
-    // if (!empty($data['variables'])) {
-    //   Variables::update($this->language, $data['variables']);
-    // }
+    if (!empty($data['variables'])) {
+      Variables::update($this->language, $data['variables']);
+    }
 
     return true;
   }

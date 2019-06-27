@@ -6,6 +6,10 @@ Text: Empty blueprint
 
 ----
 
+Foobar: baz
+
+----
+
 Ignoredfield: Ignored
 
 ----

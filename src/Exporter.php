@@ -18,7 +18,7 @@ class Exporter {
 
   function __construct ($settings = []) {
     $this->settings = array_replace($this->settings, $settings);
-    $this->walker = new Walker($this->settings, ['KirbyOutsource\Formatter', 'decode']);
+    $this->walker = new Walker($this->settings, ['KirbyOutsource\Formatter', 'extract']);
   }
 
   // Extracts all content of a Page. Can be used by its own in case you need
