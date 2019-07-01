@@ -23,7 +23,7 @@ $exporter = new Exporter([
   }
 ]);
 
-$GLOBALS['data'] = $exporter->export();
+$GLOBALS['data'] = $exporter->export(site());
 relog($GLOBALS['data']);
 
 final class ExporterTest extends TestCase {

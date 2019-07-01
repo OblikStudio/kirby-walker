@@ -12,8 +12,7 @@ class Exporter {
     'variables' => true,
     'blueprints' => [],
     'fields' => [],
-    'fieldPredicate' => null,
-    'filters' => []
+    'fieldPredicate' => null
   ];
 
   function __construct ($settings = []) {
@@ -26,14 +25,8 @@ class Exporter {
   public function extractPageContent ($page) {
     $data = $this->walker->walk($page);
     $files = [];
-    $filesFilter = $this->settings['filters']['files'] ?? null;
 
     foreach ($page->files() as $file) {
-      if (is_callable($filesFilter) && $filesFilter($file) === false) {
-        // The file has been filtered out.
-        continue;
-      }
-
       $fileId = $file->id();
       $fileData = $this->walker->walk($file);
 
@@ -48,35 +41,53 @@ class Exporter {
     ];
   }
 
-  public function export () {
+  public function export ($model) {
     $data = [];
+    $isPages = is_a($model, 'Kirby\Cms\Pages');
 
+    if (!$isPages) {
+      // prepend() to include a page's own data in the export.
+      $modelPages = $model->index()->prepend($model);
+    } else {
+      $modelPages = $model;
+    }
+
+    $site = null;
     $pages = [];
     $files = [];
 
-    $siteData = $this->extractPageContent(site());
-    $files = array_replace($files, $siteData['files']);
-    $pagesFilter = $this->settings['filters']['pages'] ?? null;
+    foreach ($modelPages as $childModel) {
+      $isModel = is_subclass_of($childModel, 'Kirby\Cms\ModelWithContent');
+      $isSite = is_a($childModel, 'Kirby\Cms\Site');
 
-    foreach (site()->index() as $page) {
-      if (is_callable($pagesFilter) && $pagesFilter($page) === false) {
-        // The page has been filtered out.
-        continue;
+      if ($isModel) {
+        $childModelData = $this->extractPageContent($childModel);
+
+        if ($isSite) {
+          $site = $childModelData['content'];
+        } else {
+          $pageId = $childModel->id();
+
+          if (!empty($childModelData['content'])) {
+            $pages[$pageId] = $childModelData['content'];
+          }
+        }
+
+        $files = array_replace($files, $childModelData['files']);
       }
-
-      $pageId = $page->id();
-      $pageData = $this->extractPageContent($page);
-
-      if (!empty($pageData['content'])) {
-        $pages[$pageId] = $pageData['content'];
-      }
-
-      $files = array_replace($files, $pageData['files']);
     }
 
-    $data['site'] = $siteData['content'];
-    $data['pages'] = $pages;
-    $data['files'] = $files;
+    if ($site) {
+      $data['site'] = $site;
+    }
+
+    if (!empty($pages)) {
+      $data['pages'] = $pages;
+    }
+
+    if (!empty($files)) {
+      $data['files'] = $files;
+    }
 
     if ($this->settings['variables']) {
       $variables = Variables::get($this->settings['language']);

@@ -27,10 +27,6 @@ include_once 'src/Walker.php';
           'ignore' => true
         ]
       ]
-    ],
-    'filters' => [
-      'pages' => null, // predicate function
-      'files' => null, // predicate function
     ]
   ],
   'api' => [
@@ -40,7 +36,6 @@ include_once 'src/Walker.php';
         'method' => 'GET',
         'action' => function () use ($kirby) {
           $pagesQuery = $_GET['page'] ?? null;
-          $filesQuery = $_GET['file'] ?? null;
           $exportLanguage = null;
 
           if ($kirby->multilang()) {
@@ -49,21 +44,18 @@ include_once 'src/Walker.php';
 
           $exporter = new Exporter([
             'language' => $exportLanguage,
-            'page' => $_GET['page'] ?? option('oblik.exporter.page'),
             'variables' => $_GET['variables'] ?? option('oblik.exporter.variables'),
             'blueprints' => option('oblik.exporter.blueprints'),
-            'fields' => option('oblik.exporter.fields'),
-            'filters' => [
-              'pages' => function ($page) use ($pagesQuery) {
-                return (!$pagesQuery || strpos($page->id(), $pagesQuery) !== false);
-              },
-              'files' => function ($file) use ($filesQuery) {
-                return (!$filesQuery || strpos($file->id(), $filesQuery) !== false);
-              }
-            ]
+            'fields' => option('oblik.exporter.fields')
           ]);
 
-          return $exporter->export();
+          $models = new \Kirby\Cms\Pages();
+          $models->append(site());
+          $models->add(site()->index()->filter(function ($page) use ($pagesQuery) {
+            return (!$pagesQuery || strpos($page->id(), $pagesQuery) !== false);
+          }));
+
+          return $exporter->export($models);
         }
       ],
       [
