@@ -1,0 +1,14 @@
+{
+  "pages": {
+    "import-basic": {
+      "f2": "both imported",
+      "f3": "import",
+      "items": [
+        {
+          "f2": "both imported",
+          "f3": "import"
+        }
+      ]
+    }
+  }
+}

@@ -1,19 +1,21 @@
 title: Import
 fields:
-  title:
+  f1:
     type: text
-  heading:
+  f2:
     type: text
-  grin:
+  f3:
     type: text
-  description:
-    type: textarea
+  f4:
+    type: text
   items:
     type: structure
     fields:
-      structTitle:
+      f1:
         type: text
-      structHeading:
+      f2:
         type: text
-      structDescription:
-        type: textarea
+      f3:
+        type: text
+      f4:
+        type: text

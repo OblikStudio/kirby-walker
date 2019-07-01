@@ -34,6 +34,12 @@ class Importer {
               $fieldData[] = $this->merge($destEntry, $sourceEntry, $structureFieldsBlueprints);
             }
           }
+
+          foreach ($destFieldData as $index => $destEntry) {
+            if (!isset($fieldData[$index])) {
+              $fieldData[$index] = $destEntry;
+            }
+          }
         } else {
           // custom merges here
           if (is_array($sourceFieldData) && is_array($destFieldData)) {
@@ -42,8 +48,10 @@ class Importer {
             $fieldData = $sourceFieldData;
           }
         }
-      } else if ($destFieldData) {
-        // Save any old data in case there was nothing to merge it with.
+      } else if ($sourceFieldData !== null) {
+        $fieldData = $sourceFieldData;
+      } else if ($destFieldData !== null) {
+        // Prevent any old data from getting lost.
         $fieldData = $destFieldData;
       }
 
