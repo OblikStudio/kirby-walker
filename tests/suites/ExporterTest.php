@@ -9,8 +9,8 @@ final class ExporterTest extends TestCase {
 
   public static function setUpBeforeClass (): void {
     $exporter = new Exporter([
-      'blueprints' => option('oblik.exporter.blueprints'),
-      'fields' => option('oblik.exporter.fields'),
+      'blueprints' => option('oblik.outsource.blueprints'),
+      'fields' => option('oblik.outsource.fields'),
       'fieldPredicate' => function ($field, $blueprint) {
         return $blueprint['translate'] ?? true;
       }

@@ -1,43 +1,48 @@
 <?php
+
 namespace KirbyOutsource;
 
 use F;
 use yaml;
 
-class Variables {
-  const EXTENSION = '.yml';
+class Variables
+{
+    const EXTENSION = '.yml';
 
-  public static function getFilePath ($filename) {
-    $path = kirby()->root('languages');
-    $folder = option('oblik.easyvars.folder');
+    public static function getFilePath($filename)
+    {
+        $path = kirby()->root('languages');
+        $folder = option('oblik.easyvars.folder');
 
-    if (!empty($folder)) {
-      $path .= DS . $folder;
+        if (!empty($folder)) {
+            $path .= DS . $folder;
+        }
+
+        return $path . DS . $filename . self::EXTENSION;
     }
 
-    return $path . DS . $filename . self::EXTENSION;
-  }
+    public static function get($language)
+    {
+        $filePath = static::getFilePath($language);
 
-  public static function get ($language) {
-    $filePath = static::getFilePath($language);
-
-    if (file_exists($filePath)) {
-      return yaml::decode(F::read($filePath));
-    } else {
-      return null;
-    }
-  }
-
-  public static function update ($language, $data) {
-    $currentData = static::get($language);
-
-    if (is_array($currentData)) {
-      $data = array_replace_recursive($currentData, $data);
+        if (file_exists($filePath)) {
+            return yaml::decode(F::read($filePath));
+        } else {
+            return null;
+        }
     }
 
-    $filePath = static::getFilePath($language);
-    $encodedData = yaml::encode($data);
+    public static function update($language, $data)
+    {
+        $currentData = static::get($language);
 
-    file_put_contents($filePath, $encodedData);
-  }
+        if (is_array($currentData)) {
+            $data = array_replace_recursive($currentData, $data);
+        }
+
+        $filePath = static::getFilePath($language);
+        $encodedData = yaml::encode($data);
+
+        file_put_contents($filePath, $encodedData);
+    }
 }
