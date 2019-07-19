@@ -5,16 +5,16 @@ fields:
   text: true
   ignoredField:
     type: text
-    exporter:
+    outsource:
       ignore: true
   yamlField:
     type: link
-    exporter:
+    outsource:
       yaml:
         - text
   yamlFieldAll:
     type: link
-    exporter:
+    outsource:
       yaml: true
   notTranslated:
     type: text
@@ -24,7 +24,7 @@ fields:
     fields:
       yamlField:
         type: link
-        exporter:
+        outsource:
           yaml:
             - text
       falsyStructureField:
@@ -35,5 +35,5 @@ fields:
     type: structure
     fields:
       text:
-        exporter:
+        outsource:
           ignore: true

@@ -20,7 +20,7 @@ class Walker
 
     public function isFieldEligible($field, $blueprint)
     {
-        $ignored = $blueprint['exporter']['ignore'] ?? false;
+        $ignored = $blueprint['outsource']['ignore'] ?? false;
         $predicate = $this->settings['fieldPredicate'] ?? null;
 
         if ($ignored) {

@@ -19,12 +19,12 @@ include_once 'src/Walker.php';
         ],
         'fields' => [
             'files' => [
-                'exporter' => [
+                'outsource' => [
                     'ignore' => true
                 ]
             ],
             'pages' => [
-                'exporter' => [
+                'outsource' => [
                     'ignore' => true
                 ]
             ]
