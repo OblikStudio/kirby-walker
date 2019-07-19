@@ -65,7 +65,7 @@ final class ExporterTest extends TestCase
     public function testYamlWhitelist()
     {
         $keys = array_keys(site()->yamlField()->yaml());
-        $whitelist = site()->blueprint()->fields()['yamlField']['outsource']['yaml'];
+        $whitelist = site()->blueprint()->fields()['yamlField'][KirbyOutsource\BLUEPRINT_KEY]['yaml'];
         $data = self::$data['yamlfield'];
 
         foreach ($keys as $key) {

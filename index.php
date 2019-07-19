@@ -2,6 +2,8 @@
 
 namespace KirbyOutsource;
 
+const BLUEPRINT_KEY = 'outsource';
+
 include_once 'src/Exporter.php';
 include_once 'src/Importer.php';
 include_once 'src/KirbytagParser.php';
@@ -19,12 +21,12 @@ include_once 'src/Walker.php';
         ],
         'fields' => [
             'files' => [
-                'outsource' => [
+                BLUEPRINT_KEY => [
                     'ignore' => true
                 ]
             ],
             'pages' => [
-                'outsource' => [
+                BLUEPRINT_KEY => [
                     'ignore' => true
                 ]
             ]

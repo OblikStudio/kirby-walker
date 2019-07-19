@@ -8,7 +8,7 @@ class Formatter
 {
     public static function mutate($data, $blueprint)
     {
-        $whitelist = $blueprint['outsource']['yaml'] ?? null;
+        $whitelist = $blueprint[BLUEPRINT_KEY]['yaml'] ?? null;
 
         if (is_array($data) && is_array($whitelist)) {
             foreach ($data as $key => $value) {
@@ -23,7 +23,7 @@ class Formatter
 
     public static function decode($field, $blueprint)
     {
-        $parseYaml = $blueprint['outsource']['yaml'] ?? false;
+        $parseYaml = $blueprint[BLUEPRINT_KEY]['yaml'] ?? false;
 
         if ($parseYaml) {
             $data = $field->yaml();
