@@ -1,0 +1,13 @@
+{
+  "pages": {
+    "import-content": {
+      "tags": "Link <kirby link=\"https://example.com/\">test</kirby> tag",
+      "yaml": {
+        "type": "url",
+        "text": "Link text"
+      },
+      "html": "<div><span><kirby test=\"bar\">fake kirby tag</kirby></span></div>",
+      "markdown": "<h1>Testing</h1>Markdown converted to <strong>HTML</strong> and a <em><kirby link=\"#\">kirbytag</kirby></em> here."
+    }
+  }
+}

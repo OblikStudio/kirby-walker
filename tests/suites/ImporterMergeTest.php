@@ -1,27 +1,14 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use KirbyOutsource\Importer;
-use Kirby\Data\Txt;
+namespace KirbyOutsource;
 
-final class ImporterTest extends TestCase
+final class MergeTest extends ImportTestCase
 {
-    private static $data;
-    private static $items;
-
     public static function setUpBeforeClass(): void
     {
-        kirby()->impersonate('kirby');
-
-        $import = json_decode(file_get_contents(__DIR__ . '/imports/basic.json'), true);
-        $importer = new Importer([
-            'language' => 'bg'
-        ]);
-        $importer->import($import);
-
-        $importResult = file_get_contents(realpath(__DIR__ . './../kirby/content/2_import-basic/import.bg.txt'));
-        self::$data = Txt::decode($importResult);
-        self::$items = Yaml::decode(self::$data['items']);
+        self::$importFile = 'merge.json';
+        self::$textFile = '2_import-merge/merge.bg.txt';
+        parent::setUpBeforeClass();
     }
 
     public function testDoesNotContainTitle()

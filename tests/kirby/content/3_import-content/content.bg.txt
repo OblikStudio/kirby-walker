@@ -1,0 +1,16 @@
+Tags: Link <kirby link="https://example.com/">test</kirby> tag
+
+----
+
+Yaml:
+
+type: url
+text: Link text
+
+----
+
+Html: <div><span><kirby test="bar">fake kirby tag</kirby></span></div>
+
+----
+
+Markdown: <h1>Testing</h1>Markdown converted to <strong>HTML</strong> and a <em><kirby link="#">kirbytag</kirby></em> here.

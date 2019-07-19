@@ -1,0 +1,11 @@
+title: Content
+fields:
+  tags:
+    type: textarea
+  yaml:
+    type: link
+  html:
+    type: textarea
+  markdown:
+    outsource:
+      markdown: true
