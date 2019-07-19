@@ -2,11 +2,7 @@ Title: Plugin Title
 
 ----
 
-Text: Empty blueprint
-
-----
-
-Foobar: baz
+Text: Kirbytag (link: https://example.com/ text: hello text) test here.
 
 ----
 
@@ -39,7 +35,7 @@ Nottranslated: Non translated text
 
 Struct:
 
--
+- 
   yamlfield:
     type: url
     value: https://example.com/
@@ -54,5 +50,9 @@ Struct:
 
 Emptystruct:
 
--
+- 
   text: Ignored text
+
+----
+
+Foobar: baz

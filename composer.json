@@ -16,5 +16,8 @@
       "@test-clean",
       "@test-run"
     ]
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^8"
   }
 }

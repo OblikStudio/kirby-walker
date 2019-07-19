@@ -24,11 +24,27 @@ final class ExporterTest extends TestCase
         self::$data = $exportedData['site'];
     }
 
+    /**
+     * Pages have a title field without specifying it in the blueprint. The
+     * `blueprints` option of the plugin should artificially add the title.
+     */
+    public function testHasTitle()
+    {
+        $this->assertArrayHasKey('title', self::$data);
+    }
+
+    /**
+     * Kirby should convert empty blueprints to valid ones with default values
+     * on which the exporter relies.
+     */
     public function testEmptyBlueprint()
     {
-        // Kirby should convert empty blueprints to valid ones with default values
-        // on which the exporter relies.
         $this->assertArrayHasKey('text', self::$data);
+    }
+
+    public function testKirbytagsConverted()
+    {
+        $this->assertRegExp('/<kirby.*>.*<\/kirby>/', self::$data['text']);
     }
 
     public function testIgnoredField()
