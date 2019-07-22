@@ -1,9 +1,9 @@
 <?php
 
+namespace KirbyOutsource;
+
 use PHPUnit\Framework\TestCase;
-use KirbyOutsource\Exporter;
 use Kirby\Cms\Pages;
-use const KirbyOutsource\BLUEPRINT_KEY;
 
 final class ExporterTest extends TestCase
 {
@@ -14,10 +14,11 @@ final class ExporterTest extends TestCase
         $exporter = new Exporter([
             'blueprints' => option('oblik.outsource.blueprints'),
             'fields' => option('oblik.outsource.fields'),
-            'fieldPredicate' => function ($blueprint) {
-                $ignored = $blueprint[BLUEPRINT_KEY]['ignore'] ?? false;
-                $trans = $blueprint['translate'] ?? true;
-                return !$ignored && $trans;
+            'fieldPredicate' => function ($blueprint, $field) {
+                return (
+                    ($blueprint['translate'] ?? true) &&
+                    Walker::fieldPredicate($blueprint, $field)
+                );
             }
         ]);
 
@@ -68,7 +69,7 @@ final class ExporterTest extends TestCase
     public function testYamlWhitelist()
     {
         $keys = array_keys(site()->yamlField()->yaml());
-        $whitelist = site()->blueprint()->fields()['yamlField'][KirbyOutsource\BLUEPRINT_KEY]['yaml'];
+        $whitelist = site()->blueprint()->fields()['yamlField'][BLUEPRINT_KEY]['yaml'];
         $data = self::$data['yamlfield'];
 
         foreach ($keys as $key) {

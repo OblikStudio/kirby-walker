@@ -4,9 +4,6 @@ namespace KirbyOutsource;
 
 class Walker
 {
-    public $processField;
-    public $processStructure;
-    public $checkField;
     public $settings = [
         'language' => null,
         'fieldPredicate' => null,
@@ -21,9 +18,13 @@ class Walker
         $this->settings = array_replace($this->settings, $settings);
     }
 
-    public function fieldPredicate (array $blueprint) {
-        $ignored = $blueprint[BLUEPRINT_KEY]['ignore'] ?? false;
-        return $ignored !== true;
+    public static function isFieldIgnored(array $blueprint)
+    {
+        return $blueprint[BLUEPRINT_KEY][BLUEPRINT_IGNORE_KEY] ?? false;
+    }
+
+    public static function fieldPredicate (array $blueprint, $field) {
+        return (!self::isFieldIgnored($blueprint) && !$field->isEmpty());
     }
 
     public function fieldHandler (array $fieldBlueprints, \Kirby\Cms\Field $field) {
@@ -34,8 +35,9 @@ class Walker
     {
         $data = null;
 
-        foreach ($structure as $entry) {
-            $childData = $this->walk($entry, $input, $fieldBlueprints);
+        foreach ($structure as $index => $entry) {
+            $inputData = $input[$index] ?? null;
+            $childData = $this->walk($entry, $inputData, $fieldBlueprints);
 
             if (!empty($childData)) {
                 $data[] = $childData;
@@ -111,13 +113,10 @@ class Walker
         foreach ($blueprint as $key => $fieldBlueprint) {
             $field = $content->$key();
             $inputData = $input[$key] ?? null;
+            $fieldData = $this->walkField($fieldBlueprint, $field, $inputData);
 
-            if ($field->isNotEmpty()) {
-                $fieldData = $this->walkField($fieldBlueprint, $field, $inputData);
-
-                if ($fieldData !== null) {
-                    $data[$key] = $fieldData;
-                }
+            if ($fieldData !== null) {
+                $data[$key] = $fieldData;
             }
         }
 

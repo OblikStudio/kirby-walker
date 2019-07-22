@@ -3,6 +3,7 @@
 namespace KirbyOutsource;
 
 const BLUEPRINT_KEY = 'outsource';
+const BLUEPRINT_IGNORE_KEY = 'ignore';
 
 include_once 'src/Exporter.php';
 include_once 'src/Importer.php';
