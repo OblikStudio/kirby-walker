@@ -2,4 +2,11 @@ Title: Import Content
 
 ----
 
-Items: 
+Yaml:
+
+popup: true
+value: https://example.com/
+
+----
+
+Random: testing here

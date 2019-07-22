@@ -4,8 +4,11 @@ fields:
     type: textarea
   yaml:
     type: link
+    outsource:
+      yaml: true
   html:
     type: textarea
   markdown:
+    type: textarea
     outsource:
       markdown: true

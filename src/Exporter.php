@@ -20,7 +20,10 @@ class Exporter
     public function __construct(array $settings = [])
     {
         $this->settings = array_replace($this->settings, $settings);
-        $this->walker = new Walker($this->settings, ['KirbyOutsource\Formatter', 'extract']);
+        $walkerSettings = array_merge([], $this->settings, [
+            'fieldHandler' => ['KirbyOutsource\Formatter', 'extract']
+        ]);
+        $this->walker = new Walker($walkerSettings);
     }
 
     /**

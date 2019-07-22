@@ -4,63 +4,38 @@ namespace KirbyOutsource;
 
 class Walker
 {
+    public $processField;
+    public $processStructure;
+    public $checkField;
     public $settings = [
         'language' => null,
         'fieldPredicate' => null,
+        'fieldHandler' => null,
+        'structureHandler' => null,
         'blueprints' => [],
         'fields' => []
     ];
-    public $callback = null;
 
-    public function __construct($settings = [], $callback)
+    public function __construct($settings = [])
     {
         $this->settings = array_replace($this->settings, $settings);
-        $this->callback = $callback;
     }
 
-    public function isFieldEligible($field, $blueprint)
-    {
+    public function fieldPredicate (array $blueprint) {
         $ignored = $blueprint[BLUEPRINT_KEY]['ignore'] ?? false;
-        $predicate = $this->settings['fieldPredicate'] ?? null;
-
-        if ($ignored) {
-            return false;
-        }
-
-        if (is_callable($predicate)) {
-            return $predicate($field, $blueprint);
-        }
-
-        return true;
+        return $ignored !== true;
     }
 
-    public function processBlueprints($prints)
-    {
-        $blueprints = $this->settings['blueprints'];
-        $fields = $this->settings['fields'];
-
-        $prints = array_replace_recursive($prints, $blueprints);
-        $prints = array_change_key_case($prints, CASE_LOWER);
-
-        foreach ($prints as $key => $value) {
-            $fieldType = $value['type'] ?? null;
-            $fieldData = $fields[$fieldType] ?? null;
-
-            if ($fieldData) {
-                $prints[$key] = array_replace_recursive($prints[$key], $fieldData);
-            }
-        }
-
-        return $prints;
+    public function fieldHandler (array $fieldBlueprints, \Kirby\Cms\Field $field) {
+        return $field->value();
     }
 
-    private function walkStructure($structure, $blueprint)
+    public function structureHandler (array $fieldBlueprints, \Kirby\Cms\Structure $structure, $input = null)
     {
         $data = null;
-        $fieldBlueprints = $this->processBlueprints($blueprint['fields']);
 
         foreach ($structure as $entry) {
-            $childData = $this->walkEntity($entry, $fieldBlueprints);
+            $childData = $this->walk($entry, $input, $fieldBlueprints);
 
             if (!empty($childData)) {
                 $data[] = $childData;
@@ -70,35 +45,75 @@ class Walker
         return $data;
     }
 
-    public function walkField($blueprint, $input)
+    /**
+     * Merges model blueprint according to specified configuration.
+     */
+    public function processBlueprint(array $blueprint)
     {
-        if ($this->isFieldEligible($input, $blueprint)) {
-            if ($blueprint['type'] === 'structure') {
-                return $this->walkStructure($input->toStructure(), $blueprint);
-            } else {
-                return ($this->callback)($input, $blueprint);
+        $customBlueprints = $this->settings['blueprints'];
+        $customFields = $this->settings['fields'];
+
+        $blueprint = array_replace_recursive($blueprint, $customBlueprints);
+        $blueprint = array_change_key_case($blueprint, CASE_LOWER);
+
+        foreach ($blueprint as $key => $value) {
+            $fieldType = $value['type'] ?? null;
+            $fieldData = $customFields[$fieldType] ?? null;
+
+            if ($fieldData) {
+                $blueprint[$key] = array_replace_recursive($blueprint[$key], $fieldData);
             }
         }
 
-        return null;
+        return $blueprint;
     }
 
-    public function walkEntity($entity, $fieldBlueprints = null)
+    public function walkField(array $blueprint, \Kirby\Cms\Field $field, $input = null)
     {
         $data = null;
-        $content = $entity->content($this->settings['language']);
+        $checkField = $this->settings['fieldPredicate'] ?? [$this, 'fieldPredicate'];
+        $processField = $this->settings['fieldHandler'] ?? [$this, 'fieldHandler'];
+        $processStructure = $this->settings['structureHandler'] ?? [$this, 'structureHandler'];
 
-        if (!$fieldBlueprints) {
-            $fieldBlueprints = $this->processBlueprints(
-                $entity->blueprint()->fields()
+        if ($checkField($blueprint, $field, $input)) {
+            if ($blueprint['type'] === 'structure') {
+                $blueprint = $this->processBlueprint($blueprint['fields']);
+                $field = $field->toStructure();
+                $data = $processStructure($blueprint, $field, $input);
+            } else {
+                $data = $processField($blueprint, $field, $input);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Recursively walks over a Model.
+     * @param Kirby\Cms\Model $model
+     * @param array $input optional input for each with the same structure as
+     * the model
+     * @param array|null $blueprint used for models without a blueprint() method
+     * like StructureObject
+     * @return array|null
+     */
+    public function walk(\Kirby\Cms\Model $model, $input = [], array $blueprint = null)
+    {
+        if (!$blueprint) {
+            $blueprint = $this->processBlueprint(
+                $model->blueprint()->fields()
             );
         }
 
-        foreach ($content->fields() as $key => $field) {
-            $blueprint = $fieldBlueprints[$key] ?? null;
+        $data = null;
+        $content = $model->content($this->settings['language']);
 
-            if ($blueprint) {
-                $fieldData = $this->walkField($blueprint, $field);
+        foreach ($blueprint as $key => $fieldBlueprint) {
+            $field = $content->$key();
+            $inputData = $input[$key] ?? null;
+
+            if ($field->isNotEmpty()) {
+                $fieldData = $this->walkField($fieldBlueprint, $field, $inputData);
 
                 if ($fieldData !== null) {
                     $data[$key] = $fieldData;
@@ -107,10 +122,5 @@ class Walker
         }
 
         return $data;
-    }
-
-    public function walk($entity)
-    {
-        return $this->walkEntity($entity);
     }
 }

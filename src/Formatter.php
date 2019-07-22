@@ -6,7 +6,7 @@ use KirbyOutsource\KirbytagParser;
 
 class Formatter
 {
-    public static function mutate($data, $blueprint)
+    public static function mutate($blueprint, $data)
     {
         $whitelist = $blueprint[BLUEPRINT_KEY]['yaml'] ?? null;
 
@@ -21,9 +21,10 @@ class Formatter
         return $data;
     }
 
-    public static function decode($field, $blueprint)
+    public static function decode($blueprint, $field)
     {
-        $parseYaml = $blueprint[BLUEPRINT_KEY]['yaml'] ?? false;
+        $options = $blueprint[BLUEPRINT_KEY] ?? null;
+        $parseYaml = $options['yaml'] ?? false;
 
         if ($parseYaml) {
             $data = $field->yaml();
@@ -42,10 +43,10 @@ class Formatter
         return $data;
     }
 
-    public static function extract($field, $blueprint)
+    public static function extract($blueprint, $field)
     {
-        $decoded = self::decode($field, $blueprint);
-        $data = self::mutate($decoded, $blueprint);
+        $decoded = self::decode($blueprint, $field);
+        $data = self::mutate($blueprint, $decoded);
 
         return $data;
     }

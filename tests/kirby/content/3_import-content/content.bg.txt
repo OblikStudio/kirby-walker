@@ -4,6 +4,8 @@ Tags: Link <kirby link="https://example.com/">test</kirby> tag
 
 Yaml:
 
+popup: "1"
+value: https://example.com/
 type: url
 text: Link text
 

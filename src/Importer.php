@@ -2,8 +2,6 @@
 
 namespace KirbyOutsource;
 
-use KirbyOutsource\Walker;
-
 class Importer
 {
     private $settings = [];
@@ -11,10 +9,18 @@ class Importer
     public function __construct($settings = [])
     {
         $this->settings = $settings;
-        $this->decodeWalker = new Walker($this->settings, ['KirbyOutsource\Formatter', 'decode']);
+        $walkerSettings = array_merge([], $this->settings, [
+            'fieldHandler' => ['KirbyOutsource\Formatter', 'decode']
+        ]);
+        $this->decodeWalker = new Walker($walkerSettings);
     }
 
-    public function merge($dest, $source, $blueprint)
+    /**
+     * Iterates over a Model blueprint, merging source data into a destination
+     * object accordingly.
+     * @param array $blueprint processed blueprints array
+     */
+    public function merge(array $dest, array $source, array $blueprint)
     {
         $data = null;
 
@@ -26,7 +32,7 @@ class Importer
 
             if ($sourceFieldData && $destFieldData) {
                 if ($fieldType === 'structure' && is_array($destFieldData)) {
-                    $structureFieldsBlueprints = $this->decodeWalker->processBlueprints($fieldBlueprint['fields']);
+                    $structureFieldsBlueprints = $this->decodeWalker->processBlueprint($fieldBlueprint['fields']);
 
                     foreach ($sourceFieldData as $index => $sourceEntry) {
                         $destEntry = $destFieldData[$index] ?? null; // id maps go here
@@ -42,8 +48,8 @@ class Importer
                         }
                     }
                 } else {
-                    // custom merges here
                     if (is_array($sourceFieldData) && is_array($destFieldData)) {
+                        // custom merges here
                         $fieldData = array_replace_recursive($destFieldData, $sourceFieldData);
                     } else {
                         $fieldData = $sourceFieldData;
@@ -72,9 +78,9 @@ class Importer
         $currentData = $this->decodeWalker->walk($model);
 
         // Uses the Walker to create blueprints with the same settings.
-        $fieldsBlueprint = $this->decodeWalker->processBlueprints(
+        $fieldsBlueprint = $this->decodeWalker->processBlueprint(
             $model->blueprint()->fields()
-    );
+        );
 
         $mergedData = $this->merge($currentData, $data, $fieldsBlueprint);
         $model->writeContent($mergedData, $this->settings['language']);

@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use KirbyOutsource\Exporter;
 use Kirby\Cms\Pages;
+use const KirbyOutsource\BLUEPRINT_KEY;
 
 final class ExporterTest extends TestCase
 {
@@ -13,8 +14,10 @@ final class ExporterTest extends TestCase
         $exporter = new Exporter([
             'blueprints' => option('oblik.outsource.blueprints'),
             'fields' => option('oblik.outsource.fields'),
-            'fieldPredicate' => function ($field, $blueprint) {
-                return $blueprint['translate'] ?? true;
+            'fieldPredicate' => function ($blueprint) {
+                $ignored = $blueprint[BLUEPRINT_KEY]['ignore'] ?? false;
+                $trans = $blueprint['translate'] ?? true;
+                return !$ignored && $trans;
             }
         ]);
 
