@@ -2,6 +2,8 @@
 
 namespace KirbyOutsource;
 
+use Kirby\Cms\Site;
+use Kirby\Cms\Pages;
 use Kirby\Cms\ModelWithContent;
 
 /**
@@ -10,27 +12,31 @@ use Kirby\Cms\ModelWithContent;
 class Exporter
 {
     public $settings = [
-        'language' => null,
         'variables' => true,
-        'blueprints' => [],
-        'fields' => [],
-        'fieldPredicate' => null,
     ];
+
+    public function __call($name, $arguments)
+    {
+        return $this->settings[$name] ?? null;
+    }
 
     public function __construct(array $settings = [])
     {
         $this->settings = array_replace($this->settings, $settings);
-        $walkerSettings = array_merge([], $this->settings, [
-            'fieldHandler' => ['KirbyOutsource\Formatter', 'extract']
+        $this->walker = new Walker([
+            'language' => $this->language(),
+            'blueprints' => $this->blueprints(),
+            'fields' => $this->fields(),
+            'fieldPredicate' => $this->fieldPredicate(),
+            'fieldHandler' => [Formatter::class, 'extract']
         ]);
-        $this->walker = new Walker($walkerSettings);
     }
 
     /**
      * Extracts all content of a Model. Can be used by its own in case you need to
      * export a single page.
      */
-    public function extractModel(ModelWithContent $model): array
+    public function extractModel(ModelWithContent $model)
     {
         $data = $this->walker->walk($model);
         $files = [];
@@ -53,7 +59,7 @@ class Exporter
     public function export($model)
     {
         $data = [];
-        $isPages = is_a($model, 'Kirby\Cms\Pages');
+        $isPages = is_a($model, Pages::class);
 
         if (!$isPages) {
             // prepend() to include a page's own data in the export.
@@ -67,8 +73,8 @@ class Exporter
         $files = [];
 
         foreach ($modelPages as $childModel) {
-            $isModel = is_subclass_of($childModel, 'Kirby\Cms\ModelWithContent');
-            $isSite = is_a($childModel, 'Kirby\Cms\Site');
+            $isModel = is_subclass_of($childModel, ModelWithContent::class);
+            $isSite = is_a($childModel, Site::class);
 
             if ($isModel) {
                 $childModelData = $this->extractModel($childModel);
@@ -100,7 +106,7 @@ class Exporter
         }
 
         if ($this->settings['variables']) {
-            $variables = Variables::get($this->settings['language']);
+            $variables = Variables::get($this->language());
 
             if (!empty($variables)) {
                 $data['variables'] = $variables;

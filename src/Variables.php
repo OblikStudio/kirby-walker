@@ -23,7 +23,7 @@ class Variables
 
     public static function get($language)
     {
-        $filePath = static::getFilePath($language);
+        $filePath = self::getFilePath($language);
 
         if (file_exists($filePath)) {
             return yaml::decode(F::read($filePath));
@@ -34,13 +34,13 @@ class Variables
 
     public static function update($language, $data)
     {
-        $currentData = static::get($language);
+        $currentData = self::get($language);
 
         if (is_array($currentData)) {
             $data = array_replace_recursive($currentData, $data);
         }
 
-        $filePath = static::getFilePath($language);
+        $filePath = self::getFilePath($language);
         $encodedData = yaml::encode($data);
 
         file_put_contents($filePath, $encodedData);

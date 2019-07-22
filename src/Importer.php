@@ -6,10 +6,18 @@ class Importer
 {
     private $settings = [];
 
+    public function __call($name, $arguments)
+    {
+        return $this->settings[$name] ?? null;
+    }
+
     public function __construct($settings = [])
     {
         $this->settings = $settings;
-        $walkerSettings = array_merge([], $this->settings, [
+        $this->walker = new Walker([
+            'language' => $this->language(),
+            'blueprint' => $this->blueprint(),
+            'fields' => $this->fields(),
             'fieldPredicate' => function ($blueprint) {
                 return !Walker::isFieldIgnored($blueprint);
             },
@@ -29,13 +37,12 @@ class Importer
                 return $data;
             }
         ]);
-        $this->walker = new Walker($walkerSettings);
     }
 
     public function update($model, $data)
     {
         $mergedData = $this->walker->walk($model, $data);
-        $model->writeContent($mergedData, $this->settings['language']);
+        $model->writeContent($mergedData, $this->language());
     }
 
     public function import($data)

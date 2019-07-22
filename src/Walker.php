@@ -2,15 +2,19 @@
 
 namespace KirbyOutsource;
 
+use Kirby\Cms\Model;
+use Kirby\Cms\Field;
+use Kirby\Cms\Structure;
+
 class Walker
 {
     public $settings = [
         'language' => null,
+        'blueprints' => [],
+        'fields' => [],
         'fieldPredicate' => null,
         'fieldHandler' => null,
-        'structureHandler' => null,
-        'blueprints' => [],
-        'fields' => []
+        'structureHandler' => null
     ];
 
     public function __construct($settings = [])
@@ -27,11 +31,11 @@ class Walker
         return (!self::isFieldIgnored($blueprint) && !$field->isEmpty());
     }
 
-    public function fieldHandler (array $fieldBlueprints, \Kirby\Cms\Field $field) {
+    public function fieldHandler (array $fieldBlueprints, Field $field) {
         return $field->value();
     }
 
-    public function structureHandler (array $fieldBlueprints, \Kirby\Cms\Structure $structure, $input = null)
+    public function structureHandler (array $fieldBlueprints, Structure $structure, $input = null)
     {
         $data = null;
 
@@ -70,7 +74,7 @@ class Walker
         return $blueprint;
     }
 
-    public function walkField(array $blueprint, \Kirby\Cms\Field $field, $input = null)
+    public function walkField(array $blueprint, Field $field, $input = null)
     {
         $data = null;
         $checkField = $this->settings['fieldPredicate'] ?? [$this, 'fieldPredicate'];
@@ -99,7 +103,7 @@ class Walker
      * like StructureObject
      * @return array|null
      */
-    public function walk(\Kirby\Cms\Model $model, $input = [], array $blueprint = null)
+    public function walk(Model $model, $input = [], array $blueprint = null)
     {
         if (!$blueprint) {
             $blueprint = $this->processBlueprint(
