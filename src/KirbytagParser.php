@@ -5,11 +5,6 @@ namespace KirbyOutsource;
 use DOMDocument;
 use DOMNode;
 
-/**
- * @todo parsing <kirby link="#"><text><div>text<br></div></text></kirby>
- * causes a `\n` to appear after `<br>`
- */
-
 class DOM {
     public static function loadText($text)
     {
@@ -49,24 +44,25 @@ class KirbyTag extends \Kirby\Text\KirbyTag
 {
     public function render(): string
     {
-        $document = new DOMDocument();
-        $tags = ['target', 'text'];
-        $htmltags = ['text', 'block'];
+        $htmlTags = $this->option('html', []);
+        $externalTags = $this->option('tags', []);
+
         $parts = array_merge([
             $this->type => $this->value
         ], $this->attrs);
-        $index = 0;
 
+        $document = new DOMDocument();
         $element = $document->createElement('kirby');
         $document->appendChild($element);
 
+        $index = 0;
         foreach ($parts as $key => $value) {
-            if (in_array($key, $tags)) {
+            if (in_array($key, $externalTags)) {
                 $child = $document->createElement('value');
                 $child->setAttribute('name', $key);
                 $child->setAttribute('index', $index);
 
-                if (in_array($key, $htmltags)) {
+                if (in_array($key, $htmlTags)) {
                     DOM::appendHTML($child, $value);
                 } else {
                     $text = $document->createTextNode($value);
@@ -98,18 +94,19 @@ class KirbytagParser
 {
     public static function encode($text, $options = [])
     {
-        $parsed = $text;
-        $parsed = KirbyTags::parse($text, [], $options);
-        $parsed = self::decode($parsed);
-        return $parsed;
+        return KirbyTags::parse($text, [], $options);
     }
 
-    public static function decode($text, $options = [])
+    public static function decode($text)
     {
         $types = KirbyTag::$types;
 
-        return preg_replace_callback('/<kirby(?:[^<]*\/>|.*?<\/kirby>)/', function ($matches) use ($types, $options) {
-            $input = $matches[0];
+        return preg_replace_callback('/<kirby(?:[^<]*\/>|.*?<\/kirby>)/', function ($matches) use ($types) {
+            $match = $matches[0];
+
+            // loadHTML() would consume HTML entities, so we escape them. Other
+            // characters are not escaped because we expect HTML after all.
+            $input = str_replace('&', '&amp;', $match);
 
             $element = DOM::loadText($input)->firstChild;
             $parts = [];
@@ -161,7 +158,7 @@ class KirbytagParser
                 $text = rtrim($text);
                 return "($text)";
             } else {
-                return $input;
+                return $match;
             }
         }, $text);
     }

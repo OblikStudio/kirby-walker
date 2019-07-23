@@ -38,7 +38,7 @@ class Formatter
             }
         } else {
             $data = KirbytagParser::encode($data, [
-                'encode' => false
+                'tags' => ['target', 'link']
             ]);
         }
 
