@@ -13,10 +13,21 @@ use DOMNode;
 
 class KirbyTag extends \Kirby\Text\KirbyTag
 {
+    public static function appendHTML(DOMNode $parent, $source)
+    {
+        $tmpDoc = new DOMDocument();
+        $tmpDoc->loadHTML('<?xml encoding="utf-8" ?><body>' . $source . '</body>');
+        foreach ($tmpDoc->getElementsByTagName('body')->item(0)->childNodes as $node) {
+            $node = $parent->ownerDocument->importNode($node, true);
+            $parent->appendChild($node);
+        }
+    }
+
     public function render(): string
     {
         $document = new DOMDocument();
         $tags = ['text'];
+        $htmltags = ['text', 'block'];
         $parts = array_merge([
             $this->type => $this->value
         ], $this->attrs);
@@ -25,12 +36,19 @@ class KirbyTag extends \Kirby\Text\KirbyTag
         $document->appendChild($element);
 
         foreach ($parts as $key => $value) {
+
+
             if (in_array($key, $tags)) {
                 $child = $document->createElement('value');
                 $child->setAttribute('name', $key);
-                $text = $document->createTextNode($value);
 
-                $child->appendChild($text);
+                if (in_array($key, $htmltags)) {
+                    self::appendHTML($child, $value);
+                } else {
+                    $text = $document->createTextNode($value);
+                    $child->appendChild($text);
+                }
+
                 $element->appendChild($child);
             } else {
                 $element->setAttribute($key, $value);
@@ -40,11 +58,6 @@ class KirbyTag extends \Kirby\Text\KirbyTag
         // saveXML() is used instead of saveHTML() because it saves empty tags
         // as self-closing tags.
         $content = $document->saveXML($document->documentElement);
-
-        if (!$this->option('encode', true)) {
-            // saveHTML() encodes by default. Decode only if `encode` is falsy.
-            $content = htmlspecialchars_decode($content);
-        }
 
         return $content;
     }
@@ -59,12 +72,14 @@ class KirbytagParser
 {
     public static function encode($text, $options = [])
     {
+        $parsed = $text;
         $parsed = KirbyTags::parse($text, [], $options);
-        // $parsed = self::decode($parsed);
+        $parsed = self::decode($parsed);
         return $parsed;
     }
 
-    public static function innerHTML(DOMNode $node) {
+    public static function innerHTML(DOMNode $node)
+    {
         $html = '';
 
         foreach ($node->childNodes as $child) {
@@ -78,26 +93,23 @@ class KirbytagParser
     {
         $types = KirbyTag::$types;
 
-        return preg_replace_callback('!<kirby.*?(?:<\/kirby>|\/>)!', function ($matches) use ($types, $options) {
+        return preg_replace_callback('/<kirby(?:[^<]*\/>|.*?<\/kirby>)/', function ($matches) use ($types, $options) {
             $input = $matches[0];
-            // $input = '<kirby><value name="text">здрасти &nbsp;</value></kirby>';
-
-            if ($options['decode'] ?? true) {
-                $input = htmlspecialchars_decode($input);
-            }
+            // $input = '<kirby><value name="link">&lt;tag&gt;</value><value name="text">test<br>end</value></kirby>';
 
             $data = new DOMDocument();
             $flag = libxml_use_internal_errors(true);
-            $data->loadHTML('<?xml encoding="utf-8" ?>' . $input, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $data->loadHTML('<?xml encoding="utf-8" ?><body>' . $input . '</body>');
+            $kirbyel = $data->getElementsByTagName('body')->item(0)->firstChild;
             libxml_use_internal_errors($flag);
 
             $parts = [];
 
-            foreach ($data->documentElement->attributes as $attr) {
+            foreach ($kirbyel->attributes as $attr) {
                 $parts[$attr->nodeName] = $attr->nodeValue;
             }
 
-            foreach ($data->documentElement->childNodes as $node) {
+            foreach ($kirbyel->childNodes as $node) {
                 $tagName = $node->tagName ?? null;
                 $valueName = null;
 
@@ -126,6 +138,7 @@ class KirbytagParser
                     }
                 }
 
+                $text = htmlspecialchars_decode($text);
                 return "($text)";
             } else {
                 return $input;

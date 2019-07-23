@@ -2,8 +2,7 @@ Title: Plugin Title
 
 ----
 
-Text: Kirbytag (link: https://example.com/ text: <div>айде<br></div> baz target:
-bar        ) (block: bar<br>test) (random: yes) test here.
+Text: Kirbytag (link: https://example.com/ text: <div>айде<br></div> baz target: bar) (block: bar<br>test) (random: yes) test here.
 
 ----
 
