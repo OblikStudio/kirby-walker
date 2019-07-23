@@ -21,7 +21,7 @@ class Formatter
         return $data;
     }
 
-    public static function decode($blueprint, $field)
+    public static function decode(array $blueprint, $field)
     {
         $options = $blueprint[BLUEPRINT_KEY] ?? null;
         $parseYaml = $options['yaml'] ?? false;
@@ -34,12 +34,20 @@ class Formatter
 
         if (is_array($data)) {
             foreach ($data as $key => $value) {
-                $data[$key] = KirbytagParser::toXML($value); // todo: recursive replace tags
+                $data[$key] = KirbytagParser::encode($value); // todo: recursive replace tags
             }
         } else {
-            $data = KirbytagParser::toXML($data);
+            $data = KirbytagParser::encode($data, [
+                'encode' => false
+            ]);
         }
 
+        return $data;
+    }
+
+    public static function encode(array $blueprint, $data)
+    {
+        $data = KirbytagParser::decode($data);
         return $data;
     }
 

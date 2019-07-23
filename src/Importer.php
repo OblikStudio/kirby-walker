@@ -34,6 +34,10 @@ class Importer
                     $data = $input;
                 }
 
+                if ($data !== null) {
+                    $data = Formatter::encode($blueprint, $data);
+                }
+
                 return $data;
             }
         ]);

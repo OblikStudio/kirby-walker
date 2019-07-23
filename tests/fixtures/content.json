@@ -1,7 +1,7 @@
 {
   "pages": {
     "import-content": {
-      "tags": "Link <kirby link=\"https://example.com/\">test</kirby> tag",
+      "tags": "Link <kirby link=\"https://example.com/\">test<br>bar</kirby> tag",
       "yaml": {
         "type": "url",
         "text": "Link text"

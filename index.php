@@ -13,6 +13,16 @@ include_once 'src/Formatter.php';
 include_once 'src/Walker.php';
 
 \Kirby::plugin('oblik/outsource', [
+    'tags' => [
+        'testbar' => [
+            'attr' => [
+                'type'
+            ],
+            'html' => function ($tag) {
+                return snippet('test', [], true);
+            }
+        ]
+    ],
     'options' => [
         'variables' => true,
         'blueprints' => [

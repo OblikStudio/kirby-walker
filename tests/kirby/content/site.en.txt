@@ -2,7 +2,8 @@ Title: Plugin Title
 
 ----
 
-Text: Kirbytag (link: https://example.com/ text: hello text) test here.
+Text: Kirbytag (link: https://example.com/ text: <div>айде<br></div> baz target:
+bar        ) (block: bar<br>test) (random: yes) test here.
 
 ----
 
@@ -35,7 +36,7 @@ Nottranslated: Non translated text
 
 Struct:
 
-- 
+-
   yamlfield:
     type: url
     value: https://example.com/
@@ -50,7 +51,7 @@ Struct:
 
 Emptystruct:
 
-- 
+-
   text: Ignored text
 
 ----
