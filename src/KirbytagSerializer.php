@@ -2,7 +2,6 @@
 
 /**
  * @todo improve encode options
- * @todo add "index" attribute only when needed
  */
 
 namespace KirbyOutsource;
@@ -61,12 +60,10 @@ class KirbyTag extends \Kirby\Text\KirbyTag
         $element = $document->createElement('kirby');
         $document->appendChild($element);
 
-        $index = 0;
         foreach ($parts as $key => $value) {
             if (in_array($key, $externalTags)) {
                 $child = $document->createElement('value');
                 $child->setAttribute('name', $key);
-                $child->setAttribute('index', $index);
 
                 if (in_array($key, $htmlTags)) {
                     DOM::appendHTML($child, $value);
@@ -78,6 +75,22 @@ class KirbyTag extends \Kirby\Text\KirbyTag
                 $element->appendChild($child);
             } else {
                 $element->setAttribute($key, $value);
+            }
+        }
+
+        // Since attribute values are decoded first, indices of values in the
+        // content start after the length of all present attributes.
+        $index = $element->attributes->length;
+        $keys = array_keys($parts);
+
+        foreach ($element->childNodes as $valueTag) {
+            $valueName = $valueTag->getAttribute('name');
+            $sourceIndex = array_search($valueName, $keys);
+
+            if ($sourceIndex !== $index) {
+                // Save the initial index of the value so it can be spliced in
+                // the right spot during decoding.
+                $valueTag->setAttribute('index', $sourceIndex);
             }
 
             $index++;

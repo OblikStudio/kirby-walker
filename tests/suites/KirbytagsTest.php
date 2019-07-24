@@ -39,13 +39,32 @@ final class KirbytagsTest extends TestCase
         );
     }
 
-    public function testExternalTags()
+    public function testExternalTag()
+    {
+        $this->serialize(
+            '(link: https://example.com/ text: hello text)',
+            '<kirby link="https://example.com/"><value name="text">hello text</value></kirby>',
+            [
+                'tags' => ['text']
+            ]
+        );
+    }
+
+    public function testTagsOrder()
     {
         $this->serialize(
             '(link: https://example.com/ text: foo target: _blank)',
-            '<kirby text="foo"><value name="link" index="0">https://example.com/</value><value name="target" index="2">_blank</value></kirby>',
+            '<kirby text="foo"><value name="link" index="0">https://example.com/</value><value name="target">_blank</value></kirby>',
             [
                 'tags' => ['link', 'target']
+            ]
+        );
+
+        $this->serialize(
+            '(link: https://example.com/ text: foo target: _blank)',
+            '<kirby target="_blank"><value name="link" index="0">https://example.com/</value><value name="text" index="1">foo</value></kirby>',
+            [
+                'tags' => ['link', 'text']
             ]
         );
     }
@@ -54,7 +73,7 @@ final class KirbytagsTest extends TestCase
     {
         $this->serialize(
             '(link: #&lt;ha<s"h\' text: <div>is "5\' &lt; <br> &amp; three</div>?)',
-            '<kirby link="#&amp;lt;ha&lt;s&quot;h\'"><value name="text" index="1"><div>is "5\' &lt; <br/> &amp; three</div>?</value></kirby>',
+            '<kirby link="#&amp;lt;ha&lt;s&quot;h\'"><value name="text"><div>is "5\' &lt; <br/> &amp; three</div>?</value></kirby>',
             [
                 'tags' => ['text'],
                 'html' => ['text']
@@ -66,7 +85,7 @@ final class KirbytagsTest extends TestCase
     {
         $this->serialize(
             '(link: #example text: random: yes)',
-            '<kirby><value name="link" index="0">#example</value><value name="text" index="1">random: yes</value></kirby>',
+            '<kirby><value name="link">#example</value><value name="text">random: yes</value></kirby>',
             [
                 'tags' => ['link', 'text']
             ]
@@ -77,7 +96,7 @@ final class KirbytagsTest extends TestCase
     {
         $this->serialize(
             '(link: #т§رト text: тест§اختبار テスト)',
-            '<kirby link="#т§رト"><value name="text" index="1">тест§اختبار テスト</value></kirby>',
+            '<kirby link="#т§رト"><value name="text">тест§اختبار テスト</value></kirby>',
             [
                 'tags' => ['text']
             ]
@@ -89,7 +108,7 @@ final class KirbytagsTest extends TestCase
     {
         $this->serialize(
             '(link: text:)',
-            '<kirby link=""><value name="text" index="1"></value></kirby>',
+            '<kirby link=""><value name="text"></value></kirby>',
             [
                 'tags' => ['text']
             ]
@@ -104,7 +123,7 @@ final class KirbytagsTest extends TestCase
         $this->expectException('PHPUnit\Framework\ExpectationFailedException');
         $this->serialize(
             "(link: # text: <div>\ntext<br></div>)",
-            "<kirby link=\"#\"><value name=\"text\" index=\"1\"><div>\ntext<br/></div></value></kirby>",
+            "<kirby link=\"#\"><value name=\"text\"><div>\ntext<br/></div></value></kirby>",
             [
                 'tags' => ['text'],
                 'html' => ['text']
