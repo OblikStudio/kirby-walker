@@ -4,13 +4,6 @@ namespace KirbyOutsource;
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @todo rename to KirbytagsSerializer
- * @todo test differently encoded characters
- * @todo parsing <kirby link="#"><text><div>text<br></div></text></kirby>
- * causes a `\n` to appear after `<br>`
- */
-
 final class KirbytagsTest extends TestCase
 {
     public function serialize($input, $expected, $options = [])
@@ -22,7 +15,23 @@ final class KirbytagsTest extends TestCase
         $this->assertEquals($input, $decoded);
     }
 
-    public function testSelfClosing()
+    public function testInvalidTag()
+    {
+        $this->serialize(
+            '(foo: bar link: #)',
+            '(foo: bar link: #)'
+        );
+    }
+
+    public function testInvalidAttributes()
+    {
+        $this->serialize(
+            '(link: foo: no bar: nope)',
+            '<kirby link="foo: no bar: nope"/>'
+        );
+    }
+
+    public function testSelfClosingTag()
     {
         $this->serialize(
             '(link: https://example.com/ text: foo)',
@@ -64,11 +73,42 @@ final class KirbytagsTest extends TestCase
         );
     }
 
-    public function testNonExistent()
+    public function testUtfCharacters()
     {
         $this->serialize(
-            '(foo: bar link: #)',
-            '(foo: bar link: #)'
+            '(link: #т§رト text: тест§اختبار テスト)',
+            '<kirby link="#т§رト"><value name="text" index="1">тест§اختبار テスト</value></kirby>',
+            [
+                'tags' => ['text']
+            ]
+        );
+    }
+
+
+    public function testEmptyValues()
+    {
+        $this->serialize(
+            '(link: text:)',
+            '<kirby link=""><value name="text" index="1"></value></kirby>',
+            [
+                'tags' => ['text']
+            ]
+        );
+    }
+
+    /**
+     * @see https://stackoverflow.com/questions/57176724/
+     */
+    public function testIncorrectNewlineDecode()
+    {
+        $this->expectException('PHPUnit\Framework\ExpectationFailedException');
+        $this->serialize(
+            "(link: # text: <div>\ntext<br></div>)",
+            "<kirby link=\"#\"><value name=\"text\" index=\"1\"><div>\ntext<br/></div></value></kirby>",
+            [
+                'tags' => ['text'],
+                'html' => ['text']
+            ]
         );
     }
 }

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @todo improve encode options
+ * @todo add "index" attribute only when needed
+ * @todo replace tags in separate function
+ */
+
 namespace KirbyOutsource;
 
 use DOMDocument;
@@ -11,7 +17,7 @@ class DOM
     {
         $document = new DOMDocument();
         $flag = libxml_use_internal_errors(true);
-        $document->loadHTML('<?xml encoding="utf-8" ?><body>' . $text . '</body>');
+        $document->loadHTML('<?xml version="1.0" encoding="utf-8" ?><body>' . $text . '</body>');
         libxml_use_internal_errors($flag);
         return $document->getElementsByTagName('body')->item(0);
     }
@@ -52,7 +58,7 @@ class KirbyTag extends \Kirby\Text\KirbyTag
             $this->type => $this->value
         ], $this->attrs);
 
-        $document = new DOMDocument();
+        $document = new DOMDocument('1.0', 'utf-8');
         $element = $document->createElement('kirby');
         $document->appendChild($element);
 
@@ -102,7 +108,7 @@ class KirbytagSerializer
     {
         $types = KirbyTag::$types;
 
-        return preg_replace_callback('/<kirby(?:[^<]*\/>|.*?<\/kirby>)/', function ($matches) use ($types) {
+        return preg_replace_callback('/<kirby(?:[^<]*\/>|.*?<\/kirby>)/s', function ($matches) use ($types) {
             $match = $matches[0];
 
             // loadHTML() would consume HTML entities, so we escape them. Other
@@ -151,7 +157,11 @@ class KirbytagSerializer
                 foreach ($parts as $pair) {
                     $name = $pair['name'];
                     $value = $pair['value'];
-                    $text .=  "$name: $value ";
+                    $text .=  "$name: ";
+
+                    if ($value) {
+                        $text .= "$value ";
+                    }
                 }
 
                 // saveXML() from encode() will encode HTML entities.
