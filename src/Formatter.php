@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @todo replace kirbytags only fields where it's needed
+ */
+
 namespace KirbyOutsource;
 
 use KirbyOutsource\KirbytagSerializer;
@@ -34,7 +38,7 @@ class Formatter
 
         if (is_array($data)) {
             foreach ($data as $key => $value) {
-                $data[$key] = KirbytagSerializer::encode($value); // todo: recursive replace tags
+                $data[$key] = KirbytagSerializer::encode($value);
             }
         } else {
             $data = KirbytagSerializer::encode($data, [

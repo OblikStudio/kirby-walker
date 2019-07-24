@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @todo improve encode options
- */
-
 namespace KirbyOutsource;
 
 use DOMDocument;
@@ -49,8 +45,8 @@ class KirbyTag extends \Kirby\Text\KirbyTag
 {
     public function render(): string
     {
-        $htmlTags = $this->option('html', []);
         $externalTags = $this->option('tags', []);
+        $encodeEntities = $this->option('entities', false);
 
         $parts = array_merge([
             $this->type => $this->value
@@ -65,15 +61,18 @@ class KirbyTag extends \Kirby\Text\KirbyTag
                 $child = $document->createElement('value');
                 $child->setAttribute('name', $key);
 
-                if (in_array($key, $htmlTags)) {
-                    DOM::appendHTML($child, $value);
-                } else {
+                if ($encodeEntities) {
+                    // HTML in text nodes are automatically encoded.
                     $text = $document->createTextNode($value);
                     $child->appendChild($text);
+                } else {
+                    DOM::appendHTML($child, $value);
                 }
 
                 $element->appendChild($child);
             } else {
+                // $encodeEntities is irrelevant because HTML characters in
+                // attributes are always encoded.
                 $element->setAttribute($key, $value);
             }
         }
@@ -122,12 +121,17 @@ class KirbytagSerializer
     /**
      * Turns the XML representation of a kirbytag to a valid kirbytag.
      */
-    public static function decodeTag(string $input) {
-        // loadHTML() would consume HTML entities, so we escape them. Other
-        // characters are not escaped because we expect HTML after all.
-        $inputEscaped = str_replace('&', '&amp;', $input);
+    public static function decodeTag(string $input, $options = []) {
+        $xml = $input;
+        $encodedEntities = $options['entities'] ?? false;
 
-        $element = DOM::loadText($inputEscaped)->firstChild;
+        if (!$encodedEntities) {
+            // If no entities are placed by encode(), entities in the original
+            // content must be escaped, otherwise the parser will consume them.
+            $xml = str_replace('&', '&amp;', $input);
+        }
+
+        $element = DOM::loadText($xml)->firstChild;
         $parts = [];
 
         foreach ($element->attributes as $attr) {
@@ -189,10 +193,10 @@ class KirbytagSerializer
      * Decodes all kirbytags in XML form that are present in the input.
      * @return string
      */
-    public static function decode(string $text)
+    public static function decode(string $text, $options = [])
     {
-        return preg_replace_callback('/<kirby(?:[^<]*\/>|.*?<\/kirby>)/s', function ($matches) {
-            return self::decodeTag($matches[0]);
+        return preg_replace_callback('/<kirby(?:[^<]*\/>|.*?<\/kirby>)/s', function ($matches) use ($options) {
+            return self::decodeTag($matches[0], $options);
         }, $text);
     }
 }
