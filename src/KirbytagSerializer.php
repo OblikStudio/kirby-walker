@@ -3,7 +3,6 @@
 /**
  * @todo improve encode options
  * @todo add "index" attribute only when needed
- * @todo replace tags in separate function
  */
 
 namespace KirbyOutsource;
@@ -99,78 +98,88 @@ class KirbyTags extends \Kirby\Text\KirbyTags
 
 class KirbytagSerializer
 {
+    /**
+     * Replaces all valid kirbytags with their XML representation.
+     */
     public static function encode($text, $options = [])
     {
         return KirbyTags::parse($text, [], $options);
     }
 
-    public static function decode($text)
+    /**
+     * Turns the XML representation of a kirbytag to a valid kirbytag.
+     */
+    public static function decodeTag(string $input) {
+        // loadHTML() would consume HTML entities, so we escape them. Other
+        // characters are not escaped because we expect HTML after all.
+        $inputEscaped = str_replace('&', '&amp;', $input);
+
+        $element = DOM::loadText($inputEscaped)->firstChild;
+        $parts = [];
+
+        foreach ($element->attributes as $attr) {
+            $parts[] = [
+                'name' => $attr->nodeName,
+                'value' => $attr->nodeValue
+            ];
+        }
+
+        foreach ($element->childNodes as $node) {
+            $tagName = $node->tagName ?? null;
+
+            if ($tagName === 'value') {
+                $name = $node->getAttribute('name');
+                $index = $node->getAttribute('index');
+
+                if ($name) {
+                    $content = [
+                        'name' => $name,
+                        'value' => DOM::innerHTML($node)
+                    ];
+
+                    if (is_numeric($index)) {
+                        array_splice($parts, (int)$index, 0, [$content]);
+                    } else {
+                        $parts[] = $content;
+                    }
+                }
+            }
+        }
+
+        // First key of $parts should be the tag type. It should be a
+        // registered tag, otherwise do nothing.
+        $tagType = $parts[0]['name'] ?? null;
+
+        if (isset(KirbyTag::$types[$tagType])) {
+            $text = '';
+
+            foreach ($parts as $pair) {
+                $name = $pair['name'];
+                $value = $pair['value'];
+                $text .=  "$name: ";
+
+                if ($value) {
+                    $text .= "$value ";
+                }
+            }
+
+            // saveXML() from encode() will encode HTML entities.
+            $text = htmlspecialchars_decode($text);
+            $text = rtrim($text);
+            return "($text)";
+        } else {
+            return $input;
+        }
+    }
+
+    /**
+     * Decodes all kirbytags in XML form that are present in the input.
+     * @return string
+     */
+    public static function decode(string $text)
     {
-        $types = KirbyTag::$types;
-
-        return preg_replace_callback('/<kirby(?:[^<]*\/>|.*?<\/kirby>)/s', function ($matches) use ($types) {
-            $match = $matches[0];
-
-            // loadHTML() would consume HTML entities, so we escape them. Other
-            // characters are not escaped because we expect HTML after all.
-            $input = str_replace('&', '&amp;', $match);
-
-            $element = DOM::loadText($input)->firstChild;
-            $parts = [];
-
-            foreach ($element->attributes as $attr) {
-                $parts[] = [
-                    'name' => $attr->nodeName,
-                    'value' => $attr->nodeValue
-                ];
-            }
-
-            foreach ($element->childNodes as $node) {
-                $tagName = $node->tagName ?? null;
-
-                if ($tagName === 'value') {
-                    $name = $node->getAttribute('name');
-                    $index = $node->getAttribute('index');
-
-                    if ($name) {
-                        $content = [
-                            'name' => $name,
-                            'value' => DOM::innerHTML($node)
-                        ];
-
-                        if (is_numeric($index)) {
-                            array_splice($parts, (int)$index, 0, [$content]);
-                        } else {
-                            $parts[] = $content;
-                        }
-                    }
-                }
-            }
-
-            // First key of $parts should be the tag type. It should be a
-            // registered tag, otherwise do nothing.
-            $type = $parts[0]['name'] ?? null;
-
-            if (isset($types[$type])) {
-                $text = '';
-
-                foreach ($parts as $pair) {
-                    $name = $pair['name'];
-                    $value = $pair['value'];
-                    $text .=  "$name: ";
-
-                    if ($value) {
-                        $text .= "$value ";
-                    }
-                }
-
-                // saveXML() from encode() will encode HTML entities.
-                $text = htmlspecialchars_decode($text);
-                $text = rtrim($text);
-                return "($text)";
-            } else {
-                return $match;
-            }
+        return preg_replace_callback('/<kirby(?:[^<]*\/>|.*?<\/kirby>)/s', function ($matches) {
+            return self::decodeTag($matches[0]);
         }, $text);
     }
 }
