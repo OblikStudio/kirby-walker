@@ -7,7 +7,7 @@ const BLUEPRINT_IGNORE_KEY = 'ignore';
 
 include_once 'src/Exporter.php';
 include_once 'src/Importer.php';
-include_once 'src/KirbytagParser.php';
+include_once 'src/KirbytagSerializer.php';
 include_once 'src/Variables.php';
 include_once 'src/Formatter.php';
 include_once 'src/Walker.php';

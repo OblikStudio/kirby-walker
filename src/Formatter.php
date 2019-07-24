@@ -2,7 +2,7 @@
 
 namespace KirbyOutsource;
 
-use KirbyOutsource\KirbytagParser;
+use KirbyOutsource\KirbytagSerializer;
 
 class Formatter
 {
@@ -34,10 +34,10 @@ class Formatter
 
         if (is_array($data)) {
             foreach ($data as $key => $value) {
-                $data[$key] = KirbytagParser::encode($value); // todo: recursive replace tags
+                $data[$key] = KirbytagSerializer::encode($value); // todo: recursive replace tags
             }
         } else {
-            $data = KirbytagParser::encode($data, [
+            $data = KirbytagSerializer::encode($data, [
                 'tags' => ['target', 'link']
             ]);
         }
@@ -47,7 +47,7 @@ class Formatter
 
     public static function encode(array $blueprint, $data)
     {
-        $data = KirbytagParser::decode($data);
+        $data = KirbytagSerializer::decode($data);
         return $data;
     }
 

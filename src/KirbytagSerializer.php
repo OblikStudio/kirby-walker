@@ -5,7 +5,8 @@ namespace KirbyOutsource;
 use DOMDocument;
 use DOMNode;
 
-class DOM {
+class DOM
+{
     public static function loadText($text)
     {
         $document = new DOMDocument();
@@ -90,7 +91,7 @@ class KirbyTags extends \Kirby\Text\KirbyTags
     protected static $tagClass = KirbyTag::class;
 }
 
-class KirbytagParser
+class KirbytagSerializer
 {
     public static function encode($text, $options = [])
     {

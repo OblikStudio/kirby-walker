@@ -5,6 +5,7 @@ namespace KirbyOutsource;
 use PHPUnit\Framework\TestCase;
 
 /**
+ * @todo rename to KirbytagsSerializer
  * @todo test differently encoded characters
  * @todo parsing <kirby link="#"><text><div>text<br></div></text></kirby>
  * causes a `\n` to appear after `<br>`
@@ -14,10 +15,10 @@ final class KirbytagsTest extends TestCase
 {
     public function serialize($input, $expected, $options = [])
     {
-        $parsed = KirbytagParser::encode($input, $options);
+        $parsed = KirbytagSerializer::encode($input, $options);
         $this->assertEquals($expected, $parsed);
 
-        $decoded = KirbytagParser::decode($parsed);
+        $decoded = KirbytagSerializer::decode($parsed);
         $this->assertEquals($input, $decoded);
     }
 
