@@ -6,10 +6,15 @@
 
 namespace KirbyOutsource;
 
-use KirbyOutsource\KirbytagSerializer;
-
 class Formatter
 {
+    public $settings = [];
+
+    public function __construct($settings = [])
+    {
+        $this->settings = $settings;
+    }
+
     public static function mutate($blueprint, $data)
     {
         $whitelist = $blueprint[BLUEPRINT_KEY]['yaml'] ?? null;
@@ -34,6 +39,13 @@ class Formatter
             $data = $field->yaml();
         } else {
             $data = $field->value();
+
+            if (!$data) {
+                return $data;
+            }
+
+            // $data = MarkdownSerializer::encode($data);
+            // $data = MarkdownSerializer::decode($data);
         }
 
         if (is_array($data)) {
@@ -42,7 +54,7 @@ class Formatter
             }
         } else {
             $data = KirbytagSerializer::encode($data, [
-                'tags' => ['target', 'link']
+                'tags' => ['text']
             ]);
         }
 

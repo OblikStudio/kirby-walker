@@ -3,6 +3,8 @@ preset: page
 unlisted: true
 fields:
   text: true
+  cont:
+    type: textarea
   ignoredField:
     type: text
     outsource:

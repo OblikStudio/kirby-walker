@@ -113,7 +113,7 @@ class KirbytagSerializer
     /**
      * Replaces all valid kirbytags with their XML representation.
      */
-    public static function encode($text, $options = [])
+    public static function encode(string $text, $options = [])
     {
         return KirbyTags::parse($text, [], $options);
     }
@@ -121,7 +121,8 @@ class KirbytagSerializer
     /**
      * Turns the XML representation of a kirbytag to a valid kirbytag.
      */
-    public static function decodeTag(string $input, $options = []) {
+    public static function decodeTag(string $input, $options = [])
+    {
         $xml = $input;
         $encodedEntities = $options['entities'] ?? false;
 
@@ -155,7 +156,7 @@ class KirbytagSerializer
                     ];
 
                     if (is_numeric($index)) {
-                        array_splice($parts, (int)$index, 0, [$content]);
+                        array_splice($parts, (int) $index, 0, [$content]);
                     } else {
                         $parts[] = $content;
                     }
