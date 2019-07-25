@@ -1,9 +1,9 @@
 <?php
 
-namespace KirbyOutsource;
+namespace Oblik\Kirby\Outsource;
 
-use F;
-use yaml;
+use Kirby\Data\Yaml;
+use Kirby\Toolkit\F;
 
 class Variables
 {
@@ -26,7 +26,7 @@ class Variables
         $filePath = self::getFilePath($language);
 
         if (file_exists($filePath)) {
-            return yaml::decode(F::read($filePath));
+            return Yaml::decode(F::read($filePath));
         } else {
             return null;
         }
@@ -41,7 +41,7 @@ class Variables
         }
 
         $filePath = self::getFilePath($language);
-        $encodedData = yaml::encode($data);
+        $encodedData = Yaml::encode($data);
 
         file_put_contents($filePath, $encodedData);
     }

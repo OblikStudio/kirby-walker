@@ -1,10 +1,17 @@
 <?php
 
 /**
- * @todo replace kirbytags only fields where it's needed
+ * @todo add `with`/`without` configs to serializers, which would
+ * whitelist/blacklist keys if the serializer returns an array, also a recursive
+ * option
+ * @todo add before/after decode/encode hooks
+ * @todo if `serialize` option is a function, use it as a serializer
+ * @todo rename decode/encode in Formatter to serialize/deserialize
  */
 
-namespace KirbyOutsource;
+namespace Oblik\Kirby\Outsource;
+
+use Kirby\Data\Yaml;
 
 class Formatter
 {
@@ -12,66 +19,40 @@ class Formatter
 
     public function __construct($settings = [])
     {
+        $settings = [
+            'serializers' => [
+                'markdown' => Serializer\Markdown::class,
+                'kirbytags' => Serializer\KirbyTags::class,
+                'yaml' => Yaml::class
+            ]
+        ];
         $this->settings = $settings;
+        $this->serializers = $settings['serializers'] ?? [];
     }
 
-    public static function mutate($blueprint, $data)
-    {
-        $whitelist = $blueprint[BLUEPRINT_KEY]['yaml'] ?? null;
-
-        if (is_array($data) && is_array($whitelist)) {
-            foreach ($data as $key => $value) {
-                if (!in_array($key, $whitelist)) {
-                    unset($data[$key]);
-                }
-            }
-        }
-
-        return $data;
-    }
-
-    public static function decode(array $blueprint, $field)
+    public function serialize(array $blueprint, $field)
     {
         $options = $blueprint[BLUEPRINT_KEY] ?? null;
-        $parseYaml = $options['yaml'] ?? false;
+        $serialize = $options['serialize'] ?? [];
+        $content = $field->value();
 
-        if ($parseYaml) {
-            $data = $field->yaml();
-        } else {
-            $data = $field->value();
-
-            if (!$data) {
-                return $data;
-            }
-
-            // $data = MarkdownSerializer::encode($data);
-            // $data = MarkdownSerializer::decode($data);
+        if ($content === null) {
+            return null;
         }
 
-        if (is_array($data)) {
-            foreach ($data as $key => $value) {
-                $data[$key] = KirbytagSerializer::encode($value);
+        foreach ($serialize as $key => $config) {
+            $serializer = $this->serializers[$key] ?? null;
+
+            if ($serializer) {
+                $content = $serializer::decode($content);
             }
-        } else {
-            $data = KirbytagSerializer::encode($data, [
-                'tags' => ['text']
-            ]);
         }
 
-        return $data;
+        return $content;
     }
 
-    public static function encode(array $blueprint, $data)
+    public static function deserialize(array $blueprint, $data)
     {
-        $data = KirbytagSerializer::decode($data);
-        return $data;
-    }
-
-    public static function extract($blueprint, $field)
-    {
-        $decoded = self::decode($blueprint, $field);
-        $data = self::mutate($blueprint, $decoded);
-
-        return $data;
+        return Serializer\KirbyTags::encode($data);
     }
 }

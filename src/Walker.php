@@ -1,6 +1,6 @@
 <?php
 
-namespace KirbyOutsource;
+namespace Oblik\Kirby\Outsource;
 
 use Kirby\Cms\Model;
 use Kirby\Cms\Field;
@@ -27,15 +27,17 @@ class Walker
         return $blueprint[BLUEPRINT_KEY][BLUEPRINT_IGNORE_KEY] ?? false;
     }
 
-    public static function fieldPredicate (array $blueprint, $field) {
+    public static function fieldPredicate(array $blueprint, $field)
+    {
         return (!self::isFieldIgnored($blueprint) && !$field->isEmpty());
     }
 
-    public function fieldHandler (array $fieldBlueprints, Field $field) {
+    public function fieldHandler(array $fieldBlueprints, Field $field)
+    {
         return $field->value();
     }
 
-    public function structureHandler (array $fieldBlueprints, Structure $structure, $input = null)
+    public function structureHandler(array $fieldBlueprints, Structure $structure, $input = null)
     {
         $data = null;
 
@@ -62,12 +64,13 @@ class Walker
         $blueprint = array_replace_recursive($blueprint, $customBlueprints);
         $blueprint = array_change_key_case($blueprint, CASE_LOWER);
 
-        foreach ($blueprint as $key => $value) {
-            $fieldType = $value['type'] ?? null;
-            $fieldData = $customFields[$fieldType] ?? null;
+        foreach ($blueprint as $fieldName => $data) {
+            $fieldType = $data['type'] ?? null;
+            $currentConfig = $data[BLUEPRINT_KEY] ?? [];
+            $fieldConfig = $customFields[$fieldType] ?? null;
 
-            if ($fieldData) {
-                $blueprint[$key] = array_replace_recursive($blueprint[$key], $fieldData);
+            if ($fieldConfig) {
+                $blueprint[$fieldName][BLUEPRINT_KEY] = array_replace($fieldConfig, $currentConfig);
             }
         }
 

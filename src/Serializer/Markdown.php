@@ -1,11 +1,11 @@
 <?php
 
-namespace KirbyOutsource;
+namespace Oblik\Kirby\Outsource\Serializer;
 
-use Kirby\Text\Markdown;
+use Kirby\Text\Markdown as MarkdownParser;
 use League\HTMLToMarkdown\HtmlConverter;
 
-class MarkdownSerializer
+class Markdown
 {
     public static $decodeOptions = [
         'header_style' => 'atx',
@@ -18,14 +18,14 @@ class MarkdownSerializer
         'list_item_style' => '-'
     ];
 
-    public static function encode(string $text, $options = [])
+    public static function decode(string $text, $options = [])
     {
-        $parser = new Markdown($options);
+        $parser = new MarkdownParser($options);
         $output = $parser->parse($text);
         return str_replace(">\n<", '><', $output);
     }
 
-    public static function decode(string $text, $options = [])
+    public static function encode(string $text, $options = [])
     {
         $options = array_merge(self::$decodeOptions, $options);
         $converter = new HtmlConverter($options);

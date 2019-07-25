@@ -1,6 +1,6 @@
 <?php
 
-namespace KirbyOutsource;
+namespace Oblik\Kirby\Outsource;
 
 use PHPUnit\Framework\TestCase;
 use Kirby\Cms\Pages;
@@ -17,8 +17,7 @@ final class ExporterTest extends TestCase
             'fieldPredicate' => function ($blueprint, $field) {
                 return (
                     ($blueprint['translate'] ?? true) &&
-                    Walker::fieldPredicate($blueprint, $field)
-                );
+                    Walker::fieldPredicate($blueprint, $field));
             }
         ]);
 
@@ -48,7 +47,7 @@ final class ExporterTest extends TestCase
 
     public function testKirbytagsConverted()
     {
-        $this->assertRegExp('/<kirby.*>.*<\/kirby>/', self::$data['text']);
+        $this->assertRegExp('/<kirby.*>/', self::$data['text']);
     }
 
     public function testIgnoredField()
@@ -68,6 +67,8 @@ final class ExporterTest extends TestCase
 
     public function testYamlWhitelist()
     {
+        $this->markTestIncomplete('Filtering not yet implemented');
+
         $keys = array_keys(site()->yamlField()->yaml());
         $whitelist = site()->blueprint()->fields()['yamlField'][BLUEPRINT_KEY]['yaml'];
         $data = self::$data['yamlfield'];
@@ -85,12 +86,6 @@ final class ExporterTest extends TestCase
     {
         $keys = site()->yamlFieldAll()->yaml();
         $this->assertEquals(self::$data['yamlfieldall'], $keys);
-    }
-
-    public function testYamlInStructure()
-    {
-        $keys = array_keys(self::$data['struct'][0]['yamlfield']);
-        $this->assertEquals($keys, ['text']);
     }
 
     public function testFalsyValueInStructure()

@@ -1,6 +1,6 @@
 <?php
 
-namespace KirbyOutsource;
+namespace Oblik\Kirby\Outsource;
 
 class Importer
 {
@@ -14,6 +14,7 @@ class Importer
     public function __construct($settings = [])
     {
         $this->settings = $settings;
+        $this->formatter = new Formatter();
         $this->walker = new Walker([
             'language' => $this->language(),
             'blueprint' => $this->blueprint(),
@@ -26,7 +27,7 @@ class Importer
                     return null;
                 }
 
-                $data = Formatter::decode($blueprint, $field);
+                $data = $this->formatter->serialize($blueprint, $field);
 
                 if (is_array($input) && is_array($data)) {
                     $data = array_replace_recursive($data, $input);
@@ -35,7 +36,7 @@ class Importer
                 }
 
                 if ($data !== null) {
-                    $data = Formatter::encode($blueprint, $data);
+                    $data = $this->formatter->deserialize($blueprint, $data);
                 }
 
                 return $data;

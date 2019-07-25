@@ -1,29 +1,31 @@
 <?php
 
-namespace KirbyOutsource;
+/**
+ * @todo autoload classes (preferably in Composer)
+ * @todo put the route functions in separate files and let the consumer register
+ * them, in case he doesn't need them
+ * @todo instead of passing options from Exporter down to Walker and Formatter,
+ * simply add settings to pass Walker/Formatter instances
+ */
+
+namespace Oblik\Kirby\Outsource;
+
+use Exception;
+use Kirby;
+use Kirby\Cms\Pages;
 
 const BLUEPRINT_KEY = 'outsource';
 const BLUEPRINT_IGNORE_KEY = 'ignore';
 
 include_once 'src/Exporter.php';
 include_once 'src/Importer.php';
-include_once 'src/KirbytagSerializer.php';
-include_once 'src/MarkdownSerializer.php';
+include_once 'src/Serializer/KirbyTags.php';
+include_once 'src/Serializer/Markdown.php';
 include_once 'src/Variables.php';
 include_once 'src/Formatter.php';
 include_once 'src/Walker.php';
 
-\Kirby::plugin('oblik/outsource', [
-    'tags' => [
-        'testbar' => [
-            'attr' => [
-                'type'
-            ],
-            'html' => function ($tag) {
-                return snippet('test', [], true);
-            }
-        ]
-    ],
+Kirby::plugin('oblik/outsource', [
     'options' => [
         'variables' => true,
         'blueprints' => [
@@ -33,13 +35,25 @@ include_once 'src/Walker.php';
         ],
         'fields' => [
             'files' => [
-                BLUEPRINT_KEY => [
-                    'ignore' => true
-                ]
+                'ignore' => true
             ],
             'pages' => [
-                BLUEPRINT_KEY => [
-                    'ignore' => true
+                'ignore' => true
+            ],
+            'textarea' => [
+                'serialize' => [
+                    'markdown' => true,
+                    'kirbytags' => true
+                ]
+            ],
+            'text' => [
+                'serialize' => [
+                    'kirbytags' => true
+                ]
+            ],
+            'link' => [
+                'serialize' => [
+                    'yaml' => true
                 ]
             ]
         ]
@@ -65,7 +79,7 @@ include_once 'src/Walker.php';
                         'fields' => option('oblik.outsource.fields')
                     ]);
 
-                    $models = new \Kirby\Cms\Pages();
+                    $models = new Pages();
                     $models->append(site());
                     $models->add(site()->index()->filter(function ($page) use ($pagesQuery) {
                         return (!$pagesQuery || strpos($page->id(), $pagesQuery) !== false);
@@ -83,11 +97,11 @@ include_once 'src/Walker.php';
                     $input = json_decode($postData, true);
 
                     if (empty($input['language'])) {
-                        throw new \Exception('Missing language', 400);
+                        throw new Exception('Missing language', 400);
                     }
 
                     if (empty($input['content'])) {
-                        throw new \Exception('Missing content', 400);
+                        throw new Exception('Missing content', 400);
                     }
 
                     $importer = new Importer($input['language']);

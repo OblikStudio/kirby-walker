@@ -1,9 +1,11 @@
 <?php
 
-namespace KirbyOutsource;
+namespace Oblik\Kirby\Outsource\Serializer;
 
 use DOMDocument;
 use DOMNode;
+use Kirby\Text\KirbyTag as NativeTag;
+use Kirby\Text\KirbyTags as NativeTags;
 
 class DOM
 {
@@ -41,7 +43,7 @@ class DOM
     }
 }
 
-class KirbyTag extends \Kirby\Text\KirbyTag
+class Tag extends NativeTag
 {
     public function render(): string
     {
@@ -103,25 +105,25 @@ class KirbyTag extends \Kirby\Text\KirbyTag
     }
 }
 
-class KirbyTags extends \Kirby\Text\KirbyTags
+class Tags extends NativeTags
 {
-    protected static $tagClass = KirbyTag::class;
+    protected static $tagClass = Tag::class;
 }
 
-class KirbytagSerializer
+class KirbyTags
 {
     /**
      * Replaces all valid kirbytags with their XML representation.
      */
-    public static function encode(string $text, $options = [])
+    public static function decode(string $text, $options = [])
     {
-        return KirbyTags::parse($text, [], $options);
+        return Tags::parse($text, [], $options);
     }
 
     /**
      * Turns the XML representation of a kirbytag to a valid kirbytag.
      */
-    public static function decodeTag(string $input, $options = [])
+    public static function encodeTag(string $input, $options = [])
     {
         $xml = $input;
         $encodedEntities = $options['entities'] ?? false;
@@ -168,7 +170,7 @@ class KirbytagSerializer
         // registered tag, otherwise do nothing.
         $tagType = $parts[0]['name'] ?? null;
 
-        if (isset(KirbyTag::$types[$tagType])) {
+        if (isset(Tag::$types[$tagType])) {
             $text = '';
 
             foreach ($parts as $pair) {
@@ -191,13 +193,13 @@ class KirbytagSerializer
     }
 
     /**
-     * Decodes all kirbytags in XML form that are present in the input.
+     * Turns all kirbytags to their text form.
      * @return string
      */
-    public static function decode(string $text, $options = [])
+    public static function encode(string $text, $options = [])
     {
         return preg_replace_callback('/<kirby(?:[^<]*\/>|.*?<\/kirby>)/s', function ($matches) use ($options) {
-            return self::decodeTag($matches[0], $options);
+            return self::encodeTag($matches[0], $options);
         }, $text);
     }
 }

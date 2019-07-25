@@ -1,6 +1,6 @@
 <?php
 
-namespace KirbyOutsource;
+namespace Oblik\Kirby\Outsource;
 
 use Kirby\Cms\Site;
 use Kirby\Cms\Pages;
@@ -23,12 +23,13 @@ class Exporter
     public function __construct(array $settings = [])
     {
         $this->settings = array_replace($this->settings, $settings);
+        $this->formatter = new Formatter();
         $this->walker = new Walker([
             'language' => $this->language(),
             'blueprints' => $this->blueprints(),
             'fields' => $this->fields(),
             'fieldPredicate' => $this->fieldPredicate(),
-            'fieldHandler' => [Formatter::class, 'extract']
+            'fieldHandler' => [$this->formatter, 'serialize']
         ]);
     }
 
