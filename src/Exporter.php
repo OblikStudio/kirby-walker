@@ -9,28 +9,22 @@ use Kirby\Cms\ModelWithContent;
 /**
  * Recursively walks the content of a Model, serializes it, and returns it.
  */
-class Exporter
+class Exporter extends Walker
 {
+    public $formatter;
     public $settings = [
-        'variables' => true,
+        'variables' => true
     ];
 
-    public function __call($name, $arguments)
+    public function __construct(Formatter $formatter, $settings = [])
     {
-        return $this->settings[$name] ?? null;
+        parent::__construct($settings);
+        $this->formatter = $formatter;
     }
 
-    public function __construct(array $settings = [])
+    public function fieldHandler($blueprint, $field, $input)
     {
-        $this->settings = array_replace($this->settings, $settings);
-        $this->formatter = new Formatter();
-        $this->walker = new Walker([
-            'language' => $this->language(),
-            'blueprints' => $this->blueprints(),
-            'fields' => $this->fields(),
-            'fieldPredicate' => $this->fieldPredicate(),
-            'fieldHandler' => [$this->formatter, 'serialize']
-        ]);
+        return $this->formatter->serialize($blueprint, $field);
     }
 
     /**
@@ -39,12 +33,12 @@ class Exporter
      */
     public function extractModel(ModelWithContent $model)
     {
-        $data = $this->walker->walk($model);
+        $data = $this->walk($model);
         $files = [];
 
         foreach ($model->files() as $file) {
             $fileId = $file->id();
-            $fileData = $this->walker->walk($file);
+            $fileData = $this->walk($file);
 
             if (!empty($fileData)) {
                 $files[$fileId] = $fileData;
@@ -107,7 +101,7 @@ class Exporter
         }
 
         if ($this->settings['variables']) {
-            $variables = Variables::get($this->language());
+            $variables = Variables::get($this->settings['language']);
 
             if (!empty($variables)) {
                 $data['variables'] = $variables;

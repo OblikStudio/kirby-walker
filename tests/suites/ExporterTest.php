@@ -5,20 +5,25 @@ namespace Oblik\Kirby\Outsource;
 use PHPUnit\Framework\TestCase;
 use Kirby\Cms\Pages;
 
+class TestExporter extends Exporter
+{
+    public function fieldPredicate($blueprint, $field, $input)
+    {
+        return ($blueprint['translate'] ?? true) && parent::fieldPredicate($blueprint, $field, $input);
+    }
+}
+
 final class ExporterTest extends TestCase
 {
     public static $data;
 
     public static function setUpBeforeClass(): void
     {
-        $exporter = new Exporter([
+        $formatter = new Formatter();
+        $exporter = new TestExporter($formatter, [
+            'language' => 'en',
             'blueprints' => option('oblik.outsource.blueprints'),
-            'fields' => option('oblik.outsource.fields'),
-            'fieldPredicate' => function ($blueprint, $field) {
-                return (
-                    ($blueprint['translate'] ?? true) &&
-                    Walker::fieldPredicate($blueprint, $field));
-            }
+            'fields' => option('oblik.outsource.fields')
         ]);
 
         $models = new Pages();

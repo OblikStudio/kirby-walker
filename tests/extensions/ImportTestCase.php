@@ -19,7 +19,13 @@ class ImportTestCase extends TestCase
 
         $importFilePath = realpath(__DIR__ . './../fixtures/' . self::$importFile);
         $importData = json_decode(file_get_contents($importFilePath), true);
-        $importer = new Importer(['language' => 'bg']);
+
+        $formatter = new Formatter();
+        $importer = new Importer($formatter, [
+            'language' => 'bg',
+            'blueprint' => option('oblik.outsource.blueprints'),
+            'fields' => option('oblik.outsource.fields')
+        ]);
         $importer->import($importData);
 
         $textFilePath = realpath(__DIR__ . './../kirby/content/' . self::$textFile);

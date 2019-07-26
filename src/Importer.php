@@ -2,52 +2,46 @@
 
 namespace Oblik\Kirby\Outsource;
 
-class Importer
+class Importer extends Walker
 {
-    private $settings = [];
+    public $formatter;
 
-    public function __call($name, $arguments)
+    public function __construct(Formatter $formatter, $settings = [])
     {
-        return $this->settings[$name] ?? null;
+        parent::__construct($settings);
+        $this->formatter = $formatter;
     }
 
-    public function __construct($settings = [])
+    public function fieldPredicate($blueprint, $field, $input)
     {
-        $this->settings = $settings;
-        $this->formatter = new Formatter();
-        $this->walker = new Walker([
-            'language' => $this->language(),
-            'blueprint' => $this->blueprint(),
-            'fields' => $this->fields(),
-            'fieldPredicate' => function ($blueprint) {
-                return !Walker::isFieldIgnored($blueprint);
-            },
-            'fieldHandler' => function ($blueprint, $field, $input) {
-                if ($field->isEmpty() && !$input) {
-                    return null;
-                }
+        return !$this::isFieldIgnored($blueprint);
+    }
 
-                $data = $this->formatter->serialize($blueprint, $field);
+    public function fieldHandler($blueprint, $field, $input)
+    {
+        if ($field->isEmpty() && !$input) {
+            return null;
+        }
 
-                if (is_array($input) && is_array($data)) {
-                    $data = array_replace_recursive($data, $input);
-                } else if ($input) {
-                    $data = $input;
-                }
+        $data = $this->formatter->serialize($blueprint, $field);
 
-                if ($data !== null) {
-                    $data = $this->formatter->deserialize($blueprint, $data);
-                }
+        if (is_array($input) && is_array($data)) {
+            $data = array_replace_recursive($data, $input);
+        } else if ($input) {
+            $data = $input;
+        }
 
-                return $data;
-            }
-        ]);
+        if ($data !== null) {
+            $data = $this->formatter->deserialize($blueprint, $data);
+        }
+
+        return $data;
     }
 
     public function update($model, $data)
     {
-        $mergedData = $this->walker->walk($model, $data);
-        $model->writeContent($mergedData, $this->language());
+        $mergedData = $this->walk($model, $data);
+        $model->writeContent($mergedData, $this->settings['language']);
     }
 
     public function import($data)
@@ -79,7 +73,7 @@ class Importer
         }
 
         if (!empty($data['variables'])) {
-            Variables::update($this->language, $data['variables']);
+            Variables::update($this->settings['language'], $data['variables']);
         }
 
         return true;

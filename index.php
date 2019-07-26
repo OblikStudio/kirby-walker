@@ -17,13 +17,13 @@ use Kirby\Cms\Pages;
 const BLUEPRINT_KEY = 'outsource';
 const BLUEPRINT_IGNORE_KEY = 'ignore';
 
-include_once 'src/Exporter.php';
-include_once 'src/Importer.php';
 include_once 'src/Serializer/KirbyTags.php';
 include_once 'src/Serializer/Markdown.php';
-include_once 'src/Variables.php';
 include_once 'src/Formatter.php';
 include_once 'src/Walker.php';
+include_once 'src/Exporter.php';
+include_once 'src/Importer.php';
+include_once 'src/Variables.php';
 
 Kirby::plugin('oblik/outsource', [
     'options' => [
@@ -72,9 +72,9 @@ Kirby::plugin('oblik/outsource', [
                         $exportLanguage = $kirby->defaultLanguage()->code();
                     }
 
-                    $exporter = new Exporter([
+                    $formatter = new Formatter();
+                    $exporter = new Exporter($formatter, [
                         'language' => $exportLanguage,
-                        'variables' => $_GET['variables'] ?? option('oblik.outsource.variables'),
                         'blueprints' => option('oblik.outsource.blueprints'),
                         'fields' => option('oblik.outsource.fields')
                     ]);
