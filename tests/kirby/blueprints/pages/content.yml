@@ -4,11 +4,14 @@ fields:
     type: textarea
   yaml:
     type: link
-    outsource:
-      yaml: true
   html:
     type: textarea
   markdown:
     type: textarea
-    outsource:
-      markdown: true
+  items:
+    type: structure
+    fields:
+      yaml:
+        type: link
+      pages:
+        type: pages

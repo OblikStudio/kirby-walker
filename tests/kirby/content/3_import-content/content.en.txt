@@ -2,10 +2,36 @@ Title: Import Content
 
 ----
 
+Tags: 
+
+----
+
 Yaml:
 
+type: url
 popup: true
 value: https://example.com/
+
+----
+
+Html: 
+
+----
+
+Markdown: 
+
+----
+
+Items:
+
+- 
+  yaml:
+    type: url
+    value: https://test.com/
+    text: foo
+  pages:
+    - home
+    - error
 
 ----
 

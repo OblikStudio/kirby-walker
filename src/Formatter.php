@@ -37,6 +37,7 @@ class Formatter
         $content = $field->value();
 
         if ($content === null) {
+            // Field has no value.
             return null;
         }
 
@@ -51,8 +52,24 @@ class Formatter
         return $content;
     }
 
-    public static function deserialize(array $blueprint, $data)
+    public function deserialize(array $blueprint, $data)
     {
-        return Serializer\KirbyTags::encode($data);
+        $options = $blueprint[BLUEPRINT_KEY] ?? null;
+        $serializers = $options['deserialize'] ?? null;
+
+        if (!is_array($serializers)) {
+            $serializers = array_reverse($options['serialize'] ?? [], true);
+        }
+
+        foreach ($serializers as $key => $config) {
+            $serializer = $this->serializers[$key] ?? null;
+
+            // test deserialize of YAML in structure where it's not needed?
+            if ($serializer) {
+                $data = $serializer::encode($data);
+            }
+        }
+
+        return $data;
     }
 }

@@ -19,7 +19,7 @@ class Importer extends Walker
 
     public function fieldHandler($blueprint, $field, $input)
     {
-        if ($field->isEmpty() && !$input) {
+        if ($field->value() === null && !$input) {
             return null;
         }
 

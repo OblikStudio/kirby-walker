@@ -27,7 +27,7 @@ class Walker
      */
     public function fieldPredicate($blueprint, $field, $input)
     {
-        return (!$this::isFieldIgnored($blueprint) && !$field->isEmpty());
+        return (!$this::isFieldIgnored($blueprint) && $field->value() !== null);
     }
 
     /**

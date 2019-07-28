@@ -1,13 +1,18 @@
 {
   "pages": {
     "import-content": {
-      "tags": "Link <kirby link=\"https://example.com/\">test<br>bar</kirby> tag",
       "yaml": {
-        "type": "url",
-        "text": "Link text"
+        "text": "import"
       },
-      "html": "<div><span><kirby test=\"bar\">fake kirby tag</kirby></span></div>",
-      "markdown": "<h1>Testing</h1>Markdown converted to <strong>HTML</strong> and a <em><kirby link=\"#\">kirbytag</kirby></em> here."
+      "html": "<div><span><kirby link=\"#\" text=\"import\"/></span></div>",
+      "markdown": "<h1>Import</h1>Markdown converted to <strong>HTML</strong> and a <em><kirby link=\"#\" text=\"kirbytag\"/></em> here.",
+      "items": [
+        {
+          "yaml": {
+            "text": "import"
+          }
+        }
+      ]
     }
   }
 }

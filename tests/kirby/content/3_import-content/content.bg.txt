@@ -1,0 +1,32 @@
+Tags: 
+
+----
+
+Yaml:
+
+type: url
+popup: true
+value: https://example.com/
+text: import
+
+----
+
+Html: <div><span>(link: # text: import)</span></div>
+
+----
+
+Markdown:
+
+# Import
+
+Markdown converted to __HTML__ and a _(link: # text: kirbytag)_ here.
+
+----
+
+Items:
+
+- 
+  yaml: |
+    type: url
+    value: https://test.com/
+    text: import
