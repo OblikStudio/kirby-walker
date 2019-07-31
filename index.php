@@ -1,13 +1,5 @@
 <?php
 
-/**
- * @todo autoload classes (preferably in Composer)
- * @todo put the route functions in separate files and let the consumer register
- * them, in case he doesn't need them
- * @todo instead of passing options from Exporter down to Walker and Formatter,
- * simply add settings to pass Walker/Formatter instances
- */
-
 namespace Oblik\Kirby\Outsource;
 
 use Exception;
@@ -19,6 +11,7 @@ const BLUEPRINT_IGNORE_KEY = 'ignore';
 
 include_once 'src/Serializer/KirbyTags.php';
 include_once 'src/Serializer/Markdown.php';
+include_once 'src/Serializer/Yaml.php';
 include_once 'src/Formatter.php';
 include_once 'src/Walker.php';
 include_once 'src/Exporter.php';

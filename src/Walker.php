@@ -3,6 +3,7 @@
 namespace Oblik\Kirby\Outsource;
 
 use Kirby\Cms\Model;
+use Kirby\Cms\Structure;
 
 class Walker
 {
@@ -60,7 +61,7 @@ class Walker
     /**
      * Merges model blueprint according to specified configuration.
      */
-    public function processBlueprint($blueprint)
+    public function processBlueprint($blueprint, $parent)
     {
         $customBlueprints = $this->settings['blueprints'];
         $customFields = $this->settings['fields'];
@@ -68,14 +69,20 @@ class Walker
         $blueprint = array_replace_recursive($blueprint, $customBlueprints);
         $blueprint = array_change_key_case($blueprint, CASE_LOWER);
 
-        foreach ($blueprint as $fieldName => $data) {
+        $inStructure = is_a($parent, Structure::class);
+
+        foreach ($blueprint as $fieldName => &$data) {
+            $config = $data[BLUEPRINT_KEY] ?? [];
+            $config['isStructureField'] = $inStructure;
+
             $fieldType = $data['type'] ?? null;
-            $currentConfig = $data[BLUEPRINT_KEY] ?? [];
             $fieldConfig = $customFields[$fieldType] ?? null;
 
             if ($fieldConfig) {
-                $blueprint[$fieldName][BLUEPRINT_KEY] = array_replace($fieldConfig, $currentConfig);
+                $config = array_replace($fieldConfig, $config);
             }
+
+            $data[BLUEPRINT_KEY] = $config;
         }
 
         return $blueprint;
@@ -87,8 +94,8 @@ class Walker
 
         if ($this->fieldPredicate($blueprint, $field, $input)) {
             if ($blueprint['type'] === 'structure') {
-                $blueprint = $this->processBlueprint($blueprint['fields']);
                 $field = $field->toStructure();
+                $blueprint = $this->processBlueprint($blueprint['fields'], $field);
                 $data = $this->structureHandler($blueprint, $field, $input);
             } else {
                 $data = $this->fieldHandler($blueprint, $field, $input);
@@ -111,7 +118,8 @@ class Walker
     {
         if (!$blueprint) {
             $blueprint = $this->processBlueprint(
-                $model->blueprint()->fields()
+                $model->blueprint()->fields(),
+                $model
             );
         }
 

@@ -26,7 +26,7 @@ Markdown converted to __HTML__ and a _(link: # text: kirbytag)_ here.
 Items:
 
 - 
-  yaml: |
+  yaml:
     type: url
     value: https://test.com/
     text: import

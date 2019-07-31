@@ -1,17 +1,6 @@
 <?php
 
-/**
- * @todo add `with`/`without` configs to serializers, which would
- * whitelist/blacklist keys if the serializer returns an array, also a recursive
- * option
- * @todo add before/after decode/encode hooks
- * @todo if `serialize` option is a function, use it as a serializer
- * @todo rename decode/encode in Formatter to serialize/deserialize
- */
-
 namespace Oblik\Kirby\Outsource;
-
-use Kirby\Data\Yaml;
 
 class Formatter
 {
@@ -23,7 +12,7 @@ class Formatter
             'serializers' => [
                 'markdown' => Serializer\Markdown::class,
                 'kirbytags' => Serializer\KirbyTags::class,
-                'yaml' => Yaml::class
+                'yaml' => Serializer\Yaml::class
             ]
         ];
         $this->settings = $settings;
@@ -45,7 +34,10 @@ class Formatter
             $serializer = $this->serializers[$key] ?? null;
 
             if ($serializer) {
-                $content = $serializer::decode($content);
+                $content = $serializer::decode($content, [
+                    'blueprint' => $blueprint,
+                    'config' => $config
+                ]);
             }
         }
 
@@ -64,9 +56,11 @@ class Formatter
         foreach ($serializers as $key => $config) {
             $serializer = $this->serializers[$key] ?? null;
 
-            // test deserialize of YAML in structure where it's not needed?
             if ($serializer) {
-                $data = $serializer::encode($data);
+                $data = $serializer::encode($data, [
+                    'blueprint' => $blueprint,
+                    'config' => $config
+                ]);
             }
         }
 
