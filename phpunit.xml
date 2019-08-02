@@ -1,5 +1,5 @@
 <phpunit
-    bootstrap="./tests/bootstrap.php"
+    bootstrap="../../../index.php"
     testdox="true"
 >
     <testsuites>
@@ -7,4 +7,7 @@
             <directory>tests/suites</directory>
         </testsuite>
     </testsuites>
+    <php>
+        <env name="KIRBY_PLUGIN" value="exporter" force="true" />
+    </php>
 </phpunit>

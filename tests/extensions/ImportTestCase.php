@@ -28,7 +28,7 @@ class ImportTestCase extends TestCase
         ]);
         $importer->import($importData);
 
-        $textFilePath = realpath(__DIR__ . './../kirby/content/' . self::$textFile);
+        $textFilePath = realpath(__DIR__ . './../roots/content/' . self::$textFile);
         $importResult = file_get_contents($textFilePath);
         self::$data = Txt::decode($importResult);
 
