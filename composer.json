@@ -30,6 +30,11 @@
       "Oblik\\Outsource\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Oblik\\Outsource\\": "tests/classes"
+    }
+  },
   "extra": {
     "installer-name": "outsource"
   }

@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Kirby\Data\Txt;
 use Yaml;
 
-class ImportTestCase extends TestCase
+abstract class ImportTestCase extends TestCase
 {
     protected static $importFile;
     protected static $textFile;
