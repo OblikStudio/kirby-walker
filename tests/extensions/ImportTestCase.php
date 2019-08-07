@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Kirby\Outsource;
+namespace Oblik\Outsource;
 
 use PHPUnit\Framework\TestCase;
 use Kirby\Data\Txt;

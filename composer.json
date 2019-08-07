@@ -1,16 +1,15 @@
 {
   "name": "oblik/kirby-outsource",
+  "description": "Kirby plugin for exporting and importing site content.",
   "type": "kirby-plugin",
   "license": "MIT",
   "authors": [
     {
       "name": "Hristiyan Dodov",
-      "email": "h.dodov@gmail.com"
+      "email": "h.dodov@gmail.com",
+      "homepage": "https://dodov.me/"
     }
   ],
-  "require": {
-    "league/html-to-markdown": "^4.8"
-  },
   "scripts": {
     "test-run": "phpunit",
     "test-clean": "for /R %i in (*.bg.txt) do (rm \"%i\")",
@@ -19,9 +18,19 @@
       "@test-run"
     ]
   },
+  "require": {
+    "getkirby/composer-installer": "^1.1",
+    "league/html-to-markdown": "^4.8"
+  },
   "require-dev": {
-    "phpunit/phpunit": "^8",
-    "oblik/kirby-link-field": "^2.0",
-    "oblik/kirby-tester": "^1.0"
+    "phpunit/phpunit": "^8"
+  },
+  "autoload": {
+    "psr-4": {
+      "Oblik\\Outsource\\": "src/"
+    }
+  },
+  "extra": {
+    "installer-name": "outsource"
   }
 }

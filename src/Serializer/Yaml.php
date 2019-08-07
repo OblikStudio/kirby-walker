@@ -1,8 +1,8 @@
 <?php
 
-namespace Oblik\Kirby\Outsource\Serializer;
+namespace Oblik\Outsource\Serializer;
 
-use const Oblik\Kirby\Outsource\BLUEPRINT_KEY;
+use const Oblik\Outsource\BLUEPRINT_KEY;
 use Kirby\Data\Yaml as YamlParser;
 
 class Yaml

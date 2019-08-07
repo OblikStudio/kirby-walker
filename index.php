@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Kirby\Outsource;
+namespace Oblik\Outsource;
 
 use Exception;
 use Kirby;
@@ -9,14 +9,7 @@ use Kirby\Cms\Pages;
 const BLUEPRINT_KEY = 'outsource';
 const BLUEPRINT_IGNORE_KEY = 'ignore';
 
-include_once 'src/Serializer/KirbyTags.php';
-include_once 'src/Serializer/Markdown.php';
-include_once 'src/Serializer/Yaml.php';
-include_once 'src/Formatter.php';
-include_once 'src/Walker.php';
-include_once 'src/Exporter.php';
-include_once 'src/Importer.php';
-include_once 'src/Variables.php';
+@include_once 'vendor/autoload.php';
 
 Kirby::plugin('oblik/outsource', [
     'options' => [

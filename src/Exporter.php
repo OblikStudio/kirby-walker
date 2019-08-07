@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Kirby\Outsource;
+namespace Oblik\Outsource;
 
 use Kirby\Cms\Site;
 use Kirby\Cms\Pages;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Kirby\Outsource;
+namespace Oblik\Outsource;
 
 final class MergeTest extends ImportTestCase
 {

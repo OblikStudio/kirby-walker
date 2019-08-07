@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Kirby\Outsource;
+namespace Oblik\Outsource;
 
 use Kirby\Cms\Model;
 use Kirby\Cms\Structure;
