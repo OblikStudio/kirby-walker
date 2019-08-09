@@ -10,6 +10,7 @@ final class ImporterTest extends TestCase
 {
     public static $merge;
     public static $mergeItems;
+    public static $content;
     public static $contentItems;
 
     public static function import($importFile, $textFile)
@@ -34,12 +35,11 @@ final class ImporterTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        $merge = self::import('merge.json', '2_import-merge/merge.bg.txt');
-        $content = self::import('content.json', '3_import-content/content.bg.txt');
-
-        self::$merge = $merge;
+        self::$merge = self::import('merge.json', '2_import-merge/merge.bg.txt');
         self::$mergeItems = Yaml::decode(self::$merge['items']);
-        self::$contentItems = Yaml::decode($content['items']);
+
+        self::$content = self::import('content.json', '3_import-content/content.bg.txt');
+        self::$contentItems = Yaml::decode(self::$content['items']);
 
         /**
          * Below would be better for testing
@@ -110,10 +110,32 @@ final class ImporterTest extends TestCase
         $this->assertArrayNotHasKey('f4', self::$mergeItems[0]);
     }
 
+    public function testYaml()
+    {
+        $data = Yaml::decode(self::$content['yaml']);
+        $this->assertEquals($data['text'], 'import');
+    }
+
     public function testYamlInStructure()
     {
         $entry = self::$contentItems[0];
         $this->assertIsArray($entry['yaml']);
         $this->assertEquals($entry['yaml']['text'], 'import');
+    }
+
+    public function testKirbytagInHtml()
+    {
+        $this->assertEquals(
+            '<div><span>(link: # text: import)</span></div>',
+            self::$content['html']
+        );
+    }
+
+    public function testMarkdownInHtml()
+    {
+        $this->assertEquals(
+            "# Import\n\nMarkdown converted to __HTML__ and a _(link: # text: kirbytag)_ here.",
+            self::$content['markdown']
+        );
     }
 }
