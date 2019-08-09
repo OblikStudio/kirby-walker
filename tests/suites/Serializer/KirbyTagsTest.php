@@ -1,17 +1,17 @@
 <?php
 
-namespace Oblik\Outsource;
+namespace Oblik\Outsource\Serializer;
 
 use PHPUnit\Framework\TestCase;
 
-final class KirbytagsTest extends TestCase
+final class KirbyTagsTest extends TestCase
 {
     public function serialize($input, $expected, $decodeOptions = [], $encodeOptions = [])
     {
-        $xml = Serializer\KirbyTags::decode($input, $decodeOptions);
+        $xml = KirbyTags::decode($input, $decodeOptions);
         $this->assertEquals($expected, $xml);
 
-        $text = Serializer\KirbyTags::encode($xml, $encodeOptions);
+        $text = KirbyTags::encode($xml, $encodeOptions);
         $this->assertEquals($input, $text);
     }
 

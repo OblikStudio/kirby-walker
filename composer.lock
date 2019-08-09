@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8a6f1258f1b46202142e6cce6da2e6a8",
+    "content-hash": "80bf206897207d8929a66584e2ceca41",
     "packages": [
         {
             "name": "getkirby/composer-installer",
@@ -107,6 +107,43 @@
                 "markdown"
             ],
             "time": "2019-08-02T11:57:39+00:00"
+        },
+        {
+            "name": "oblik/kirby-tester",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/OblikStudio/kirby-tester.git",
+                "reference": "e3a893eef826a29cb8af62cbadb3925e5b57eb45"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/OblikStudio/kirby-tester/zipball/e3a893eef826a29cb8af62cbadb3925e5b57eb45",
+                "reference": "e3a893eef826a29cb8af62cbadb3925e5b57eb45",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Oblik\\KirbyTester\\": "src/"
+                },
+                "files": [
+                    "index.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Hristiyan Dodov",
+                    "email": "h.dodov@gmail.com",
+                    "homepage": "https://dodov.me/"
+                }
+            ],
+            "description": "Utility for loading Kirby and switching roots while testing.",
+            "time": "2019-08-08T10:01:54+00:00"
         }
     ],
     "packages-dev": [
