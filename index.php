@@ -38,6 +38,11 @@ Kirby::plugin('oblik/outsource', [
                 'serialize' => [
                     'yaml' => true
                 ]
+            ],
+            'tags' => [
+                'serialize' => [
+                    'tags' => true
+                ]
             ]
         ]
     ],

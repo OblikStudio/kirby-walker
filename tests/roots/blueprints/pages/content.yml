@@ -1,7 +1,7 @@
 title: Content
 fields:
   tags:
-    type: textarea
+    type: tags
   yaml:
     type: link
   html:

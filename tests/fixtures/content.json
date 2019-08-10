@@ -1,6 +1,9 @@
 {
   "pages": {
     "import-content": {
+      "tags": [
+        "import"
+      ],
       "yaml": {
         "text": "import"
       },

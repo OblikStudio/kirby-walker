@@ -7,7 +7,8 @@ class Formatter
     protected static $serializers = [
         'markdown' => Serializer\Markdown::class,
         'kirbytags' => Serializer\KirbyTags::class,
-        'yaml' => Serializer\Yaml::class
+        'yaml' => Serializer\Yaml::class,
+        'tags' => Serializer\Tags::class,
     ];
 
     public static function serialize(array $blueprint, $field)
@@ -26,6 +27,7 @@ class Formatter
 
             if ($serializer) {
                 $content = $serializer::decode($content, [
+                    'field' => $field,
                     'blueprint' => $blueprint,
                     'config' => $config
                 ]);

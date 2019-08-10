@@ -43,7 +43,7 @@ class DOM
     }
 }
 
-class Tag extends NativeTag
+class KirbyTag extends NativeTag
 {
     public function render(): string
     {
@@ -105,9 +105,9 @@ class Tag extends NativeTag
     }
 }
 
-class Tags extends NativeTags
+class KirbyTagsParser extends NativeTags
 {
-    protected static $tagClass = Tag::class;
+    protected static $tagClass = KirbyTag::class;
 }
 
 class KirbyTags
@@ -117,7 +117,7 @@ class KirbyTags
      */
     public static function decode(string $text, $options = [])
     {
-        return Tags::parse($text, [], $options);
+        return KirbyTagsParser::parse($text, [], $options);
     }
 
     /**
@@ -170,7 +170,7 @@ class KirbyTags
         // registered tag, otherwise do nothing.
         $tagType = $parts[0]['name'] ?? null;
 
-        if (isset(Tag::$types[$tagType])) {
+        if (isset(KirbyTag::$types[$tagType])) {
             $text = '';
 
             foreach ($parts as $pair) {
