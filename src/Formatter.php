@@ -4,22 +4,13 @@ namespace Oblik\Outsource;
 
 class Formatter
 {
-    public $settings = [];
+    protected static $serializers = [
+        'markdown' => Serializer\Markdown::class,
+        'kirbytags' => Serializer\KirbyTags::class,
+        'yaml' => Serializer\Yaml::class
+    ];
 
-    public function __construct($settings = [])
-    {
-        $settings = [
-            'serializers' => [
-                'markdown' => Serializer\Markdown::class,
-                'kirbytags' => Serializer\KirbyTags::class,
-                'yaml' => Serializer\Yaml::class
-            ]
-        ];
-        $this->settings = $settings;
-        $this->serializers = $settings['serializers'] ?? [];
-    }
-
-    public function serialize(array $blueprint, $field)
+    public static function serialize(array $blueprint, $field)
     {
         $options = $blueprint[BLUEPRINT_KEY] ?? null;
         $serialize = $options['serialize'] ?? [];
@@ -31,7 +22,7 @@ class Formatter
         }
 
         foreach ($serialize as $key => $config) {
-            $serializer = $this->serializers[$key] ?? null;
+            $serializer = self::$serializers[$key] ?? null;
 
             if ($serializer) {
                 $content = $serializer::decode($content, [
@@ -44,7 +35,7 @@ class Formatter
         return $content;
     }
 
-    public function deserialize(array $blueprint, $data)
+    public static function deserialize(array $blueprint, $data)
     {
         $options = $blueprint[BLUEPRINT_KEY] ?? null;
         $serializers = $options['deserialize'] ?? null;
@@ -54,7 +45,7 @@ class Formatter
         }
 
         foreach ($serializers as $key => $config) {
-            $serializer = $this->serializers[$key] ?? null;
+            $serializer = self::$serializers[$key] ?? null;
 
             if ($serializer) {
                 $data = $serializer::encode($data, [

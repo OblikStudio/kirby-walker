@@ -114,7 +114,8 @@ final class KirbyTagsTest extends TestCase
      */
     public function testIncorrectNewlineDecode()
     {
-        $this->expectException('PHPUnit\Framework\ExpectationFailedException');
+        // $this->expectException('PHPUnit\Framework\ExpectationFailedException');
+        // Probably starts working in a new version of libxml.
         $this->serialize(
             "(link: # text: <div>\ntext<br></div>)",
             "<kirby link=\"#\"><value name=\"text\"><div>\ntext<br/></div></value></kirby>",

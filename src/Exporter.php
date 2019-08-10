@@ -11,20 +11,14 @@ use Kirby\Cms\ModelWithContent;
  */
 class Exporter extends Walker
 {
-    public $formatter;
     public $settings = [
+        'formatter' => Formatter::class,
         'variables' => true
     ];
 
-    public function __construct(Formatter $formatter, $settings = [])
-    {
-        parent::__construct($settings);
-        $this->formatter = $formatter;
-    }
-
     public function fieldHandler($blueprint, $field, $input)
     {
-        return $this->formatter->serialize($blueprint, $field);
+        return $this->settings['formatter']::serialize($blueprint, $field);
     }
 
     /**

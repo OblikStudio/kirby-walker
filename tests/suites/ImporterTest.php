@@ -20,8 +20,7 @@ final class ImporterTest extends TestCase
         $importFilePath = realpath(__DIR__ . '/../fixtures/' . $importFile);
         $importData = json_decode(file_get_contents($importFilePath), true);
 
-        $formatter = new Formatter();
-        $importer = new Importer($formatter, [
+        $importer = new Importer([
             'language' => 'bg',
             'blueprint' => option('oblik.outsource.blueprints'),
             'fields' => option('oblik.outsource.fields')

@@ -56,8 +56,7 @@ Kirby::plugin('oblik/outsource', [
                         $exportLanguage = $kirby->defaultLanguage()->code();
                     }
 
-                    $formatter = new Formatter();
-                    $exporter = new Exporter($formatter, [
+                    $exporter = new Exporter([
                         'language' => $exportLanguage,
                         'blueprints' => option('oblik.outsource.blueprints'),
                         'fields' => option('oblik.outsource.fields')

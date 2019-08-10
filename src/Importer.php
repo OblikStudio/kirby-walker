@@ -4,13 +4,9 @@ namespace Oblik\Outsource;
 
 class Importer extends Walker
 {
-    public $formatter;
-
-    public function __construct(Formatter $formatter, $settings = [])
-    {
-        parent::__construct($settings);
-        $this->formatter = $formatter;
-    }
+    public $settings = [
+        'formatter' => Formatter::class
+    ];
 
     public function fieldPredicate($blueprint, $field, $input)
     {
@@ -23,7 +19,7 @@ class Importer extends Walker
             return null;
         }
 
-        $data = $this->formatter->serialize($blueprint, $field);
+        $data = $this->settings['formatter']::serialize($blueprint, $field);
 
         if (is_array($input) && is_array($data)) {
             $data = array_replace_recursive($data, $input);
@@ -32,7 +28,7 @@ class Importer extends Walker
         }
 
         if ($data !== null) {
-            $data = $this->formatter->deserialize($blueprint, $data);
+            $data = $this->settings['formatter']::deserialize($blueprint, $data);
         }
 
         return $data;
