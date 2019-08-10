@@ -2,13 +2,20 @@
 
 namespace Oblik\Outsource;
 
+use Oblik\Outsource\Serializer\KirbyTags;
+use Oblik\Outsource\Serializer\Markdown;
+use Oblik\Outsource\Serializer\Yaml;
+use Oblik\Outsource\Serializer\Tags;
+use Kirby\Data\Json;
+
 class Formatter
 {
     protected static $serializers = [
-        'markdown' => Serializer\Markdown::class,
-        'kirbytags' => Serializer\KirbyTags::class,
-        'yaml' => Serializer\Yaml::class,
-        'tags' => Serializer\Tags::class,
+        'kirbytags' => KirbyTags::class,
+        'markdown' => Markdown::class,
+        'yaml' => Yaml::class,
+        'tags' => Tags::class,
+        'json' => Json::class
     ];
 
     public static function serialize(array $blueprint, $field)

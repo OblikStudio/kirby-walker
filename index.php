@@ -43,6 +43,11 @@ Kirby::plugin('oblik/outsource', [
                 'serialize' => [
                     'tags' => true
                 ]
+            ],
+            'editor' => [
+                'serialize' => [
+                    'json' => true
+                ]
             ]
         ]
     ],
