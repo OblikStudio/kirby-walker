@@ -7,7 +7,6 @@ use Kirby;
 use Kirby\Cms\Pages;
 
 const BLUEPRINT_KEY = 'outsource';
-const BLUEPRINT_IGNORE_KEY = 'ignore';
 
 Kirby::plugin('oblik/outsource', [
     'options' => [

@@ -20,7 +20,7 @@ class Walker
 
     public static function isFieldIgnored(array $blueprint)
     {
-        return $blueprint[BLUEPRINT_KEY][BLUEPRINT_IGNORE_KEY] ?? false;
+        return $blueprint[BLUEPRINT_KEY]['ignore'] ?? false;
     }
 
     /**
