@@ -23,7 +23,9 @@ class Yaml
         $inStructure = $options['blueprint'][BLUEPRINT_KEY]['isStructureField'];
 
         // Structure data is encoded as YAML. If any fields are encoded prior to
-        // that, they would be double encoded. This must be avoided.
+        // that, they would be double encoded. Therefore, YAML fields in
+        // structures should not be encoded because they will be encoded later
+        // with the rest of the structure data.
         if (!$inStructure) {
             return YamlParser::encode($input);
         }

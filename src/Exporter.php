@@ -16,9 +16,39 @@ class Exporter extends Walker
         'variables' => true
     ];
 
+    public static function filter(array $data, array $settings)
+    {
+        $keys = $settings['keys'];
+        $inclusive = $settings['inclusive'] ?? true;
+        $recursive = $settings['recursive'] ?? true;
+
+        foreach ($data as $key => &$value) {
+            $matched = in_array($key, $keys, true);
+            $unset = $inclusive !== $matched;
+
+            if ($recursive && is_array($value)) {
+                $value = self::filter($value, $settings);
+                $unset = count($value) <= 0;
+            }
+
+            if ($unset) {
+                unset($data[$key]);
+            }
+        }
+
+        return $data;
+    }
+
     public function fieldHandler($blueprint, $field, $input)
     {
-        return $this->settings['formatter']::serialize($blueprint, $field);
+        $data = $this->settings['formatter']::serialize($blueprint, $field);
+        $filter = $blueprint[BLUEPRINT_KEY]['export']['filter'] ?? null;
+
+        if (is_array($data) && is_array($filter)) {
+            $data = self::filter($data, $filter);
+        }
+
+        return $data;
     }
 
     /**

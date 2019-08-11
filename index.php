@@ -37,6 +37,11 @@ Kirby::plugin('oblik/outsource', [
             'link' => [
                 'serialize' => [
                     'yaml' => true
+                ],
+                'export' => [
+                    'filter' => [
+                        'keys' => ['text']
+                    ]
                 ]
             ],
             'tags' => [
@@ -47,6 +52,11 @@ Kirby::plugin('oblik/outsource', [
             'editor' => [
                 'serialize' => [
                     'json' => true
+                ],
+                'export' => [
+                    'filter' => [
+                        'keys' => ['id', 'content']
+                    ]
                 ]
             ]
         ]
