@@ -1,6 +1,14 @@
 {
   "pages": {
-    "import-content": {
+    "import": {
+      "f2": "both imported",
+      "f3": "import",
+      "items": [
+        {
+          "f2": "both imported",
+          "f3": "import"
+        }
+      ],
       "text": [
         {
           "id": "_ml7ufpb8n",
@@ -19,7 +27,7 @@
       },
       "html": "<div><span><kirby link=\"#\" text=\"import\"/></span></div>",
       "markdown": "<h1>Import</h1>Markdown converted to <strong>HTML</strong> and a <em><kirby link=\"#\" text=\"kirbytag\"/></em> here.",
-      "items": [
+      "contentitems": [
         {
           "yaml": {
             "text": "import"

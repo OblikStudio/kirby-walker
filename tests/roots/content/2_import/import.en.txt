@@ -1,4 +1,22 @@
-Title: Import Content
+Title: Import
+
+----
+
+F1: default
+
+----
+
+F2: both
+
+----
+
+Items:
+
+-
+  f1: default
+  f2: both
+-
+  f1: default
 
 ----
 
@@ -41,7 +59,7 @@ Markdown:
 
 ----
 
-Items:
+Contentitems:
 
 - 
   yaml:

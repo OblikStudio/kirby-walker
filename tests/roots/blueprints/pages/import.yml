@@ -19,3 +19,20 @@ fields:
         type: text
       f4:
         type: text
+  text:
+    type: editor
+  tags:
+    type: tags
+  yaml:
+    type: link
+  html:
+    type: textarea
+  markdown:
+    type: textarea
+  contentItems:
+    type: structure
+    fields:
+      yaml:
+        type: link
+      pages:
+        type: pages

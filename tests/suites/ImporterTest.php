@@ -9,9 +9,8 @@ use Yaml;
 
 final class ImporterTest extends TestCase
 {
-    public static $merge;
-    public static $mergeItems;
-    public static $content;
+    public static $data;
+    public static $items;
     public static $contentItems;
 
     public static function import($importFile, $textFile)
@@ -35,11 +34,9 @@ final class ImporterTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        self::$merge = self::import('merge.json', '2_import-merge/merge.bg.txt');
-        self::$mergeItems = Yaml::decode(self::$merge['items']);
-
-        self::$content = self::import('content.json', '3_import-content/content.bg.txt');
-        self::$contentItems = Yaml::decode(self::$content['items']);
+        self::$data = self::import('import.json', '2_import/import.bg.txt');
+        self::$items = Yaml::decode(self::$data['items']);
+        self::$contentItems = Yaml::decode(self::$data['contentitems']);
 
         /**
          * Below would be better for testing
@@ -52,67 +49,67 @@ final class ImporterTest extends TestCase
     {
         // The `Title` field is present in the default txt by default but it
         // shouldn't appear in the translation because it's not in the blueprint.
-        $this->assertArrayNotHasKey('title', self::$merge);
+        $this->assertArrayNotHasKey('title', self::$data);
     }
 
     public function testDefaultValuePreserved()
     {
         // If a field is not present in the import but exists in the blueprint and
         // in the default txt, it should be preserved.
-        $this->assertEquals('default', self::$merge['f1']);
+        $this->assertEquals('default', self::$data['f1']);
     }
 
     public function testValueImported()
     {
         // If a field exists in both the default txt and the import, the imported
         // value should override the default one.
-        $this->assertEquals('both imported', self::$merge['f2']);
+        $this->assertEquals('both imported', self::$data['f2']);
     }
 
     public function testImportedValueAdded()
     {
         // If a value exists only in the import but the field is listed in the
         // blueprint, that value should be added.
-        $this->assertEquals('import', self::$merge['f3']);
+        $this->assertEquals('import', self::$data['f3']);
     }
 
     public function testMissingValueIsMissing()
     {
         // The `f4` field is defined in the blueprint, but absent in both the
         // default txt and the import. It should not appear in the translation.
-        $this->assertArrayNotHasKey('f4', self::$merge);
+        $this->assertArrayNotHasKey('f4', self::$data);
     }
 
     public function testStructureSecondEntryPreserved()
     {
         // Even though the import contains one entry, the second entry from the
         // default txt should be copied.
-        $this->assertEquals('default', self::$mergeItems[1]['f1']);
+        $this->assertEquals('default', self::$items[1]['f1']);
     }
 
     public function testStructureDefaultValuePreserved()
     {
-        $this->assertEquals('default', self::$mergeItems[0]['f1']);
+        $this->assertEquals('default', self::$items[0]['f1']);
     }
 
     public function testStructureValueImported()
     {
-        $this->assertEquals('both imported', self::$mergeItems[0]['f2']);
+        $this->assertEquals('both imported', self::$items[0]['f2']);
     }
 
     public function testStructureImportedValueAdded()
     {
-        $this->assertEquals('import', self::$mergeItems[0]['f3']);
+        $this->assertEquals('import', self::$items[0]['f3']);
     }
 
     public function testStructureMissingValueIsMissing()
     {
-        $this->assertArrayNotHasKey('f4', self::$mergeItems[0]);
+        $this->assertArrayNotHasKey('f4', self::$items[0]);
     }
 
     public function testYaml()
     {
-        $data = Yaml::decode(self::$content['yaml']);
+        $data = Yaml::decode(self::$data['yaml']);
         $this->assertEquals($data['text'], 'import');
     }
 
@@ -127,7 +124,7 @@ final class ImporterTest extends TestCase
     {
         $this->assertEquals(
             '<div><span>(link: # text: import)</span></div>',
-            self::$content['html']
+            self::$data['html']
         );
     }
 
@@ -135,7 +132,7 @@ final class ImporterTest extends TestCase
     {
         $this->assertEquals(
             "# Import\n\nMarkdown converted to __HTML__ and a _(link: # text: kirbytag)_ here.",
-            self::$content['markdown']
+            self::$data['markdown']
         );
     }
 
@@ -145,7 +142,7 @@ final class ImporterTest extends TestCase
      */
     public function testCustomMerger()
     {
-        $data = Json::decode(self::$content['text']);
+        $data = Json::decode(self::$data['text']);
         $this->assertEquals('Imported heading', $data[0]['content']);
         $this->assertEquals('Imported content', $data[1]['content']);
     }
