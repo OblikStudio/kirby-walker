@@ -13,8 +13,8 @@ class Walker
     {
         $this->settings = array_replace([
             'language' => null,
-            'blueprints' => [],
-            'fields' => []
+            BP_BLUEPRINT => [],
+            BP_FIELDS => []
         ], $this->settings, $settings);
     }
 
@@ -63,8 +63,8 @@ class Walker
      */
     public function processBlueprint($blueprint, $parent)
     {
-        $customBlueprint = $this->settings['blueprint'];
-        $customFields = $this->settings['fields'];
+        $customBlueprint = $this->settings[BP_BLUEPRINT];
+        $customFields = $this->settings[BP_FIELDS];
 
         $blueprint = array_replace_recursive($blueprint, $customBlueprint);
         $blueprint = array_change_key_case($blueprint, CASE_LOWER);

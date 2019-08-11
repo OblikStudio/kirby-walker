@@ -7,16 +7,18 @@ use Kirby;
 use Kirby\Cms\Pages;
 
 const BLUEPRINT_KEY = 'outsource';
+const BP_BLUEPRINT = 'blueprint';
+const BP_FIELDS = 'fields';
 
 Kirby::plugin('oblik/outsource', [
     'options' => [
         'variables' => true,
-        'blueprint' => [
+        BP_BLUEPRINT => [
             'title' => [
                 'type' => 'text'
             ]
         ],
-        'fields' => [
+        BP_FIELDS => [
             'files' => [
                 'ignore' => true
             ],
@@ -82,8 +84,8 @@ Kirby::plugin('oblik/outsource', [
 
                     $exporter = new Exporter([
                         'language' => $exportLanguage,
-                        'blueprint' => option('oblik.outsource.blueprint'),
-                        'fields' => option('oblik.outsource.fields')
+                        BP_BLUEPRINT => option('oblik.outsource.' . BP_BLUEPRINT),
+                        BP_FIELDS => option('oblik.outsource.' . BP_FIELDS)
                     ]);
 
                     $models = new Pages();

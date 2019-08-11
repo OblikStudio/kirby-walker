@@ -21,8 +21,8 @@ final class ExporterTest extends TestCase
     {
         $exporter = new TestExporter([
             'language' => 'en',
-            'blueprint' => option('oblik.outsource.blueprint'),
-            'fields' => option('oblik.outsource.fields')
+            BP_BLUEPRINT => option('oblik.outsource.' . BP_BLUEPRINT),
+            BP_FIELDS => option('oblik.outsource.' . BP_FIELDS)
         ]);
 
         $models = new Pages();

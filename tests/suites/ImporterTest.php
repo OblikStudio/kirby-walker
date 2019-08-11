@@ -22,8 +22,8 @@ final class ImporterTest extends TestCase
 
         $importer = new Importer([
             'language' => 'bg',
-            'blueprint' => option('oblik.outsource.blueprint'),
-            'fields' => option('oblik.outsource.fields')
+            BP_BLUEPRINT => option('oblik.outsource.' . BP_BLUEPRINT),
+            BP_FIELDS => option('oblik.outsource.' . BP_FIELDS)
         ]);
         $importer->import($importData);
 
