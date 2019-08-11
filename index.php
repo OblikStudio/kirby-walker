@@ -11,7 +11,7 @@ const BLUEPRINT_KEY = 'outsource';
 Kirby::plugin('oblik/outsource', [
     'options' => [
         'variables' => true,
-        'blueprints' => [
+        'blueprint' => [
             'title' => [
                 'type' => 'text'
             ]
@@ -82,7 +82,7 @@ Kirby::plugin('oblik/outsource', [
 
                     $exporter = new Exporter([
                         'language' => $exportLanguage,
-                        'blueprints' => option('oblik.outsource.blueprints'),
+                        'blueprint' => option('oblik.outsource.blueprint'),
                         'fields' => option('oblik.outsource.fields')
                     ]);
 

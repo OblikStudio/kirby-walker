@@ -63,10 +63,10 @@ class Walker
      */
     public function processBlueprint($blueprint, $parent)
     {
-        $customBlueprints = $this->settings['blueprints'];
+        $customBlueprint = $this->settings['blueprint'];
         $customFields = $this->settings['fields'];
 
-        $blueprint = array_replace_recursive($blueprint, $customBlueprints);
+        $blueprint = array_replace_recursive($blueprint, $customBlueprint);
         $blueprint = array_change_key_case($blueprint, CASE_LOWER);
 
         $inStructure = is_a($parent, Structure::class);

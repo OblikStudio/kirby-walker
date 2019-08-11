@@ -1,6 +1,7 @@
 {
   "pages": {
     "import": {
+      "title": "Imported",
       "f2": "both imported",
       "f3": "import",
       "items": [

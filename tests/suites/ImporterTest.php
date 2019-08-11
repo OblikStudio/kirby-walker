@@ -22,7 +22,7 @@ final class ImporterTest extends TestCase
 
         $importer = new Importer([
             'language' => 'bg',
-            'blueprint' => option('oblik.outsource.blueprints'),
+            'blueprint' => option('oblik.outsource.blueprint'),
             'fields' => option('oblik.outsource.fields')
         ]);
         $importer->import($importData);
@@ -45,11 +45,11 @@ final class ImporterTest extends TestCase
         // $item = kirby()->page('import-content')->content('bg');
     }
 
-    public function testDoesNotContainTitle()
+    public function testImportedArtificialField()
     {
-        // The `Title` field is present in the default txt by default but it
-        // shouldn't appear in the translation because it's not in the blueprint.
-        $this->assertArrayNotHasKey('title', self::$data);
+        // The `title` field is artificially added to the blueprint via the
+        // `blueprint` setting. It should be imported too.
+        $this->assertEquals('Imported', self::$data['title']);
     }
 
     public function testDefaultValuePreserved()
