@@ -57,6 +57,11 @@ Kirby::plugin('oblik/outsource', [
                     'filter' => [
                         'keys' => ['id', 'content']
                     ]
+                ],
+                'import' => [
+                    'merge' => function ($data, $input) {
+                        return merge_by_key($data, $input, 'array_replace_recursive');
+                    }
                 ]
             ]
         ]

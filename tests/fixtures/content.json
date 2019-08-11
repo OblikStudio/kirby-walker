@@ -1,6 +1,16 @@
 {
   "pages": {
     "import-content": {
+      "text": [
+        {
+          "id": "_ml7ufpb8n",
+          "content": "Imported content"
+        },
+        {
+          "id": "_3i2q91mx6",
+          "content": "Imported heading"
+        }
+      ],
       "tags": [
         "import"
       ],

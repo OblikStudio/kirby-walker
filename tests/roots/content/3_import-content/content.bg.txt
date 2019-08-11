@@ -1,4 +1,4 @@
-Text: [{"attrs":[],"content":"Hello!","id":"_3i2q91mx6","type":"h1"},{"attrs":[],"content":"This is the Kirby editor!","id":"_ml7ufpb8n","type":"paragraph"}]
+Text: [{"attrs":[],"content":"Imported heading","id":"_3i2q91mx6","type":"h1"},{"attrs":[],"content":"Imported content","id":"_ml7ufpb8n","type":"paragraph"}]
 
 ----
 

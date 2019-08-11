@@ -27,6 +27,9 @@
     "phpunit/phpunit": "^8"
   },
   "autoload": {
+    "files": [
+      "utilities.php"
+    ],
     "psr-4": {
       "Oblik\\Outsource\\": "src/"
     }
