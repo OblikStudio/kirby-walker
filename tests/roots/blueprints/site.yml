@@ -11,13 +11,6 @@ fields:
       ignore: true
   yamlField:
     type: link
-    outsource:
-      yaml:
-        - text
-  yamlFieldAll:
-    type: link
-    outsource:
-      yaml: true
   notTranslated:
     type: text
     translate: false

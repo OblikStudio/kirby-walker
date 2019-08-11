@@ -3,6 +3,7 @@
 namespace Oblik\Outsource;
 
 use PHPUnit\Framework\TestCase;
+use Kirby\Data\Json;
 use Kirby\Data\Txt;
 use Yaml;
 
@@ -136,5 +137,16 @@ final class ImporterTest extends TestCase
             "# Import\n\nMarkdown converted to __HTML__ and a _(link: # text: kirbytag)_ here.",
             self::$content['markdown']
         );
+    }
+
+    /**
+     * The imported items are at different indices compared to the default ones.
+     * They should be merged by their IDs, not by their array position.
+     */
+    public function testCustomMerger()
+    {
+        $data = Json::decode(self::$content['text']);
+        $this->assertEquals('Imported heading', $data[0]['content']);
+        $this->assertEquals('Imported content', $data[1]['content']);
     }
 }

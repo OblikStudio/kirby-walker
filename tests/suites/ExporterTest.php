@@ -69,27 +69,10 @@ final class ExporterTest extends TestCase
         $this->assertArrayNotHasKey('emptystruct', self::$data);
     }
 
-    public function testYamlWhitelist()
+    public function testFiltering()
     {
-        $this->markTestIncomplete('Filtering not yet implemented');
-
-        $keys = array_keys(site()->yamlField()->yaml());
-        $whitelist = site()->blueprint()->fields()['yamlField'][BLUEPRINT_KEY]['yaml'];
-        $data = self::$data['yamlfield'];
-
-        foreach ($keys as $key) {
-            if (in_array($key, $whitelist)) {
-                $this->assertArrayHasKey($key, $data);
-            } else {
-                $this->assertArrayNotHasKey($key, $data);
-            }
-        }
-    }
-
-    public function testYamlAllKeys()
-    {
-        $keys = site()->yamlFieldAll()->yaml();
-        $this->assertEquals(self::$data['yamlfieldall'], $keys);
+        $keys = array_keys(self::$data['yamlfield']);
+        $this->assertEquals(['text'], $keys);
     }
 
     public function testFalsyValueInStructure()

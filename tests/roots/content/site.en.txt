@@ -35,14 +35,6 @@ hash: kirby-link-field
 
 ----
 
-Yamlfieldall:
-
-type: url
-value: https://example.com/
-text: Example
-
-----
-
 Nottranslated: Non translated text
 
 ----
