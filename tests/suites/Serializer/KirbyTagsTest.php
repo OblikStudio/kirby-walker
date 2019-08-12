@@ -110,15 +110,14 @@ final class KirbyTagsTest extends TestCase
     }
 
     /**
+     * An older version of libxml (2.9.7) caused a strange newline to appear.
      * @see https://stackoverflow.com/questions/57176724/
      */
-    public function testIncorrectNewlineDecode()
+    public function testNewlineDecode()
     {
-        // $this->expectException('PHPUnit\Framework\ExpectationFailedException');
-        // Probably starts working in a new version of libxml.
         $this->serialize(
-            "(link: # text: <div>\ntext<br></div>)",
-            "<kirby link=\"#\"><value name=\"text\"><div>\ntext<br/></div></value></kirby>",
+            "(link: # text: <div>text<br></div>)",
+            "<kirby link=\"#\"><value name=\"text\"><div>text<br/></div></value></kirby>",
             ['tags' => ['text']]
         );
     }
