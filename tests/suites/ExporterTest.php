@@ -16,19 +16,21 @@ class TestExporter extends Exporter
 final class ExporterTest extends TestCase
 {
     public static $data;
+    public static $site;
 
     public static function setUpBeforeClass(): void
     {
         $exporter = new TestExporter([
             'language' => 'en',
+            'variables' => Variables::class,
             BP_BLUEPRINT => option('oblik.outsource.' . BP_BLUEPRINT),
             BP_FIELDS => option('oblik.outsource.' . BP_FIELDS)
         ]);
 
         $models = new Pages();
         $models->prepend(site());
-        $exportedData = $exporter->export($models);
-        self::$data = $exportedData['site'];
+        self::$data = $exporter->export($models);
+        self::$site = self::$data['site'];
     }
 
     /**
@@ -37,7 +39,7 @@ final class ExporterTest extends TestCase
      */
     public function testHasTitle()
     {
-        $this->assertArrayHasKey('title', self::$data);
+        $this->assertArrayHasKey('title', self::$site);
     }
 
     /**
@@ -46,37 +48,42 @@ final class ExporterTest extends TestCase
      */
     public function testEmptyBlueprint()
     {
-        $this->assertArrayHasKey('text', self::$data);
+        $this->assertArrayHasKey('text', self::$site);
     }
 
     public function testKirbytagsConverted()
     {
-        $this->assertRegExp('/<kirby.*>/', self::$data['text']);
+        $this->assertRegExp('/<kirby.*>/', self::$site['text']);
     }
 
     public function testIgnoredField()
     {
-        $this->assertArrayNotHasKey('ignoredfield', self::$data);
+        $this->assertArrayNotHasKey('ignoredfield', self::$site);
     }
 
     public function testFieldPredicate()
     {
-        $this->assertArrayNotHasKey('nottranslated', self::$data);
+        $this->assertArrayNotHasKey('nottranslated', self::$site);
     }
 
     public function testEmptyStructure()
     {
-        $this->assertArrayNotHasKey('emptystruct', self::$data);
+        $this->assertArrayNotHasKey('emptystruct', self::$site);
     }
 
     public function testFiltering()
     {
-        $keys = array_keys(self::$data['yamlfield']);
+        $keys = array_keys(self::$site['yamlfield']);
         $this->assertEquals(['text'], $keys);
     }
 
     public function testFalsyValueInStructure()
     {
-        $this->assertArrayHasKey('falsystructurefield', self::$data['struct'][0]);
+        $this->assertArrayHasKey('falsystructurefield', self::$site['struct'][0]);
+    }
+
+    public function testVariablesExported()
+    {
+        $this->assertEquals('foo', self::$data['variables']['test']['var']);
     }
 }

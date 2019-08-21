@@ -12,7 +12,7 @@ const BP_FIELDS = 'fields';
 
 Kirby::plugin('oblik/outsource', [
     'options' => [
-        'variables' => true,
+        'variables' => Variables::class,
         BP_BLUEPRINT => [
             'title' => [
                 'type' => 'text'
@@ -84,6 +84,7 @@ Kirby::plugin('oblik/outsource', [
 
                     $exporter = new Exporter([
                         'language' => $exportLanguage,
+                        'variables' => option(('oblik.outsource.variables')),
                         BP_BLUEPRINT => option('oblik.outsource.' . BP_BLUEPRINT),
                         BP_FIELDS => option('oblik.outsource.' . BP_FIELDS)
                     ]);

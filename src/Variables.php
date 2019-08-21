@@ -2,47 +2,31 @@
 
 namespace Oblik\Outsource;
 
-use Kirby\Data\Yaml;
-use Kirby\Toolkit\F;
+use Oblik\Variables\Manager;
 
 class Variables
 {
-    const EXTENSION = '.yml';
-
-    public static function getFilePath($filename)
+    public static function export(string $lang)
     {
-        $path = kirby()->root('languages');
-        $folder = option('oblik.easyvars.folder');
+        $handler = Manager::getHandler($lang);
+        $data = null;
 
-        if (!empty($folder)) {
-            $path .= DS . $folder;
+        if ($handler) {
+            $data = $handler->data;
         }
 
-        return $path . DS . $filename . self::EXTENSION;
+        return $data;
     }
 
-    public static function get($language)
+    public static function import(string $lang, array $data)
     {
-        $filePath = self::getFilePath($language);
+        $handler = Manager::getHandler($lang);
 
-        if (file_exists($filePath)) {
-            return Yaml::decode(F::read($filePath));
-        } else {
-            return null;
-        }
-    }
-
-    public static function update($language, $data)
-    {
-        $currentData = self::get($language);
-
-        if (is_array($currentData)) {
-            $data = array_replace_recursive($currentData, $data);
+        if ($handler && is_array($handler->data)) {
+            $data = array_replace_recursive($handler->data, $data);
         }
 
-        $filePath = self::getFilePath($language);
-        $encodedData = Yaml::encode($data);
-
-        file_put_contents($filePath, $encodedData);
+        $handler->data = $data;
+        $handler->write();
     }
 }

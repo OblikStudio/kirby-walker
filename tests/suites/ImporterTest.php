@@ -22,6 +22,7 @@ final class ImporterTest extends TestCase
 
         $importer = new Importer([
             'language' => 'bg',
+            'variables' => Variables::class,
             BP_BLUEPRINT => option('oblik.outsource.' . BP_BLUEPRINT),
             BP_FIELDS => option('oblik.outsource.' . BP_FIELDS)
         ]);
@@ -145,5 +146,10 @@ final class ImporterTest extends TestCase
         $data = Json::decode(self::$data['text']);
         $this->assertEquals('Imported heading', $data[0]['content']);
         $this->assertEquals('Imported content', $data[1]['content']);
+    }
+
+    public function testVariablesImported()
+    {
+        $this->assertFileExists(__DIR__ . '/../roots/languages/bg.yml');
     }
 }

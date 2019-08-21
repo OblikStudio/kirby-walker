@@ -2,6 +2,8 @@
 
 namespace Oblik\Outsource;
 
+use Exception;
+
 class Importer extends Walker
 {
     public $settings = [
@@ -74,7 +76,13 @@ class Importer extends Walker
         }
 
         if (!empty($data['variables'])) {
-            Variables::update($this->settings['language'], $data['variables']);
+            $driver = $this->settings['variables'] ?? null;
+
+            if ($driver) {
+                $driver::import($this->settings['language'], $data['variables']);
+            } else {
+                throw new Exception('No variables driver provided');
+            }
         }
 
         return true;

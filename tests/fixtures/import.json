@@ -36,5 +36,10 @@
         }
       ]
     }
+  },
+  "variables": {
+    "foo": {
+      "bar": "test"
+    }
   }
 }
