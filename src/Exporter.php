@@ -28,12 +28,16 @@ class Exporter extends Walker
 
             if ($recursive && is_array($value)) {
                 $value = self::filter($value, $settings);
-                $unset = count($value) <= 0;
+                $unset = $value !== null;
             }
 
             if ($unset) {
                 unset($data[$key]);
             }
+        }
+
+        if (count($data) === 0) {
+            $data = null;
         }
 
         return $data;
