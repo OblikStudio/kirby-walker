@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "80bf206897207d8929a66584e2ceca41",
+    "content-hash": "eee61e338eaaaf9eb49f7fd1008e050a",
     "packages": [
         {
             "name": "getkirby/composer-installer",
@@ -110,16 +110,16 @@
         },
         {
             "name": "oblik/kirby-tester",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/OblikStudio/kirby-tester.git",
-                "reference": "e3a893eef826a29cb8af62cbadb3925e5b57eb45"
+                "reference": "cc996778583ad5a6bd38ae9756407402712ec1ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/OblikStudio/kirby-tester/zipball/e3a893eef826a29cb8af62cbadb3925e5b57eb45",
-                "reference": "e3a893eef826a29cb8af62cbadb3925e5b57eb45",
+                "url": "https://api.github.com/repos/OblikStudio/kirby-tester/zipball/cc996778583ad5a6bd38ae9756407402712ec1ff",
+                "reference": "cc996778583ad5a6bd38ae9756407402712ec1ff",
                 "shasum": ""
             },
             "type": "library",
@@ -143,7 +143,7 @@
                 }
             ],
             "description": "Utility for loading Kirby and switching roots while testing.",
-            "time": "2019-08-08T10:01:54+00:00"
+            "time": "2019-08-15T07:03:54+00:00"
         }
     ],
     "packages-dev": [

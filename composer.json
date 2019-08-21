@@ -11,12 +11,7 @@
     }
   ],
   "scripts": {
-    "test-run": "phpunit",
-    "test-clean": "for /R %i in (*.bg.txt) do (rm \"%i\")",
-    "test": [
-      "@test-clean",
-      "@test-run"
-    ]
+    "test": "phpunit"
   },
   "require": {
     "getkirby/composer-installer": "^1.1",
