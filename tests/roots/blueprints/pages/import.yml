@@ -19,6 +19,15 @@ fields:
         type: text
       f4:
         type: text
+  itemsSync:
+    type: structure
+    fields:
+      id:
+        type: text
+      content:
+        type: textarea
+    outsource:
+      sync: id
   text:
     type: editor
   tags:

@@ -148,6 +148,25 @@ final class ImporterTest extends TestCase
         $this->assertEquals('Imported content', $data[1]['content']);
     }
 
+    public function testSyncedStructures()
+    {
+        $data = Yaml::decode(self::$data['itemssync']);
+        $this->assertEquals([
+            [
+                'id' => '2',
+                'content' => 'second imported'
+            ],
+            [
+                'id' => '3',
+                'content' => 'third'
+            ],
+            [
+                'id' => '1',
+                'content' => 'first imported'
+            ]
+        ], $data);
+    }
+
     public function testVariablesImported()
     {
         $this->assertFileExists(__DIR__ . '/../roots/languages/bg.yml');

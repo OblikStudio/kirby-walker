@@ -25,6 +25,20 @@ Items:
 
 ----
 
+Itemssync:
+
+- 
+  id: "2"
+  content: second imported
+- 
+  id: "3"
+  content: third
+- 
+  id: "1"
+  content: first imported
+
+----
+
 Text: [{"attrs":[],"content":"Imported heading","id":"_3i2q91mx6","type":"h1"},{"attrs":[],"content":"Imported content","id":"_ml7ufpb8n","type":"paragraph"}]
 
 ----

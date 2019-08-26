@@ -41,6 +41,40 @@ class Importer extends Walker
         return $data;
     }
 
+    public function structureHandler($blueprint, $field, $input)
+    {
+        $sync = $blueprint[BLUEPRINT_KEY]['sync'] ?? null;
+        $field = $field->toStructure();
+        $fieldBlueprints = $this->processBlueprint($blueprint['fields'], $field);
+
+        if (is_string($sync)) {
+            return $this->walkStructureSync($fieldBlueprints, $field, $input, $sync);
+        } else {
+            return $this->walkStructure($fieldBlueprints, $field, $input);
+        }
+    }
+
+    public function walkStructureSync($fieldBlueprints, $structure, $input = [], string $sync)
+    {
+        $data = null;
+        $input = array_column($input, null, $sync);
+
+        foreach ($structure as $entry) {
+            $syncValue = $entry->$sync() ?? null;
+            $inputEntry = $input[$syncValue] ?? null;
+
+            if ($inputEntry) {
+                $entry = $this->walk($entry, $inputEntry, $fieldBlueprints);
+            } else {
+                $entry = $entry->content()->toArray();
+            }
+
+            $data[] = $entry;
+        }
+
+        return $data;
+    }
+
     public function update($model, $data)
     {
         $mergedData = $this->walk($model, $data);

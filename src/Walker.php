@@ -9,6 +9,11 @@ class Walker
 {
     public $settings = [];
 
+    public static function isFieldIgnored(array $blueprint)
+    {
+        return $blueprint[BLUEPRINT_KEY][BP_IGNORE] ?? false;
+    }
+
     public function __construct($settings = [])
     {
         $this->settings = array_replace([
@@ -16,46 +21,6 @@ class Walker
             BP_BLUEPRINT => [],
             BP_FIELDS => []
         ], $this->settings, $settings);
-    }
-
-    public static function isFieldIgnored(array $blueprint)
-    {
-        return $blueprint[BLUEPRINT_KEY]['ignore'] ?? false;
-    }
-
-    /**
-     * Determines if a field should be included in the resulting data.
-     */
-    public function fieldPredicate($blueprint, $field, $input)
-    {
-        return (!$this::isFieldIgnored($blueprint) && $field->value() !== null);
-    }
-
-    /**
-     * Determines what data to return for this field in the result.
-     */
-    public function fieldHandler($blueprint, $field, $input)
-    {
-        return $field->value();
-    }
-
-    /**
-     * Walks over structure field entries and returns their result.
-     */
-    public function structureHandler($fieldBlueprints, $structure, $input = [])
-    {
-        $data = null;
-
-        foreach ($structure as $index => $entry) {
-            $inputData = $input[$index] ?? null;
-            $childData = $this->walk($entry, $inputData, $fieldBlueprints);
-
-            if (!empty($childData)) {
-                $data[] = $childData;
-            }
-        }
-
-        return $data;
     }
 
     /**
@@ -88,21 +53,27 @@ class Walker
         return $blueprint;
     }
 
-    public function walkField($blueprint, $field, $input)
+    /**
+     * Determines if a field should be included in the resulting data.
+     */
+    public function fieldPredicate($blueprint, $field, $input)
     {
-        $data = null;
+        return (!$this::isFieldIgnored($blueprint) && $field->value() !== null);
+    }
 
-        if ($this->fieldPredicate($blueprint, $field, $input)) {
-            if ($blueprint['type'] === 'structure') {
-                $field = $field->toStructure();
-                $blueprint = $this->processBlueprint($blueprint['fields'], $field);
-                $data = $this->structureHandler($blueprint, $field, $input);
-            } else {
-                $data = $this->fieldHandler($blueprint, $field, $input);
-            }
-        }
+    /**
+     * Determines what data to return for this field in the result.
+     */
+    public function fieldHandler($blueprint, $field, $input)
+    {
+        return $field->value();
+    }
 
-        return $data;
+    public function structureHandler($blueprint, $field, $input)
+    {
+        $field = $field->toStructure();
+        $fieldBlueprints = $this->processBlueprint($blueprint['fields'], $field);
+        return $this->walkStructure($fieldBlueprints, $field, $input);
     }
 
     /**
@@ -133,6 +104,40 @@ class Walker
 
             if ($fieldData !== null) {
                 $data[$key] = $fieldData;
+            }
+        }
+
+        return $data;
+    }
+
+    public function walkField($blueprint, $field, $input)
+    {
+        $data = null;
+
+        if ($this->fieldPredicate($blueprint, $field, $input)) {
+            if ($blueprint['type'] === 'structure') {
+                $data = $this->structureHandler($blueprint, $field, $input);
+            } else {
+                $data = $this->fieldHandler($blueprint, $field, $input);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Walks over structure field entries and returns their result.
+     */
+    public function walkStructure($fieldBlueprints, $structure, $input = [])
+    {
+        $data = null;
+
+        foreach ($structure as $index => $entry) {
+            $inputData = $input[$index] ?? null;
+            $childData = $this->walk($entry, $inputData, $fieldBlueprints);
+
+            if (!empty($childData)) {
+                $data[] = $childData;
             }
         }
 

@@ -34,6 +34,20 @@
             "text": "import"
           }
         }
+      ],
+      "itemssync": [
+        {
+          "id": "1",
+          "content": "first imported"
+        },
+        {
+          "id": "2",
+          "content": "second imported"
+        },
+        {
+          "id": "4",
+          "content": "non-existent"
+        }
       ]
     }
   },

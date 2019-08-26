@@ -9,6 +9,7 @@ use Kirby\Cms\Pages;
 const BLUEPRINT_KEY = 'outsource';
 const BP_BLUEPRINT = 'blueprint';
 const BP_FIELDS = 'fields';
+const BP_IGNORE = 'ignore';
 
 Kirby::plugin('oblik/outsource', [
     'options' => [
@@ -20,10 +21,10 @@ Kirby::plugin('oblik/outsource', [
         ],
         BP_FIELDS => [
             'files' => [
-                'ignore' => true
+                BP_IGNORE => true
             ],
             'pages' => [
-                'ignore' => true
+                BP_IGNORE => true
             ],
             'textarea' => [
                 'serialize' => [
