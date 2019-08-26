@@ -28,13 +28,13 @@ Items:
 Itemssync:
 
 - 
-  id: "2"
+  id: b
   content: second imported
 - 
-  id: "3"
+  id: c
   content: third
 - 
-  id: "1"
+  id: a
   content: first imported
 
 ----

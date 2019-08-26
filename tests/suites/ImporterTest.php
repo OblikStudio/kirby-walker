@@ -153,15 +153,15 @@ final class ImporterTest extends TestCase
         $data = Yaml::decode(self::$data['itemssync']);
         $this->assertEquals([
             [
-                'id' => '2',
+                'id' => 'b',
                 'content' => 'second imported'
             ],
             [
-                'id' => '3',
+                'id' => 'c',
                 'content' => 'third'
             ],
             [
-                'id' => '1',
+                'id' => 'a',
                 'content' => 'first imported'
             ]
         ], $data);

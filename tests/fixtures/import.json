@@ -37,15 +37,15 @@
       ],
       "itemssync": [
         {
-          "id": "1",
+          "id": "a",
           "content": "first imported"
         },
         {
-          "id": "2",
+          "id": "b",
           "content": "second imported"
         },
         {
-          "id": "4",
+          "id": "d",
           "content": "non-existent"
         }
       ]
