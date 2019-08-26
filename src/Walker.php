@@ -73,7 +73,9 @@ class Walker
     {
         $field = $field->toStructure();
         $fieldBlueprints = $this->processBlueprint($blueprint['fields'], $field);
-        return $this->walkStructure($fieldBlueprints, $field, $input);
+        $sync = $blueprint[BLUEPRINT_KEY]['sync'] ?? null;
+
+        return $this->walkStructure($fieldBlueprints, $field, $input, $sync);
     }
 
     /**
@@ -128,13 +130,22 @@ class Walker
     /**
      * Walks over structure field entries and returns their result.
      */
-    public function walkStructure($fieldBlueprints, $structure, $input = [])
+    public function walkStructure($fieldBlueprints, Structure $structure, $input = [], string $sync = null)
     {
         $data = null;
 
-        foreach ($structure as $index => $entry) {
-            $inputData = $input[$index] ?? null;
-            $childData = $this->walk($entry, $inputData, $fieldBlueprints);
+        if ($sync) {
+            $input = array_column($input, null, $sync);
+        }
+
+        foreach ($structure as $id => $entry) {
+            if ($sync) {
+                $inputEntry = $input[$entry->$sync()] ?? null;
+            } else {
+                $inputEntry = $input[$id] ?? null;
+            }
+
+            $childData = $this->walk($entry, $inputEntry, $fieldBlueprints);
 
             if (!empty($childData)) {
                 $data[] = $childData;
