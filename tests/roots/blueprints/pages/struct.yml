@@ -1,0 +1,17 @@
+title: Struct
+preset: page
+fields:
+  syncedStruct:
+    type: structure
+    fields:
+      nested:
+        type: structure
+        fields:
+          nestedSync:
+            type: structure
+            fields:
+              text: true
+            outsource:
+              sync: myid
+    outsource:
+      sync: id

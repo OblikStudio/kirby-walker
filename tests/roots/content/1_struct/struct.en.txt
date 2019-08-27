@@ -1,0 +1,30 @@
+Title: Struct
+
+----
+
+Syncedstruct:
+
+- 
+  nested:
+    - 
+      nestedsync:
+        - 
+          text: first
+          myid: fapg
+        - 
+          text: second
+          myid: pxxg
+    - 
+      nestedsync:
+        - 
+          text: third
+          myid: dugn
+  id: zyrc
+- 
+  nested:
+    - 
+      nestedsync:
+        - 
+          text: fourth
+          myid: usrs
+  id: iskw

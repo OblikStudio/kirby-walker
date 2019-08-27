@@ -120,5 +120,12 @@ Kirby::plugin('oblik/outsource', [
                 }
             ]
         ]
+    ],
+    'hooks' => [
+        'page.update:after' => function ($page) {
+            $marker = new Marker();
+            $data = $marker->walk($page);
+            $page->update($data);
+        }
     ]
 ]);

@@ -134,7 +134,7 @@ class Walker
     {
         $data = null;
 
-        if ($sync) {
+        if ($sync && is_array($input)) {
             $input = array_column($input, null, $sync);
         }
 
