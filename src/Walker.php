@@ -43,7 +43,8 @@ class Walker
      */
     public function inStructure()
     {
-        return count($this->structureLevels) > 0;
+        $last = end($this->structureLevels);
+        return ($last !== false && $last !== $this->level);
     }
 
     /**

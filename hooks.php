@@ -2,6 +2,31 @@
 
 namespace Oblik\Outsource;
 
+function markModel($model, $lang)
+{
+
+    $marker = new Marker();
+    $markedData = $marker->walk($model);
+    $model = $model->update($markedData, $lang);
+    return $markedData;
+}
+
+function syncModel($model, $data, $targetLang)
+{
+    $syncer = new Syncer();
+    foreach ($model->translations() as $translation) {
+        $lang = $translation->code();
+
+        if ($lang !== $targetLang) {
+            $syncer->settings['language'] = $lang;
+
+            if ($syncedData = $syncer->walk($model, $data)) {
+                $model->update($syncedData, $lang);
+            }
+        }
+    }
+}
+
 function synchronizeModel($model)
 {
     /**
@@ -12,22 +37,11 @@ function synchronizeModel($model)
     $updatedLang = kirby()->languageCode();
 
     // Add mark structure entries by adding specified sync IDs
-    $marker = new Marker();
-    $markedData = $marker->walk($model);
-    $model = $model->update($markedData, $updatedLang);
+    $data = markModel($model, $updatedLang);
 
     // After the updated translation had its entries marked with IDs,
     // synchronize all other translations with it.
-    $syncer = new Syncer();
-    foreach ($model->translations() as $translation) {
-        $lang = $translation->code();
-
-        if ($lang !== $updatedLang) {
-            $syncer->settings['language'] = $lang;
-            $syncedData = $syncer->walk($model, $markedData);
-            $model->update($syncedData, $lang);
-        }
-    }
+    syncModel($model, $data, $updatedLang);
 }
 
 return [
