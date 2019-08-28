@@ -7,12 +7,12 @@ namespace Oblik\Outsource;
  */
 class Syncer extends Walker
 {
-    public function fieldPredicate($blueprint, $field, $input)
+    public function fieldPredicate($field, $input)
     {
-        return $blueprint['type'] === 'structure';
+        return $this->blueprint('type') === 'structure';
     }
 
-    public function walkStructure($fieldBlueprints, $structure, $input = [], string $sync = null)
+    public function structureHandler($structure, $input, $sync)
     {
         $data = [];
 
@@ -27,7 +27,7 @@ class Syncer extends Walker
                         $childData = $entry->content()->toArray();
 
                         // Get data from nested structures.
-                        $nestedData = $this->walk($entry, $inputEntry, $fieldBlueprints);
+                        $nestedData = $this->walk($entry, $inputEntry);
 
                         if (is_array($nestedData)) {
                             $childData = array_replace($childData, $nestedData);

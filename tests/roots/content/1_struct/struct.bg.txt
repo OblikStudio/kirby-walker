@@ -1,0 +1,32 @@
+Title: Struct
+
+----
+
+Itemssync:
+
+- 
+  id: upug
+  num: 3
+- 
+  id: glww
+  num: 11
+- 
+  id: qogw
+  num: 4
+
+----
+
+Itemssyncnested:
+
+- 
+  struct:
+    - 
+      text: baz
+      id: pajt
+  id: djzw
+- 
+  struct:
+    - 
+      text: f
+      id: pngw
+  id: nnlc

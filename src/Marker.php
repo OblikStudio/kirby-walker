@@ -28,19 +28,19 @@ class Marker extends Walker
         return $content;
     }
 
-    public function fieldPredicate($blueprint, $field, $input)
+    public function fieldPredicate($field, $input)
     {
-        return $blueprint['type'] === 'structure';
+        return $this->blueprint('type') === 'structure';
     }
 
-    public function walkStructure($fieldBlueprints, $structure, $input = [], string $sync = null)
+    public function structureHandler($structure, $input, $sync)
     {
         $data = null;
 
         foreach ($structure as $entry) {
             $fields = $entry->content()->toArray();
 
-            if ($nestedStructures = $this->walk($entry, [], $fieldBlueprints)) {
+            if ($nestedStructures = $this->walk($entry)) {
                 $fields = array_replace($fields, $nestedStructures);
             }
 

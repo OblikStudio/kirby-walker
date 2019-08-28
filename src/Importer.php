@@ -22,7 +22,7 @@ class Importer extends Walker
         }
 
         $blueprint = $this->blueprint();
-        $merger = $blueprint[BLUEPRINT_KEY]['import']['merge'] ?? null;
+        $merger = $this->blueprintSetting('import')['merge'] ?? null;
         $data = $this->settings['formatter']::serialize($blueprint, $field);
 
         if (is_callable($merger)) {
