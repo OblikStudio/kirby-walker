@@ -6,8 +6,6 @@ fields:
     type: text
   f3:
     type: text
-  f4:
-    type: text
   items:
     type: structure
     fields:
@@ -16,8 +14,6 @@ fields:
       f2:
         type: text
       f3:
-        type: text
-      f4:
         type: text
   itemsSync:
     type: structure

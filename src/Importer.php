@@ -45,7 +45,7 @@ class Importer extends Walker
     public function update($model, $data)
     {
         $mergedData = $this->walk($model, $data);
-        $model->writeContent($mergedData, $this->settings['language']);
+        $model->update($mergedData, $this->settings['language']);
     }
 
     public function import($data)

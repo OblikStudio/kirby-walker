@@ -74,13 +74,6 @@ final class ImporterTest extends TestCase
         $this->assertEquals('import', self::$data['f3']);
     }
 
-    public function testMissingValueIsMissing()
-    {
-        // The `f4` field is defined in the blueprint, but absent in both the
-        // default txt and the import. It should not appear in the translation.
-        $this->assertArrayNotHasKey('f4', self::$data);
-    }
-
     public function testStructureSecondEntryPreserved()
     {
         // Even though the import contains one entry, the second entry from the
@@ -101,11 +94,6 @@ final class ImporterTest extends TestCase
     public function testStructureImportedValueAdded()
     {
         $this->assertEquals('import', self::$items[0]['f3']);
-    }
-
-    public function testStructureMissingValueIsMissing()
-    {
-        $this->assertArrayNotHasKey('f4', self::$items[0]);
     }
 
     public function testYaml()

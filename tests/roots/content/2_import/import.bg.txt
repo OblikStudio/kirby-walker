@@ -22,6 +22,8 @@ Items:
   f3: import
 - 
   f1: default
+  f2: null
+  f3: null
 
 ----
 
@@ -39,7 +41,22 @@ Itemssync:
 
 ----
 
-Text: [{"attrs":[],"content":"Imported heading","id":"_3i2q91mx6","type":"h1"},{"attrs":[],"content":"Imported content","id":"_ml7ufpb8n","type":"paragraph"}]
+Text:
+
+[
+    {
+        "attrs": [],
+        "content": "Imported heading",
+        "id": "_3i2q91mx6",
+        "type": "h1"
+    },
+    {
+        "attrs": [],
+        "content": "Imported content",
+        "id": "_ml7ufpb8n",
+        "type": "paragraph"
+    }
+]
 
 ----
 
@@ -75,3 +92,8 @@ Contentitems:
     type: url
     value: https://test.com/
     text: import
+  pages: [ ]
+
+----
+
+Random: testing here

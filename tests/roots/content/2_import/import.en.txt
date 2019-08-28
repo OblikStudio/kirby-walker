@@ -10,13 +10,20 @@ F2: both
 
 ----
 
+F3: 
+
+----
+
 Items:
 
--
+- 
   f1: default
   f2: both
--
+  f3: null
+- 
   f1: default
+  f2: null
+  f3: null
 
 ----
 
