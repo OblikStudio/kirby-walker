@@ -42,10 +42,10 @@ class Exporter extends Walker
         return $data;
     }
 
-    public function fieldHandler($blueprint, $field, $input)
+    public function fieldHandler($field, $input)
     {
-        $data = $this->settings['formatter']::serialize($blueprint, $field);
-        $filter = $blueprint[BLUEPRINT_KEY]['export']['filter'] ?? null;
+        $data = $this->settings['formatter']::serialize($this->blueprint(), $field);
+        $filter = $this->blueprint()[BLUEPRINT_KEY]['export']['filter'] ?? null;
 
         if (is_array($data) && is_array($filter)) {
             $data = self::filter($data, $filter);

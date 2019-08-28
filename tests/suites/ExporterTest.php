@@ -7,9 +7,9 @@ use Kirby\Cms\Pages;
 
 class TestExporter extends Exporter
 {
-    public function fieldPredicate($blueprint, $field, $input)
+    public function fieldPredicate($field, $input)
     {
-        return ($blueprint['translate'] ?? true) && parent::fieldPredicate($blueprint, $field, $input);
+        return ($this->blueprint('translate') ?? true) && parent::fieldPredicate($field, $input);
     }
 }
 

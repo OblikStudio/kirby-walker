@@ -4,9 +4,22 @@ namespace Oblik\Outsource;
 
 use Kirby\Cms\Model;
 use Kirby\Cms\Structure;
+use Kirby\Cms\StructureObject;
 
 class Walker
 {
+    /**
+     * Recursion level.
+     */
+    public $level = 0;
+
+    /**
+     * Levels at which the model is a structure entry.
+     */
+    public $structureLevels = [];
+
+    public $blueprints = [];
+
     public $settings = [];
 
     public static function isFieldIgnored(array $blueprint)
@@ -24,58 +37,78 @@ class Walker
     }
 
     /**
-     * Merges model blueprint according to specified configuration.
+     * Checks if the currently walked model is inside a structure.
      */
-    public function processBlueprint($blueprint, $parent)
+    public function inStructure()
     {
-        $customBlueprint = $this->settings[BP_BLUEPRINT];
-        $customFields = $this->settings[BP_FIELDS];
+        return count($this->structureLevels) > 0;
+    }
 
-        $blueprint = array_replace_recursive($blueprint, $customBlueprint);
-        $blueprint = array_change_key_case($blueprint, CASE_LOWER);
+    public function blueprint($key = null)
+    {
+        $data = $this->blueprints[array_key_last($this->blueprints)];
 
-        $inStructure = is_a($parent, Structure::class);
-
-        foreach ($blueprint as $fieldName => &$data) {
-            $config = $data[BLUEPRINT_KEY] ?? [];
-            $config['isStructureField'] = $inStructure;
-
-            $fieldType = $data['type'] ?? null;
-            $fieldConfig = $customFields[$fieldType] ?? null;
-
-            if ($fieldConfig) {
-                $config = array_replace($fieldConfig, $config);
-            }
-
-            $data[BLUEPRINT_KEY] = $config;
+        if ($key) {
+            $data = $data[$key] ?? null;
         }
 
+        return $data;
+    }
+
+    /**
+     * Merges model blueprint according to specified configuration.
+     */
+    public function processBlueprint($blueprint)
+    {
+        $customBlueprint = $this->settings[BP_BLUEPRINT];
+        $blueprint = array_replace_recursive($blueprint, $customBlueprint);
+        $blueprint = array_change_key_case($blueprint, CASE_LOWER);
+        return $blueprint;
+    }
+
+    public function processFieldBlueprint($blueprint)
+    {
+        $config = $blueprint[BLUEPRINT_KEY] ?? [];
+        $config['isStructureField'] = $this->inStructure();
+
+        $customFields = $this->settings[BP_FIELDS];
+        $fieldType = $blueprint['type'] ?? null;
+        $fieldConfig = $customFields[$fieldType] ?? null;
+
+        if ($fieldConfig) {
+            $config = array_replace($fieldConfig, $config);
+        }
+
+        $blueprint[BLUEPRINT_KEY] = $config;
         return $blueprint;
     }
 
     /**
      * Determines if a field should be included in the resulting data.
      */
-    public function fieldPredicate($blueprint, $field, $input)
+    public function fieldPredicate($field, $input)
     {
-        return (!$this::isFieldIgnored($blueprint) && $field->value() !== null);
+        return (!$this::isFieldIgnored($this->blueprint()) && $field->value() !== null);
     }
 
     /**
      * Determines what data to return for this field in the result.
      */
-    public function fieldHandler($blueprint, $field, $input)
+    public function fieldHandler($field, $input)
     {
         return $field->value();
     }
 
-    public function structureHandler($blueprint, $field, $input)
+    public function structureHandler($field, $input)
     {
-        $field = $field->toStructure();
-        $fieldBlueprints = $this->processBlueprint($blueprint['fields'], $field);
-        $sync = $blueprint[BLUEPRINT_KEY]['sync'] ?? null;
+        $structure = $field->toStructure();
+        $fields = $this->processBlueprint($this->blueprint('fields'));
+        $sync = $this->blueprint()[BLUEPRINT_KEY]['sync'] ?? null;
 
-        return $this->walkStructure($fieldBlueprints, $field, $input, $sync);
+        array_push($this->blueprints, $fields);
+        $data = $this->walkStructure(null, $structure, $input, $sync);
+        array_pop($this->blueprints);
+        return $data;
     }
 
     /**
@@ -89,38 +122,48 @@ class Walker
      */
     public function walk(Model $model, $input = [], $blueprint = null)
     {
-        if (!$blueprint) {
-            $blueprint = $this->processBlueprint(
-                $model->blueprint()->fields(),
-                $model
-            );
+        $this->level++;
+
+        if ($isStructureObject = is_a($model, StructureObject::class)) {
+            array_push($this->structureLevels, $this->level);
+        } else {
+            array_push($this->blueprints, $this->processBlueprint($model->blueprint()->fields()));
         }
 
         $data = null;
         $content = $model->content($this->settings['language']);
 
-        foreach ($blueprint as $key => $fieldBlueprint) {
+        foreach ($this->blueprint() as $key => $fieldBlueprint) {
             $field = $content->$key();
             $inputData = $input[$key] ?? null;
-            $fieldData = $this->walkField($fieldBlueprint, $field, $inputData);
+
+            $fieldBlueprint = $this->processFieldBlueprint($fieldBlueprint);
+            array_push($this->blueprints, $fieldBlueprint);
+            $fieldData = $this->walkField($field, $inputData);
+            array_pop($this->blueprints);
 
             if ($fieldData !== null) {
                 $data[$key] = $fieldData;
             }
         }
 
+        if ($isStructureObject) {
+            array_pop($this->structureLevels);
+        }
+
+        $this->level--;
         return $data;
     }
 
-    public function walkField($blueprint, $field, $input)
+    public function walkField($field, $input)
     {
         $data = null;
 
-        if ($this->fieldPredicate($blueprint, $field, $input)) {
-            if ($blueprint['type'] === 'structure') {
-                $data = $this->structureHandler($blueprint, $field, $input);
+        if ($this->fieldPredicate($field, $input)) {
+            if ($this->blueprint('type') === 'structure') {
+                $data = $this->structureHandler($field, $input);
             } else {
-                $data = $this->fieldHandler($blueprint, $field, $input);
+                $data = $this->fieldHandler($field, $input);
             }
         }
 
@@ -130,7 +173,7 @@ class Walker
     /**
      * Walks over structure field entries and returns their result.
      */
-    public function walkStructure($fieldBlueprints, Structure $structure, $input = [], string $sync = null)
+    public function walkStructure($obsolete, $structure, $input = [], $sync = null)
     {
         $data = null;
 
@@ -145,7 +188,7 @@ class Walker
                 $inputEntry = $input[$id] ?? null;
             }
 
-            $childData = $this->walk($entry, $inputEntry, $fieldBlueprints);
+            $childData = $this->walk($entry, $inputEntry);
 
             if (!empty($childData)) {
                 $data[] = $childData;

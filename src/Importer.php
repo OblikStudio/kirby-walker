@@ -10,17 +10,18 @@ class Importer extends Walker
         'formatter' => Formatter::class
     ];
 
-    public function fieldPredicate($blueprint, $field, $input)
+    public function fieldPredicate($field, $input)
     {
-        return !$this::isFieldIgnored($blueprint);
+        return !$this::isFieldIgnored($this->blueprint());
     }
 
-    public function fieldHandler($blueprint, $field, $input)
+    public function fieldHandler($field, $input)
     {
         if ($field->value() === null && $input === null) {
             return null;
         }
 
+        $blueprint = $this->blueprint();
         $merger = $blueprint[BLUEPRINT_KEY]['import']['merge'] ?? null;
         $data = $this->settings['formatter']::serialize($blueprint, $field);
 
