@@ -1,6 +1,10 @@
 title: Struct
 preset: page
 fields:
+  items:
+    type: structure
+    fields:
+      text: true
   itemsSync:
     type: structure
     fields:
