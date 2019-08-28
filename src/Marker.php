@@ -4,6 +4,9 @@ namespace Oblik\Outsource;
 
 use Kirby\Toolkit\Str;
 
+/**
+ * Adds IDs to structure entries marked as synced.
+ */
 class Marker extends Walker
 {
     public static function generateId(array $ids)
@@ -35,6 +38,13 @@ class Marker extends Walker
 
     public function structureHandler($structure, $input, $sync)
     {
+        // Avoid checking top-level desync structures. Even if any nested
+        // structures have IDs, they would be useless since the top-level
+        // structures are not identified.
+        if (!$this->inStructure() && !$sync) {
+            return null;
+        }
+
         $data = null;
 
         foreach ($structure as $entry) {
