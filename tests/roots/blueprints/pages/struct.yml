@@ -1,17 +1,23 @@
 title: Struct
 preset: page
 fields:
-  syncedStruct:
+  itemsSync:
     type: structure
     fields:
-      nested:
+      id:
+        type: text
+      num:
+        type: number
+    outsource:
+      sync: id
+  itemsSyncNested:
+    type: structure
+    fields:
+      struct:
         type: structure
         fields:
-          nestedSync:
-            type: structure
-            fields:
-              text: true
-            outsource:
-              sync: myid
+          text: true
+        outsource:
+          sync: id
     outsource:
       sync: id

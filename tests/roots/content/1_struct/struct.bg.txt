@@ -12,7 +12,7 @@ Itemssync:
   num: 8
 - 
   id: qogw
-  num: 4
+  num: 6
 
 ----
 
