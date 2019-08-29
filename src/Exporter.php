@@ -18,6 +18,7 @@ class Exporter extends Walker
     public static function filter(array $data, array $settings)
     {
         $keys = $settings['keys'];
+        $numeric = $settings['numeric'] ?? true;
         $inclusive = $settings['inclusive'] ?? true;
         $recursive = $settings['recursive'] ?? true;
 
@@ -27,7 +28,15 @@ class Exporter extends Walker
 
             if ($recursive && is_array($value)) {
                 $value = self::filter($value, $settings);
-                $unset = $value !== null;
+                $unset = $value === null;
+            }
+
+            if (is_int($key) && $numeric) {
+                $unset = false;
+
+                if ($value === null) {
+                    $value = [];
+                }
             }
 
             if ($unset) {
