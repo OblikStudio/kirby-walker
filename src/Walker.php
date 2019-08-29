@@ -6,11 +6,13 @@ use Kirby\Cms\Model;
 
 class Walker
 {
-    public $settings = [
+    private static $defaults = [
         'language' => null,
         BP_BLUEPRINT => [],
         BP_FIELDS => []
     ];
+
+    public $settings = [];
 
     /**
      * Recursion level.
@@ -35,7 +37,11 @@ class Walker
 
     public function __construct($settings = [])
     {
-        $this->settings = array_replace($this->settings, $settings);
+        $this->settings = array_replace(
+            self::$defaults,
+            $this->settings,
+            $settings
+        );
     }
 
     /**
