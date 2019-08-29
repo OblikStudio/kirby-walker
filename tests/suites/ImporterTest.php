@@ -20,12 +20,9 @@ final class ImporterTest extends TestCase
         $importFilePath = realpath(__DIR__ . '/../fixtures/' . $importFile);
         $importData = json_decode(file_get_contents($importFilePath), true);
 
-        $importer = new Importer([
-            'language' => 'bg',
-            'variables' => Variables::class,
-            BP_BLUEPRINT => option('oblik.outsource.' . BP_BLUEPRINT),
-            BP_FIELDS => option('oblik.outsource.' . BP_FIELDS)
-        ]);
+        $importer = new Importer(testWalkerSettings([
+            'language' => 'bg'
+        ]));
         $importer->import($importData);
 
         $textFilePath = realpath(__DIR__ . '/../roots/content/' . $textFile);

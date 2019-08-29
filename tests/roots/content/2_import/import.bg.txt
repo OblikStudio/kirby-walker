@@ -92,7 +92,9 @@ Contentitems:
     type: url
     value: https://test.com/
     text: import
-  pages: [ ]
+  pages:
+    - home
+    - error
 
 ----
 

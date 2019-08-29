@@ -2,9 +2,7 @@
 
 namespace Oblik\Outsource;
 
-use Exception;
 use Kirby;
-use Kirby\Cms\Pages;
 
 const BLUEPRINT_KEY = 'outsource';
 const BP_BLUEPRINT = 'blueprint';
@@ -12,39 +10,23 @@ const BP_FIELDS = 'fields';
 const BP_IGNORE = 'ignore';
 
 Kirby::plugin('oblik/outsource', [
+    'hooks' => include __DIR__ . '/hooks.php',
     'options' => [
-        'variables' => Variables::class,
         BP_BLUEPRINT => [
             'title' => [
                 'type' => 'text'
             ]
         ],
         BP_FIELDS => [
-            'files' => [
-                BP_IGNORE => true
-            ],
-            'pages' => [
-                BP_IGNORE => true
-            ],
-            'textarea' => [
-                'serialize' => [
-                    'markdown' => true,
-                    'kirbytags' => true
-                ]
-            ],
             'text' => [
                 'serialize' => [
                     'kirbytags' => true
                 ]
             ],
-            'link' => [
+            'textarea' => [
                 'serialize' => [
-                    'yaml' => true
-                ],
-                'export' => [
-                    'filter' => [
-                        'keys' => ['text']
-                    ]
+                    'markdown' => true,
+                    'kirbytags' => true
                 ]
             ],
             'tags' => [
@@ -63,63 +45,22 @@ Kirby::plugin('oblik/outsource', [
                 ],
                 'import' => [
                     'merge' => function ($data, $input) {
-                        return merge_by_key($data, $input, 'array_replace_recursive');
+                        $input = array_column($input, null, 'id');
+
+                        foreach ($data as &$block) {
+                            $id = $block['id'] ?? null;
+                            $inputBlock = $input[$id] ?? null;
+
+                            if ($inputBlock) {
+                                $block = array_replace_recursive($block, $inputBlock);
+                            }
+                        }
+
+                        return $data;
                     }
                 ]
             ]
-        ]
-    ],
-    'api' => [
-        'routes' => [
-            [
-                'pattern' => 'export',
-                'method' => 'GET',
-                'auth' => false,
-                'action' => function () use ($kirby) {
-                    $pagesQuery = $_GET['page'] ?? null;
-                    $exportLanguage = null;
-
-                    if ($kirby->multilang()) {
-                        $exportLanguage = $kirby->defaultLanguage()->code();
-                    }
-
-                    $exporter = new Exporter([
-                        'language' => $exportLanguage,
-                        'variables' => option(('oblik.outsource.variables')),
-                        BP_BLUEPRINT => option('oblik.outsource.' . BP_BLUEPRINT),
-                        BP_FIELDS => option('oblik.outsource.' . BP_FIELDS)
-                    ]);
-
-                    $models = new Pages();
-                    $models->append(site());
-                    $models->add(site()->index()->filter(function ($page) use ($pagesQuery) {
-                        return (!$pagesQuery || strpos($page->id(), $pagesQuery) !== false);
-                    }));
-
-                    return $exporter->export($models);
-                }
-            ],
-            [
-                'pattern' => 'import',
-                'method' => 'POST',
-                'action' => function () {
-                    $postData = file_get_contents('php://input');
-                    // $postData = file_get_contents(__DIR__ . DS . 'import.json');
-                    $input = json_decode($postData, true);
-
-                    if (empty($input['language'])) {
-                        throw new Exception('Missing language', 400);
-                    }
-
-                    if (empty($input['content'])) {
-                        throw new Exception('Missing content', 400);
-                    }
-
-                    $importer = new Importer($input['language']);
-                    return $importer->import($input['content']);
-                }
-            ]
-        ]
-    ],
-    'hooks' => include __DIR__ . '/hooks.php'
+        ],
+        'variables' => null
+    ]
 ]);

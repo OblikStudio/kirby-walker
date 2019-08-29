@@ -20,13 +20,7 @@ final class ExporterTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        $exporter = new TestExporter([
-            'language' => 'en',
-            'variables' => Variables::class,
-            BP_BLUEPRINT => option('oblik.outsource.' . BP_BLUEPRINT),
-            BP_FIELDS => option('oblik.outsource.' . BP_FIELDS)
-        ]);
-
+        $exporter = new TestExporter(testWalkerSettings());
         $models = new Pages();
         $models->prepend(site());
         self::$data = $exporter->export($models);
