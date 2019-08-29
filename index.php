@@ -9,8 +9,10 @@ const BP_BLUEPRINT = 'blueprint';
 const BP_FIELDS = 'fields';
 const BP_IGNORE = 'ignore';
 
+require_once 'vendor/autoload.php';
+
 Kirby::plugin('oblik/outsource', [
-    'hooks' => include __DIR__ . '/hooks.php',
+    'hooks' => include 'hooks.php',
     'options' => [
         BP_BLUEPRINT => [
             'title' => [

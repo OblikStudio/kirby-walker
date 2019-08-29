@@ -15,10 +15,10 @@
   },
   "require": {
     "getkirby/composer-installer": "^1.1",
-    "league/html-to-markdown": "^4.8",
-    "oblik/kirby-tester": "^1.0"
+    "league/html-to-markdown": "^4.8"
   },
   "require-dev": {
+    "oblik/kirby-tester": "^1.0",
     "phpunit/phpunit": "^8"
   },
   "autoload": {
