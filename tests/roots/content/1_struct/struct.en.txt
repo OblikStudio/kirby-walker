@@ -5,28 +5,14 @@ Title: Struct
 Itemssync:
 
 - 
-  id: upug
-  num: 3
-- 
-  id: glww
-  num: 8
-- 
-  id: qogw
-  num: 4
-
-----
-
-Itemssyncnested:
-
+  struct:
+    - 
+      text: en3
+      id: anod
+  id: oyyd
 - 
   struct:
     - 
-      text: baz
+      text: en1mod
       id: pajt
   id: djzw
-- 
-  struct:
-    - 
-      text: f
-      id: pngw
-  id: nnlc

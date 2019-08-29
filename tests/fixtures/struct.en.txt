@@ -1,0 +1,12 @@
+Title: Struct
+
+----
+
+Itemssync:
+
+- 
+  struct:
+    - 
+      text: en1
+      id: pajt
+  id: djzw

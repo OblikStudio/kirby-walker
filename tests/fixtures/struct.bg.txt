@@ -7,12 +7,6 @@ Itemssync:
 - 
   struct:
     - 
-      text: en3
-      id: anod
-  id: oyyd
-- 
-  struct:
-    - 
       text: bg1
       id: pajt
   id: djzw
