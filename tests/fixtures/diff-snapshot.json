@@ -1,0 +1,41 @@
+{
+  "site": {
+    "text": "old",
+    "yamlfield": {
+      "val": "one",
+      "text": "old"
+    },
+    "struct": [
+      {
+        "test": "old"
+      },
+      {
+        "test": "old"
+      }
+    ],
+    "synced": [
+      {
+        "id": "b",
+        "text": "old",
+        "nested": [
+          {
+            "id": "b-b",
+            "text": "old"
+          },
+          {
+            "id": "obsolete",
+            "text": "old"
+          },
+          {
+            "id": "b-a",
+            "text": "old"
+          }
+        ]
+      },
+      {
+        "id": "c",
+        "text": "old"
+      }
+    ]
+  }
+}
