@@ -1,41 +1,39 @@
 {
-  "site": {
-    "text": "old",
-    "yamlfield": {
-      "val": "one",
-      "text": "old"
+  "text": "old",
+  "yamlfield": {
+    "id": "a",
+    "text": "old"
+  },
+  "struct": [
+    {
+      "test": "old"
     },
-    "struct": [
-      {
-        "test": "old"
-      },
-      {
-        "test": "old"
-      }
-    ],
-    "synced": [
-      {
-        "id": "b",
-        "text": "old",
-        "nested": [
-          {
-            "id": "b-b",
-            "text": "old"
-          },
-          {
-            "id": "obsolete",
-            "text": "old"
-          },
-          {
-            "id": "b-a",
-            "text": "old"
-          }
-        ]
-      },
-      {
-        "id": "c",
-        "text": "old"
-      }
-    ]
-  }
+    {
+      "test": "old"
+    }
+  ],
+  "synced": [
+    {
+      "id": "b",
+      "text": "old",
+      "nested": [
+        {
+          "id": "b-b",
+          "text": "old"
+        },
+        {
+          "id": "obsolete",
+          "text": "old"
+        },
+        {
+          "id": "b-a",
+          "text": "old"
+        }
+      ]
+    },
+    {
+      "id": "c",
+      "text": "old"
+    }
+  ]
 }
