@@ -47,18 +47,7 @@ Kirby::plugin('oblik/outsource', [
                 ],
                 'import' => [
                     'merge' => function ($data, $input) {
-                        $input = array_column($input, null, 'id');
-
-                        foreach ($data as &$block) {
-                            $id = $block['id'] ?? null;
-                            $inputBlock = $input[$id] ?? null;
-
-                            if ($inputBlock) {
-                                $block = array_replace_recursive($block, $inputBlock);
-                            }
-                        }
-
-                        return $data;
+                        return Diff::processKeyedArray($data, $input, 'array_replace_recursive');
                     }
                 ]
             ]
