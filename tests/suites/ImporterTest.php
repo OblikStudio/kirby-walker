@@ -23,7 +23,7 @@ final class ImporterTest extends TestCase
         $importer = new Importer(testWalkerSettings([
             'language' => 'bg'
         ]));
-        $importer->import($importData);
+        $importer->process($importData);
 
         $textFilePath = realpath(__DIR__ . '/../roots/content/' . $textFile);
         $importResult = file_get_contents($textFilePath);

@@ -2,10 +2,10 @@
 
 namespace Oblik\Outsource;
 
-use Exception;
-
 class Importer extends Walker
 {
+    use SiteData;
+
     public $settings = [
         'formatter' => Formatter::class
     ];
@@ -42,50 +42,14 @@ class Importer extends Walker
         return $data;
     }
 
-    public function update($model, $data)
+    public function processModel($model, $data)
     {
         $mergedData = $this->walk($model, $data);
         $model->update($mergedData, $this->settings['language']);
     }
 
-    public function import($data)
+    public function processVariables($data, string $driver)
     {
-        $site = site();
-
-        if (!empty($data['site'])) {
-            $this->update($site, $data['site']);
-        }
-
-        if (!empty($data['pages'])) {
-            foreach ($data['pages'] as $id => $pageData) {
-                $page = $site->page($id);
-
-                if ($page) {
-                    $this->update($page, $pageData);
-                }
-            }
-        }
-
-        if (!empty($data['files'])) {
-            foreach ($data['files'] as $id => $fileData) {
-                $file = $site->file($id);
-
-                if ($file) {
-                    $this->update($file, $fileData);
-                }
-            }
-        }
-
-        if (!empty($data['variables'])) {
-            $driver = $this->settings['variables'] ?? null;
-
-            if ($driver) {
-                $driver::import($this->settings['language'], $data['variables']);
-            } else {
-                throw new Exception('No variables driver provided');
-            }
-        }
-
-        return true;
+        $driver::import($this->settings['language'], $data);
     }
 }
