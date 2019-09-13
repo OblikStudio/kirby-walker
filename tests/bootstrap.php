@@ -27,8 +27,12 @@ function testWalkerSettings($settings = [])
 }
 
 return [
+    'beforeLoad' => function () {
+        // Must be in `beforeLoad` because the variables Manager reads the file
+        // on Kirby init.
+        copy(__DIR__ . '/fixtures/bg.yml', __DIR__ . '/roots/languages/bg.yml');
+    },
     'beforeInit' => function () {
-        F::remove(__DIR__ . '/roots/languages/bg.yml');
         foreach (glob(__DIR__ . '/roots/content/*/*.bg.txt') as $file) {
             F::remove($file);
         }

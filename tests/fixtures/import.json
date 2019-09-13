@@ -53,7 +53,10 @@
   },
   "variables": {
     "foo": {
-      "bar": "test"
+      "bar": "imported"
+    },
+    "added": {
+      "value": "imported"
     }
   }
 }

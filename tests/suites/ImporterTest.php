@@ -9,6 +9,7 @@ use Yaml;
 
 final class ImporterTest extends TestCase
 {
+    public static $compare;
     public static $data;
     public static $items;
     public static $contentItems;
@@ -19,11 +20,11 @@ final class ImporterTest extends TestCase
 
         $importFilePath = realpath(__DIR__ . '/../fixtures/' . $importFile);
         $importData = json_decode(file_get_contents($importFilePath), true);
-
         $importer = new Importer(testWalkerSettings([
             'language' => 'bg'
         ]));
-        $importer->process($importData);
+
+        self::$compare = $importer->process($importData);
 
         $textFilePath = realpath(__DIR__ . '/../roots/content/' . $textFile);
         $importResult = file_get_contents($textFilePath);
@@ -41,6 +42,27 @@ final class ImporterTest extends TestCase
          * @see https://github.com/getkirby/kirby/issues/1959
          */
         // $item = kirby()->page('import-content')->content('bg');
+    }
+
+    public function testPageComparison()
+    {
+        $this->assertEquals([
+            '$old' => 'Import',
+            '$new' => 'Imported'
+        ], self::$compare['pages']['import']['title']);
+    }
+
+    public function testVariablesComparison()
+    {
+        $this->assertEquals([
+            '$old' => 'old',
+            '$new' => 'imported'
+        ], self::$compare['variables']['foo']['bar']);
+
+        $this->assertEquals([
+            '$old' => null,
+            '$new' => ['value' => 'imported']
+        ], self::$compare['variables']['added']);
     }
 
     public function testImportedArtificialField()

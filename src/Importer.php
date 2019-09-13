@@ -10,6 +10,33 @@ class Importer extends Walker
         'formatter' => Formatter::class
     ];
 
+    public static function compare(array $old, array $new)
+    {
+        $keys = array_replace(array_keys($new), array_keys($old));
+        $data = null;
+
+        foreach ($keys as $key) {
+            $newValue = $new[$key] ?? null;
+            $oldValue = $old[$key] ?? null;
+            $entry = null;
+
+            if (is_array($newValue) && is_array($oldValue)) {
+                $entry = self::compare($oldValue, $newValue);
+            } else if ($newValue !== $oldValue) {
+                $entry = [
+                    '$old' => $oldValue,
+                    '$new' => $newValue
+                ];
+            }
+
+            if ($entry !== null) {
+                $data[$key] = $entry;
+            }
+        }
+
+        return $data;
+    }
+
     public function fieldPredicate($field, $input)
     {
         return !$this::isFieldIgnored($this->blueprint());
@@ -42,14 +69,30 @@ class Importer extends Walker
         return $data;
     }
 
+    /**
+     * @param \Kirby\Cms\Page $model
+     */
     public function processModel($model, $data)
     {
+        $lang = $this->settings['language'];
+
         $mergedData = $this->walk($model, $data);
-        $model->update($mergedData, $this->settings['language']);
+        $newModel = $model->update($mergedData, $lang);
+
+        return self::compare(
+            $model->content($lang)->data(),
+            $newModel->content($lang)->data()
+        );
     }
 
     public function processVariables($data, string $driver)
     {
-        $driver::import($this->settings['language'], $data);
+        $lang = $this->settings['language'];
+
+        $oldVariables = $driver::export($lang);
+        $driver::import($lang, $data);
+        $newVariables = $driver::export($lang);
+
+        return self::compare($oldVariables, $newVariables);
     }
 }
