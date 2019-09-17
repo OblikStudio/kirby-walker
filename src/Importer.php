@@ -93,6 +93,6 @@ class Importer extends Walker
         $driver::import($lang, $data);
         $newVariables = $driver::export($lang);
 
-        return self::compare($oldVariables, $newVariables);
+        return self::compare($oldVariables ?? [], $newVariables ?? []);
     }
 }
