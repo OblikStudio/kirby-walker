@@ -14,36 +14,43 @@ trait SiteData
 
     public function process($data = [])
     {
+        $result = [];
         $site = site();
 
         if (!empty($data['site'])) {
-            $data['site'] = $this->processModel($site, $data['site'], 'site');
+            $result['site'] = $this->processModel($site, $data['site'], 'site');
         }
 
         if (!empty($data['pages'])) {
+            $result['pages'] = [];
+
             foreach ($data['pages'] as $id => $pageData) {
                 if ($page = $site->page($id)) {
-                    $data['pages'][$id] = $this->processModel($page, $pageData, 'page');
+                    $result['pages'][$id] = $this->processModel($page, $pageData, 'page');
                 }
             }
         }
 
         if (!empty($data['files'])) {
+            $result['files'] = [];
+
             foreach ($data['files'] as $id => $fileData) {
                 if ($file = $site->file($id)) {
-                    $data['files'][$id] = $this->processModel($file, $fileData, 'file');
+                    $result['files'][$id] = $this->processModel($file, $fileData, 'file');
                 }
             }
         }
 
         if (!empty($data['variables'])) {
+            $result['variables'] = [];
+
             if ($driver = $this->settings['variables'] ?? null) {
-                $data['variables'] = $this->processVariables($data['variables'], $driver);
+                $result['variables'] = $this->processVariables($data['variables'], $driver);
             } else {
                 throw new Exception('No variables driver provided');
             }
         }
 
-        return $data;
+        return $result;
     }
 }
