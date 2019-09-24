@@ -1,6 +1,159 @@
-Blueprints are the source of truth and they define the schema. Data is exported
-and imported according to them. If something is not defined in a blueprint, it's
-ignored.
+# Outsource
 
-Sites without a panel (and therefore, blueprints) are a different use case that
-will not be handled by this plugin.
+Plugin that allows you to walk, export, and import all site data according to specified blueprints. It is created with the intention of being used as a dependency for other plugins. Features:
+
+- Flexible configurability in blueprints, _config.php_, or the API itself
+- Serialize content on a per-field basis; convert kirbytags their XML representation, parse JSON and YAML, convert Markdown to HTML, etc.
+- Export serialized site data for easy consumation by another API
+- Import data and deserialize it so Kirby can use it
+- Export/import language variables via [kirby-variables](https://github.com/OblikStudio/kirby-variables)
+- Add IDs to structure entries on page update so consuming APIs can identify them and to avoid incorrectly merging content when importing data
+- Synchronize structures in multi-lang sites so manipulating entries in one language applies the same changes in others
+- Built-in support for [the Kirby Editor](https://github.com/getkirby/editor)
+
+For example, this plugin is used as a dependency for [kirby-memsource](https://github.com/OblikStudio/kirby-memsource). It is used to export all site data and after it's translated in [Memsource](https://www.memsource.com/) - import it back.
+
+## Installation
+
+With [Composer](http://packagist.org/packages/oblik/kirby-outsource):
+
+```
+composer require oblik/kirby-outsource
+```
+
+## Usage
+
+Class synopsis:
+
+- [Walker](src/Walker.php) iterates over a Kirby Model's fields and recurses in structures
+- [Serializers](src/Serializer) convert data from one format to another and back
+- [Formatter](src/Formatter.php) uses Serializers and applies value transformations according to blueprint
+- [Exporter](src/Exporter.php) extends Walker and uses Formatter to export serialized site data
+- [Importer](src/Importer.php) extends Walker and uses Formatter to serialize current site data, merge it with some input data, deserialize it, and save it
+
+Check the other classes [here](src/).
+
+### Configuration
+
+Most settings can be managed from several different places. The `pages` field is stored as YAML. Let's say you want to use the YAML serializer to parse the field value. You can do that in the blueprint under the `outsource` property:
+
+```yml
+fields:
+  articles:
+    type: pages
+    outsource:
+      serialize:
+        yaml: true
+```
+
+If you don't want to explicitly set that for each `pages` field in the blueprint, you can set it in the global `fields` plugin setting in your _config.php_:
+
+```php
+return [
+    'oblik.outsource.fields' => [
+        'pages' => [
+            'serialize' => [
+                'yaml' => true
+            ]
+        ]
+    ]  
+];
+```
+
+...or, when used directly, in the Walker instance options:
+
+```php
+$exporter = new \Oblik\Outsource\Exporter([
+    'fields' => [
+        'pages' => [
+            'serialize' => [
+                'yaml' => true
+            ]
+        ]
+    ]
+]);
+```
+
+Settings specified in the YAML blueprint file will always have the highest priority. Settings in _config.php_ are intended for defaults and stuff that would otherwise be constantly repeated in blueprint files. Check the defaults [here](index.php).
+
+### Walker
+
+The core class of the plugin is the Walker which processes a Model's fields and recurses in structure entries. You can optionally provide an `$input` array with the same form as the walked Model. In the Importer, for example, that is used to merge the current content with the provided one and then save it.
+
+#### Exporting
+
+```php
+$exporter = new Oblik\Outsource\Exporter([
+    // Translation which should be used when walking the Model
+    'language' => 'en',
+
+    // Class with export() and import() methods which will be used as a driver to manage language Variables
+    'variables' => Oblik\Outsource\Variables::class,
+
+    // Fields that should artificially be added to each blueprint.
+    // This is useful because each page has a `title` field even when it's not defined in a blueprint
+    'blueprint' => [
+        'title' => [
+            'type' => 'text'
+        ]
+    ],
+
+    // Configuration for each field type
+    'fields' => [
+        'textarea' => [
+            'serialize' => [
+                'markdown' => true
+            ]
+        ]
+    ]
+]);
+$data = $exporter->export(site());
+```
+
+Resulting data will be in the form of:
+
+```php
+[
+    'site' => [
+        // fields from site.yml
+    ],
+    'pages' => [
+        'page' => [
+            // page fields
+        ],
+        'page/child' => [
+            // child page fields
+        ]
+    ],
+    'files' => [
+        'page/logo.svg' => [
+            // file fields
+        ]
+    ],
+    'variables' => [
+        // variables array
+    ]
+]
+```
+
+#### Importing
+
+```php
+$importer = new Oblik\Outsource\Importer([
+    'language' => 'bg'
+]);
+$importer->process([
+    'site' => [
+        'title' => 'New Title'
+    ],
+    'pages' => [
+        'my/page' => [
+            'title' => 'My Page',
+            'text' => 'Hello World!'
+        ]
+    ]
+]);
+```
+
+Importer has the same settings as Exporter and uses the same input data
+structure as the one coming out from Exporter.
