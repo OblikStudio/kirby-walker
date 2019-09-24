@@ -33,9 +33,52 @@ Class synopsis:
 
 Check the other classes [here](src/).
 
-### Configuration
+### Field Settings
 
-Most settings can be managed from several different places. The `pages` field is stored as YAML. Let's say you want to use the YAML serializer to parse the field value. You can do that in the blueprint under the `outsource` property:
+These alter how field types are processed by the various plugin classes:
+
+```php
+[
+    // Whether the plugin should ignore this field.
+    'ignore' => false,
+
+    // Array with serializers that must be applied when the value is exported.
+    'serialize' => [
+        'markdown' => true, // converts Markdown to HTML
+        'kirbytags' => true // then converts kirbytags to HTML
+    ],
+
+    // Array with serializers that must be applied when the value is imported.
+    // If omitted, the values in `serialize` will be used in reverse order.
+    'deserialize' => [
+        // same as `serialize`
+    ],
+
+    // Export settings.
+    'export' => [
+        'filter' => [
+            // Array of value keys to filter
+            'keys' => [],
+
+            // Whether the specified keys above are a whitelist or a blacklist.
+            'inclusive' => true,
+
+            // Whether numeric keys should be allowed to exist either way.
+            // Keep in mind that structure entries have numeric keys.
+            'numeric' => true,
+
+            // Whether this filter should be applied recursively.
+            'recursive' => true
+        ]
+    ],
+
+    // Key name for IDs when synchronizing structures.
+    // Recommended: `id`
+    'sync' => null
+]
+```
+
+You can specify these settings in your blueprints. For example, the `pages` field is stored as YAML. Let's say you want to use the YAML serializer to parse the field value. You can do that in the blueprint under the `outsource` property:
 
 ```yml
 fields:
@@ -76,6 +119,30 @@ $exporter = new \Oblik\Outsource\Exporter([
 
 Settings specified in the YAML blueprint file will always have the highest priority. Settings in _config.php_ are intended for defaults and stuff that would otherwise be constantly repeated in blueprint files. Check the defaults [here](index.php).
 
+### Artificial Fields
+
+Since everything is processed according to the blueprints, you can't process a field outside of them. One such field is the `title`, which all pages have by default, even if it isn't in the blueprint. You can add the following in _config.php_:
+
+```php
+return [
+    'oblik.outsource.blueprint' => [
+        'title' => [
+            'type' => 'text'
+        ]
+    ]  
+];
+```
+
+...and all Models will be processed as if they had:
+
+```yml
+fields:
+  title:
+    type: text
+```
+
+**Note:** This is the default value for the `blueprint` plugin option, so you don't have to explicitly set it.
+
 ### Walker
 
 The core class of the plugin is the Walker which processes a Model's fields and recurses in structure entries. You can optionally provide an `$input` array with the same form as the walked Model. In the Importer, for example, that is used to merge the current content with the provided one and then save it.
@@ -84,21 +151,20 @@ The core class of the plugin is the Walker which processes a Model's fields and 
 
 ```php
 $exporter = new Oblik\Outsource\Exporter([
-    // Translation which should be used when walking the Model
+    // Translation which should be used when walking the Model.
     'language' => 'en',
 
-    // Class with export() and import() methods which will be used as a driver to manage language Variables
+    // Class that will be used as a driver to manage language Variables.
     'variables' => Oblik\Outsource\Variables::class,
 
     // Fields that should artificially be added to each blueprint.
-    // This is useful because each page has a `title` field even when it's not defined in a blueprint
     'blueprint' => [
         'title' => [
             'type' => 'text'
         ]
     ],
 
-    // Configuration for each field type
+    // Configuration for each field type.
     'fields' => [
         'textarea' => [
             'serialize' => [
