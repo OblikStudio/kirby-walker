@@ -156,4 +156,77 @@ $importer->process([
 ```
 
 Importer has the same settings as Exporter and uses the same input data
-structure as the one coming out from Exporter.
+structure as the one coming out from Exporter. The returned data from `process()` is an array with the changed values due to the import, for example:
+
+```php
+[
+    'site' => [
+        'title' => [
+            '$old' => 'Title',
+            '$new' => 'New Title'
+        ]
+    ],
+    'pages' => [
+        'my/page' => [
+            'title' => [
+                '$old' => 'Page',
+                '$new' => 'My Page'
+            ],
+            'text' => [
+                '$old' => null, // if there was no value
+                '$new' => 'Hello World!'
+            ]
+        ]
+    ]
+]
+```
+
+#### Structure Synchronization
+
+Synchronization of structures consists of two parts:
+
+1. Adding IDs to structure entries so they can be uniquely identified
+2. Adding/deleting/removing entries in all languages whenever a change in any language has been made
+
+To have that working, you must mark the structure as a synced structure:
+
+```yml
+fields:
+  items:
+    type: structure
+    outsource:
+      sync: id # `id` is the field name used to store the ID
+```
+
+When you save that structure in the panel, you'd get:
+
+```yml
+- 
+  text: foo
+  id: cmrc
+- 
+  text: bar
+  id: djzw
+```
+
+Then, in a translation, if you reorder those entries like this:
+
+```yml
+- 
+  text: translated bar
+  id: djzw
+- 
+  text: translated foo
+  id: cmrc
+```
+
+...the values in the default language would be reordered in the same way:
+
+```yml
+- 
+  text: bar
+  id: djzw
+- 
+  text: foo
+  id: cmrc
+```
