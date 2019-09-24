@@ -72,7 +72,6 @@ Kirby::plugin('oblik/outsource', [
                     }
                 ]
             ]
-        ],
-        'variables' => null
+        ]
     ]
 ]);

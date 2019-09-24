@@ -12,7 +12,8 @@ use Kirby\Cms\ModelWithContent;
 class Exporter extends Walker
 {
     public $settings = [
-        'formatter' => Formatter::class
+        'formatter' => Formatter::class,
+        'variables' => null
     ];
 
     public static function filter(array $data, array $settings)
@@ -136,7 +137,7 @@ class Exporter extends Walker
             $data['files'] = $files;
         }
 
-        if ($driver = $this->settings['variables'] ?? null) {
+        if ($driver = $this->settings['variables']) {
             if ($variables = $driver::export($this->settings[BP_LANGUAGE])) {
                 $data['variables'] = $variables;
             }

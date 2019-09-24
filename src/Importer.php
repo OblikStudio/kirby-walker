@@ -7,7 +7,8 @@ class Importer extends Walker
     use SiteData;
 
     public $settings = [
-        'formatter' => Formatter::class
+        'formatter' => Formatter::class,
+        'variables' => null
     ];
 
     public static function compare(array $old, array $new)
