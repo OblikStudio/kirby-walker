@@ -137,7 +137,7 @@ class Exporter extends Walker
         }
 
         if ($driver = $this->settings['variables'] ?? null) {
-            if ($variables = $driver::export($this->settings['language'])) {
+            if ($variables = $driver::export($this->settings[BP_LANGUAGE])) {
                 $data['variables'] = $variables;
             }
         }

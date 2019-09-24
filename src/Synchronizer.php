@@ -32,7 +32,7 @@ class Synchronizer
             $lang = $translation->code();
 
             if ($lang !== $this->lang) {
-                $syncer->settings['language'] = $lang;
+                $syncer->settings[BP_LANGUAGE] = $lang;
 
                 if ($data = $syncer->walk($this->model, $input)) {
                     $this->model->update($data, $lang);

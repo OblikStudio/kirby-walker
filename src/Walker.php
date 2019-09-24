@@ -7,7 +7,7 @@ use Kirby\Cms\Model;
 class Walker
 {
     private static $defaults = [
-        'language' => null,
+        BP_LANGUAGE => null,
         BP_BLUEPRINT => [],
         BP_FIELDS => []
     ];
@@ -29,7 +29,10 @@ class Walker
      */
     protected $blueprints = [];
 
-
+    /**
+     * According to its blueprint, checks whether a field should be ignored by
+     * the plugin
+     */
     public static function isFieldIgnored(array $blueprint)
     {
         return $blueprint[BLUEPRINT_KEY][BP_IGNORE] ?? false;
@@ -67,11 +70,18 @@ class Walker
         return $data;
     }
 
+    /**
+     * Returns a setting from the `outsource` property in the current blueprint.
+     */
     public function blueprintSetting($key)
     {
         return $this->blueprint(BLUEPRINT_KEY)[$key] ?? null;
     }
 
+    /**
+     * Formats a blueprint by adding custom fields and changing the keys to
+     * lowercase since that's what Kirby internally uses.
+     */
     public function processBlueprint($blueprint)
     {
         $customBlueprint = $this->settings[BP_BLUEPRINT];
@@ -80,6 +90,10 @@ class Walker
         return $blueprint;
     }
 
+    /**
+     * Merges blueprint settings in `outsource` from the Walker instance with
+     * those in the field blueprint.
+     */
     public function processFieldBlueprint($blueprint)
     {
         $config = $blueprint[BLUEPRINT_KEY] ?? [];
@@ -161,7 +175,7 @@ class Walker
         }
 
         $data = null;
-        $content = $model->content($this->settings['language']);
+        $content = $model->content($this->settings[BP_LANGUAGE]);
 
         foreach ($this->blueprint() as $key => $fieldBlueprint) {
             $field = $content->$key();

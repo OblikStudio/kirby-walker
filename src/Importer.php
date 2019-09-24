@@ -74,7 +74,7 @@ class Importer extends Walker
      */
     public function processModel($model, $data)
     {
-        $lang = $this->settings['language'];
+        $lang = $this->settings[BP_LANGUAGE];
 
         $mergedData = $this->walk($model, $data);
         $newModel = $model->update($mergedData, $lang);
@@ -87,7 +87,7 @@ class Importer extends Walker
 
     public function processVariables($data, string $driver)
     {
-        $lang = $this->settings['language'];
+        $lang = $this->settings[BP_LANGUAGE];
 
         $oldVariables = $driver::export($lang);
         $driver::import($lang, $data);
