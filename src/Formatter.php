@@ -24,7 +24,7 @@ class Formatter
         $serialize = $options['serialize'] ?? [];
         $content = $field->value();
 
-        if ($content === null) {
+        if ($content === null || $content === '') {
             // Field has no value.
             return null;
         }
