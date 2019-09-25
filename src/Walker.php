@@ -2,6 +2,9 @@
 
 namespace Oblik\Outsource;
 
+use Exception;
+use Throwable;
+use Kirby\Cms\Site;
 use Kirby\Cms\Model;
 
 class Walker
@@ -183,7 +186,17 @@ class Walker
             $fieldBlueprint = $this->processFieldBlueprint($fieldBlueprint);
 
             array_push($this->blueprints, $fieldBlueprint);
-            $fieldData = $this->walkField($field, $inputData);
+
+            try {
+                $fieldData = $this->walkField($field, $inputData);
+            } catch (Throwable $e) {
+                $modelName = is_a($model, Site::class) ? 'site' : $model->id();
+                $fieldName = $field->key();
+                $errorName = $e->getMessage();
+
+                throw new Exception("Could not process $fieldName in $modelName: $errorName");
+            }
+
             array_pop($this->blueprints);
 
             if ($fieldData !== null) {
