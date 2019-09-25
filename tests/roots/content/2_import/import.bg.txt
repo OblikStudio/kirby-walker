@@ -22,8 +22,8 @@ Items:
   f3: import
 - 
   f1: default
-  f2: null
-  f3: null
+  f2: ""
+  f3: ""
 
 ----
 

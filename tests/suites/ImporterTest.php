@@ -174,6 +174,22 @@ final class ImporterTest extends TestCase
         ], $data);
     }
 
+    public function testSiteFileImported()
+    {
+        $this->assertFileEquals(
+            __DIR__ . '/../fixtures/file.svg.bg.txt',
+            __DIR__ . '/../roots/content/file.svg.bg.txt'
+        );
+    }
+
+    public function testPageFileImported()
+    {
+        $this->assertFileEquals(
+            __DIR__ . '/../fixtures/sample.svg.bg.txt',
+            __DIR__ . '/../roots/content/home/sample.svg.bg.txt'
+        );
+    }
+
     public function testVariablesImported()
     {
         $this->assertFileExists(__DIR__ . '/../roots/languages/bg.yml');

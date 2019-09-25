@@ -33,7 +33,12 @@ return [
         copy(__DIR__ . '/fixtures/bg.yml', __DIR__ . '/roots/languages/bg.yml');
     },
     'beforeInit' => function () {
-        foreach (glob(__DIR__ . '/roots/content/*/*.bg.txt') as $file) {
+        $files = array_merge(
+            glob(__DIR__ . '/roots/content/*/*.bg.*'),
+            glob(__DIR__ . '/roots/content/*.bg.*')
+        );
+
+        foreach ($files as $file) {
             F::remove($file);
         }
 

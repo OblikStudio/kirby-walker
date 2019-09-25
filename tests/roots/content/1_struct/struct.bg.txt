@@ -8,8 +8,8 @@ Itemssync:
   struct:
     - 
       text: en3
-      id: anod
-  id: oyyd
+      id: xgsg
+  id: dfts
 - 
   struct:
     - 

@@ -51,6 +51,14 @@
       ]
     }
   },
+  "files": {
+    "file.svg": {
+      "name": "imported"
+    },
+    "home/sample.svg": {
+      "name": "imported"
+    }
+  },
   "variables": {
     "foo": {
       "bar": "imported"

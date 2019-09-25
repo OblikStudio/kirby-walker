@@ -21,9 +21,7 @@ final class ExporterTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         $exporter = new TestExporter(testWalkerSettings());
-        $models = new Pages();
-        $models->prepend(site());
-        self::$data = $exporter->export($models);
+        self::$data = $exporter->export(site());
         self::$site = self::$data['site'];
     }
 
@@ -74,6 +72,16 @@ final class ExporterTest extends TestCase
     public function testFalsyValueInStructure()
     {
         $this->assertArrayHasKey('falsystructurefield', self::$site['struct'][0]);
+    }
+
+    public function testSiteFile()
+    {
+        $this->assertArrayHasKey('file.svg', self::$data['files']);
+    }
+
+    public function testPageFile()
+    {
+        $this->assertArrayHasKey('home/sample.svg', self::$data['files']);
     }
 
     public function testVariablesExported()
