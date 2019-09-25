@@ -88,40 +88,42 @@ class Exporter extends Walker
         ];
     }
 
-    public function export($model)
+    /**
+     * @param ModelWithContent|Pages|array $input
+     */
+    public function export($input)
     {
         $data = [];
-        $isPages = is_a($model, Pages::class);
+        $targets = [];
 
-        if (!$isPages) {
-            // prepend() to include a page's own data in the export.
-            $modelPages = $model->index()->prepend($model);
-        } else {
-            $modelPages = $model;
+        if (is_a($input, ModelWithContent::class)) {
+            $targets[] = $input;
+            $input = $input->index();
+        }
+
+        if (is_a($input, Pages::class)) {
+            $targets = array_merge($targets, $input->values());
+        } else if (is_array($input)) {
+            $targets = array_merge($targets, $input);
         }
 
         $site = null;
         $pages = [];
         $files = [];
 
-        foreach ($modelPages as $childModel) {
-            $isModel = is_subclass_of($childModel, ModelWithContent::class);
-            $isSite = is_a($childModel, Site::class);
+        foreach ($targets as $model) {
+            if (is_subclass_of($model, ModelWithContent::class)) {
+                $modelData = $this->extractModel($model);
 
-            if ($isModel) {
-                $childModelData = $this->extractModel($childModel);
-
-                if ($isSite) {
-                    $site = $childModelData['content'];
-                } else {
-                    $pageId = $childModel->id();
-
-                    if (!empty($childModelData['content'])) {
-                        $pages[$pageId] = $childModelData['content'];
+                if (!empty($modelData['content'])) {
+                    if (is_a($model, Site::class)) {
+                        $site = $modelData['content'];
+                    } else {
+                        $pages[$model->id()] = $modelData['content'];
                     }
                 }
 
-                $files = array_replace($files, $childModelData['files']);
+                $files = array_replace($files, $modelData['files']);
             }
         }
 
