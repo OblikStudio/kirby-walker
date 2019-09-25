@@ -12,10 +12,8 @@ use Oblik\Variables\Manager;
  */
 class Exporter extends Walker
 {
-    public $settings = [
-        'formatter' => Formatter::class,
-        'variables' => Manager::class
-    ];
+    public static $formatter = Formatter::class;
+    public static $variables = Manager::class;
 
     public static function filter(array $data, array $settings)
     {
@@ -55,7 +53,7 @@ class Exporter extends Walker
 
     public function fieldHandler($field, $input)
     {
-        $data = $this->settings['formatter']::serialize($this->blueprint(), $field);
+        $data = static::$formatter::serialize($this->blueprint(), $field);
         $filter = $this->blueprintSetting('export')['filter'] ?? null;
 
         if (is_array($data) && is_array($filter)) {
@@ -141,7 +139,7 @@ class Exporter extends Walker
         }
 
         if ($lang = $this->settings[BP_LANGUAGE] ?? null) {
-            if ($variables = $this->settings['variables']::export($lang)) {
+            if ($variables = static::$variables::export($lang)) {
                 $data['variables'] = $variables;
             }
         }

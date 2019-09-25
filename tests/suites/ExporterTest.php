@@ -3,7 +3,6 @@
 namespace Oblik\Outsource;
 
 use PHPUnit\Framework\TestCase;
-use Kirby\Cms\Pages;
 
 class TestExporter extends Exporter
 {

@@ -154,9 +154,6 @@ $exporter = new Oblik\Outsource\Exporter([
     // Translation which should be used when walking the Model.
     'language' => 'en',
 
-    // Class that will be used as a driver to manage language Variables.
-    'variables' => Oblik\Outsource\Variables::class,
-
     // Fields that should artificially be added to each blueprint.
     'blueprint' => [
         'title' => [

@@ -6,10 +6,8 @@ use Oblik\Variables\Manager;
 
 class Importer extends Walker
 {
-    public $settings = [
-        'formatter' => Formatter::class,
-        'variables' => Manager::class
-    ];
+    public static $formatter = Formatter::class;
+    public static $variables = Manager::class;
 
     public static function compare(array $old, array $new)
     {
@@ -51,7 +49,7 @@ class Importer extends Walker
 
         $blueprint = $this->blueprint();
         $merger = $this->blueprintSetting('import')['merge'] ?? null;
-        $data = $this->settings['formatter']::serialize($blueprint, $field);
+        $data = static::$formatter::serialize($blueprint, $field);
 
         if (is_callable($merger)) {
             $data = $merger($data, $input);
@@ -64,15 +62,12 @@ class Importer extends Walker
         }
 
         if ($data !== null) {
-            $data = $this->settings['formatter']::deserialize($blueprint, $data);
+            $data = static::$formatter::deserialize($blueprint, $data);
         }
 
         return $data;
     }
 
-    /**
-     * @param \Kirby\Cms\Page $model
-     */
     public function processModel($model, $data)
     {
         $lang = $this->settings[BP_LANGUAGE];
@@ -90,9 +85,9 @@ class Importer extends Walker
     {
         $lang = $this->settings[BP_LANGUAGE];
 
-        $oldVariables = $this->settings['variables']::export($lang);
-        $this->settings['variables']::import($lang, $data);
-        $newVariables = $this->settings['variables']::export($lang);
+        $oldVariables = static::$variables::export($lang);
+        static::$variables::import($lang, $data);
+        $newVariables = static::$variables::export($lang);
 
         return self::compare($oldVariables ?? [], $newVariables ?? []);
     }
@@ -103,7 +98,7 @@ class Importer extends Walker
         $site = site();
 
         if (!empty($data['site'])) {
-            $result['site'] = $this->processModel($site, $data['site'], 'site');
+            $result['site'] = $this->processModel($site, $data['site']);
         }
 
         if (!empty($data['pages'])) {
@@ -111,7 +106,7 @@ class Importer extends Walker
 
             foreach ($data['pages'] as $id => $pageData) {
                 if ($page = $site->page($id)) {
-                    $result['pages'][$id] = $this->processModel($page, $pageData, 'page');
+                    $result['pages'][$id] = $this->processModel($page, $pageData);
                 }
             }
         }
@@ -121,7 +116,7 @@ class Importer extends Walker
 
             foreach ($data['files'] as $id => $fileData) {
                 if ($file = $site->file($id)) {
-                    $result['files'][$id] = $this->processModel($file, $fileData, 'file');
+                    $result['files'][$id] = $this->processModel($file, $fileData);
                 }
             }
         }

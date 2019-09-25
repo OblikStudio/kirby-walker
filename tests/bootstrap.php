@@ -1,7 +1,6 @@
 <?php
 
 use Kirby\Toolkit\F;
-use Oblik\Outsource\Variables;
 
 function testWalkerSettings($settings = [])
 {
