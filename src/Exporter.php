@@ -5,6 +5,7 @@ namespace Oblik\Outsource;
 use Kirby\Cms\Site;
 use Kirby\Cms\Pages;
 use Kirby\Cms\ModelWithContent;
+use Oblik\Variables\Manager;
 
 /**
  * Recursively walks the content of a Model, serializes it, and returns it.
@@ -13,7 +14,7 @@ class Exporter extends Walker
 {
     public $settings = [
         'formatter' => Formatter::class,
-        'variables' => null
+        'variables' => Manager::class
     ];
 
     public static function filter(array $data, array $settings)
@@ -139,8 +140,8 @@ class Exporter extends Walker
             $data['files'] = $files;
         }
 
-        if ($driver = $this->settings['variables']) {
-            if ($variables = $driver::export($this->settings[BP_LANGUAGE])) {
+        if ($lang = $this->settings[BP_LANGUAGE] ?? null) {
+            if ($variables = $this->settings['variables']::export($lang)) {
                 $data['variables'] = $variables;
             }
         }

@@ -2,13 +2,13 @@
 
 namespace Oblik\Outsource;
 
+use Oblik\Variables\Manager;
+
 class Importer extends Walker
 {
-    use SiteData;
-
     public $settings = [
         'formatter' => Formatter::class,
-        'variables' => null
+        'variables' => Manager::class
     ];
 
     public static function compare(array $old, array $new)
@@ -86,14 +86,50 @@ class Importer extends Walker
         );
     }
 
-    public function processVariables($data, string $driver)
+    public function processVariables($data)
     {
         $lang = $this->settings[BP_LANGUAGE];
 
-        $oldVariables = $driver::export($lang);
-        $driver::import($lang, $data);
-        $newVariables = $driver::export($lang);
+        $oldVariables = $this->settings['variables']::export($lang);
+        $this->settings['variables']::import($lang, $data);
+        $newVariables = $this->settings['variables']::export($lang);
 
         return self::compare($oldVariables ?? [], $newVariables ?? []);
+    }
+
+    public function process($data = [])
+    {
+        $result = [];
+        $site = site();
+
+        if (!empty($data['site'])) {
+            $result['site'] = $this->processModel($site, $data['site'], 'site');
+        }
+
+        if (!empty($data['pages'])) {
+            $result['pages'] = [];
+
+            foreach ($data['pages'] as $id => $pageData) {
+                if ($page = $site->page($id)) {
+                    $result['pages'][$id] = $this->processModel($page, $pageData, 'page');
+                }
+            }
+        }
+
+        if (!empty($data['files'])) {
+            $result['files'] = [];
+
+            foreach ($data['files'] as $id => $fileData) {
+                if ($file = $site->file($id)) {
+                    $result['files'][$id] = $this->processModel($file, $fileData, 'file');
+                }
+            }
+        }
+
+        if (!empty($data['variables'])) {
+            $result['variables'] = $this->processVariables($data['variables']);
+        }
+
+        return $result;
     }
 }

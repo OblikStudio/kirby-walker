@@ -7,7 +7,6 @@ function testWalkerSettings($settings = [])
 {
     return array_replace_recursive([
         'language' => 'en',
-        'variables' => Variables::class,
         'blueprint' => option('oblik.outsource.blueprint'),
         'fields' => array_replace_recursive(
             option('oblik.outsource.fields'), [
