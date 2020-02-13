@@ -23,11 +23,6 @@ class Walker
     protected $level = 0;
 
     /**
-     * Levels at which the model is a structure.
-     */
-    protected $structureLevels = [];
-
-    /**
      * The blueprints stack, consisting of model, structure or field blueprints.
      */
     protected $blueprints = [];
@@ -48,15 +43,6 @@ class Walker
             $this->settings,
             $settings
         );
-    }
-
-    /**
-     * Checks if the currently walked model is inside a structure.
-     */
-    public function inStructure()
-    {
-        $last = end($this->structureLevels);
-        return ($last !== false && $last !== $this->level);
     }
 
     /**
@@ -231,11 +217,9 @@ class Walker
         $sync = $this->blueprintSetting('sync');
         $fieldsBlueprint = $this->processBlueprint($this->blueprint('fields'));
 
-        array_push($this->structureLevels, $this->level);
         array_push($this->blueprints, $fieldsBlueprint);
         $data = $this->structureHandler($structure, $input, $sync);
         array_pop($this->blueprints);
-        array_pop($this->structureLevels);
 
         return $data;
     }

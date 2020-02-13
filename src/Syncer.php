@@ -16,41 +16,32 @@ class Syncer extends Walker
     {
         $data = [];
 
-        if ($sync) {
-            if (is_array($input)) {
-                foreach ($input as $inputEntry) {
-                    $id = $inputEntry[$sync] ?? null;
-                    $entry = $structure->findBy($sync, $id);
+        if ($sync && is_array($input)) {
+            foreach ($input as $inputEntry) {
+                $id = $inputEntry[$sync] ?? null;
+                $entry = $structure->findBy($sync, $id);
 
-                    if ($entry) {
-                        // Get all unaltered child data.
-                        $childData = $entry->content()->toArray();
+                if ($entry) {
+                    // Get all unaltered child data.
+                    $childData = $entry->content()->toArray();
 
-                        // Get data from nested structures.
-                        $nestedData = $this->walk($entry, $inputEntry);
+                    // Get data from nested structures.
+                    $nestedData = $this->walk($entry, $inputEntry);
 
-                        if (is_array($nestedData)) {
-                            $childData = array_replace($childData, $nestedData);
-                        }
-                    } else {
-                        $childData = $inputEntry;
+                    if (is_array($nestedData)) {
+                        $childData = array_replace($childData, $nestedData);
                     }
-
-                    $data[] = $childData;
+                } else {
+                    $childData = $inputEntry;
                 }
+
+                $data[] = $childData;
             }
         } else {
-            if ($this->inStructure()) {
-                // If the structure should not be synchronized, simply copy all of
-                // its entries and leave them unchanged.
-                foreach ($structure as $entry) {
-                    $data[] = $entry->content()->toArray();
-                }
-            } else {
-                // A top-level structure that is not synchronized should be left
-                // as-is. Return null to avoid triggering an update.
-                return null;
-            }
+            // There's nothing to sync, avoid triggering an update. Even if
+            // there are any deeply nested structures with $sync set to `true`,
+            // they can't be synced because the current one isn't.
+            return null;
         }
 
         return $data;

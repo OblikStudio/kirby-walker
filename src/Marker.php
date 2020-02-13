@@ -38,27 +38,26 @@ class Marker extends Walker
 
     public function structureHandler($structure, $input, $sync)
     {
-        // Avoid checking top-level desync structures. Even if any nested
-        // structures have IDs, they would be useless since the top-level
-        // structures are not identified.
-        if (!$this->inStructure() && !$sync) {
-            return null;
-        }
-
         $data = null;
 
-        foreach ($structure as $entry) {
-            $fields = $entry->content()->toArray();
+        if ($sync) {
+            foreach ($structure as $entry) {
+                $fields = $entry->content()->toArray();
 
-            if ($nestedStructures = $this->walk($entry)) {
-                $fields = array_replace($fields, $nestedStructures);
+                if ($nestedStructures = $this->walk($entry)) {
+                    $fields = array_replace($fields, $nestedStructures);
+                }
+
+                $data[] = $fields;
             }
 
-            $data[] = $fields;
-        }
-
-        if ($data && $sync) {
-            $data = self::addIds($data, $sync);
+            if ($data) {
+                $data = self::addIds($data, $sync);
+            }
+        } else {
+            // If the current structure is not synced, it's impossible to sync
+            // any nested structures, so return `null` and don't bother
+            // recursing further.
         }
 
         return $data;
