@@ -87,4 +87,10 @@ final class ExporterTest extends TestCase
     {
         $this->assertEquals('foo', self::$data['variables']['test']['var']);
     }
+
+    public function testSyncFieldExported()
+    {
+        $this->assertArrayHasKey('id', self::$data['pages']['struct']['itemssync'][0]);
+        $this->assertArrayHasKey('id', self::$data['pages']['struct']['itemssync'][0]['struct'][0]);
+    }
 }

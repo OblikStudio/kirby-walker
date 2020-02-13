@@ -155,6 +155,10 @@ class Walker
             $childData = $this->walk($entry, $inputEntry);
 
             if (!empty($childData)) {
+                if ($sync) {
+                    $childData[$sync] = $id;
+                }
+
                 $data[] = $childData;
             }
         }
