@@ -2,34 +2,20 @@
 
 namespace Oblik\Outsource\Serializer;
 
-use const Oblik\Outsource\BLUEPRINT_KEY;
 use Kirby\Data\Yaml as YamlParser;
 
 class Yaml
 {
     public static function decode($input, $options)
     {
-        $inStructure = $options['blueprint'][BLUEPRINT_KEY]['isStructureField'];
-
-        if (is_string($input) && !$inStructure) {
-            return YamlParser::decode($input);
-        }
-
-        return $input;
+        return YamlParser::decode($input);
     }
 
     public static function encode($input, $options)
     {
-        $inStructure = $options['blueprint'][BLUEPRINT_KEY]['isStructureField'];
-
-        // Structure data is encoded as YAML. If any fields are encoded prior to
-        // that, they would be double encoded. Therefore, YAML fields in
-        // structures should not be encoded because they will be encoded later
-        // with the rest of the structure data.
-        if (!$inStructure) {
-            return YamlParser::encode($input);
-        }
-
+        // There's no need to encode data in YAML since that's the format that
+        // Kirby uses to store it. In other words, it'll be encoded by Kirby
+        // when it's saved. Otherwise, it could get double-encoded.
         return $input;
     }
 }

@@ -100,7 +100,6 @@ class Walker
     public function processFieldBlueprint($blueprint)
     {
         $config = $blueprint[BLUEPRINT_KEY] ?? [];
-        $config['isStructureField'] = $this->inStructure();
 
         $customFields = $this->settings[BP_FIELDS];
         $fieldType = $blueprint['type'] ?? null;
