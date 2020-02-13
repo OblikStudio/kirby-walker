@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eee61e338eaaaf9eb49f7fd1008e050a",
+    "content-hash": "9d9698bb964c919b8aa9ccab05a4b138",
     "packages": [
         {
             "name": "getkirby/composer-installer",
@@ -109,27 +109,29 @@
             "time": "2019-08-02T11:57:39+00:00"
         },
         {
-            "name": "oblik/kirby-tester",
-            "version": "1.2.0",
+            "name": "oblik/kirby-variables",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/OblikStudio/kirby-tester.git",
-                "reference": "cc996778583ad5a6bd38ae9756407402712ec1ff"
+                "url": "https://github.com/OblikStudio/kirby-variables.git",
+                "reference": "3c3d96e3a859f60bdf7caee6775855da94a1e037"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/OblikStudio/kirby-tester/zipball/cc996778583ad5a6bd38ae9756407402712ec1ff",
-                "reference": "cc996778583ad5a6bd38ae9756407402712ec1ff",
+                "url": "https://api.github.com/repos/OblikStudio/kirby-variables/zipball/3c3d96e3a859f60bdf7caee6775855da94a1e037",
+                "reference": "3c3d96e3a859f60bdf7caee6775855da94a1e037",
                 "shasum": ""
             },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Oblik\\KirbyTester\\": "src/"
-                },
-                "files": [
-                    "index.php"
-                ]
+            "require": {
+                "getkirby/composer-installer": "^1.1"
+            },
+            "require-dev": {
+                "oblik/kirby-tester": "^1.2",
+                "phpunit/phpunit": "^8.3"
+            },
+            "type": "kirby-plugin",
+            "extra": {
+                "installer-name": "variables"
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -138,12 +140,11 @@
             "authors": [
                 {
                     "name": "Hristiyan Dodov",
-                    "email": "h.dodov@gmail.com",
-                    "homepage": "https://dodov.me/"
+                    "email": "h.dodov@gmail.com"
                 }
             ],
-            "description": "Utility for loading Kirby and switching roots while testing.",
-            "time": "2019-08-15T07:03:54+00:00"
+            "description": "Easy language variable management in YAML files for Kirby.",
+            "time": "2020-01-21T12:56:12+00:00"
         }
     ],
     "packages-dev": [
@@ -204,6 +205,50 @@
             "time": "2019-03-17T17:37:11+00:00"
         },
         {
+            "name": "getkirby/editor",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/getkirby/editor.git",
+                "reference": "04bb7131db996ef18d2eb9c3ee065daa0044c814"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/getkirby/editor/zipball/04bb7131db996ef18d2eb9c3ee065daa0044c814",
+                "reference": "04bb7131db996ef18d2eb9c3ee065daa0044c814",
+                "shasum": ""
+            },
+            "require": {
+                "getkirby/composer-installer": "^1.1",
+                "paquettg/php-html-parser": "^2.1",
+                "php": ">=7.1.0"
+            },
+            "require-dev": {
+                "getkirby/cms": "^3.2"
+            },
+            "type": "kirby-plugin",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Bastian Allgeier",
+                    "email": "bastian@getkirby.com"
+                }
+            ],
+            "description": "Kirby Editor",
+            "homepage": "https://getkirby.com",
+            "keywords": [
+                "cms",
+                "editor",
+                "kirby",
+                "plugin",
+                "wysiwyg"
+            ],
+            "time": "2019-11-26T10:16:25+00:00"
+        },
+        {
             "name": "myclabs/deep-copy",
             "version": "1.9.1",
             "source": {
@@ -250,6 +295,143 @@
                 "object graph"
             ],
             "time": "2019-04-07T13:18:21+00:00"
+        },
+        {
+            "name": "oblik/kirby-tester",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/OblikStudio/kirby-tester.git",
+                "reference": "cc996778583ad5a6bd38ae9756407402712ec1ff"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/OblikStudio/kirby-tester/zipball/cc996778583ad5a6bd38ae9756407402712ec1ff",
+                "reference": "cc996778583ad5a6bd38ae9756407402712ec1ff",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Oblik\\KirbyTester\\": "src/"
+                },
+                "files": [
+                    "index.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Hristiyan Dodov",
+                    "email": "h.dodov@gmail.com",
+                    "homepage": "https://dodov.me/"
+                }
+            ],
+            "description": "Utility for loading Kirby and switching roots while testing.",
+            "time": "2019-08-15T07:03:54+00:00"
+        },
+        {
+            "name": "paquettg/php-html-parser",
+            "version": "2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/paquettg/php-html-parser.git",
+                "reference": "668c770fc5724ea3f15b8791435f054835be8d5e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/paquettg/php-html-parser/zipball/668c770fc5724ea3f15b8791435f054835be8d5e",
+                "reference": "668c770fc5724ea3f15b8791435f054835be8d5e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-mbstring": "*",
+                "ext-zlib": "*",
+                "paquettg/string-encode": "~1.0.0",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "infection/infection": "^0.13.4",
+                "mockery/mockery": "^1.2",
+                "phan/phan": "^2.4",
+                "php-coveralls/php-coveralls": "^2.1",
+                "phpunit/phpunit": "^7.5.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PHPHtmlParser\\": "src/PHPHtmlParser"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gilles Paquette",
+                    "email": "paquettg@gmail.com",
+                    "homepage": "http://gillespaquette.ca"
+                }
+            ],
+            "description": "An HTML DOM parser. It allows you to manipulate HTML. Find tags on an HTML page with selectors just like jQuery.",
+            "homepage": "https://github.com/paquettg/php-html-parser",
+            "keywords": [
+                "dom",
+                "html",
+                "parser"
+            ],
+            "time": "2020-01-20T12:59:15+00:00"
+        },
+        {
+            "name": "paquettg/string-encode",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/paquettg/string-encoder.git",
+                "reference": "a8708e9fac9d5ddfc8fc2aac6004e2cd05d80fee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/paquettg/string-encoder/zipball/a8708e9fac9d5ddfc8fc2aac6004e2cd05d80fee",
+                "reference": "a8708e9fac9d5ddfc8fc2aac6004e2cd05d80fee",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.5.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "stringEncode": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gilles Paquette",
+                    "email": "paquettg@gmail.com",
+                    "homepage": "http://gillespaquette.ca"
+                }
+            ],
+            "description": "Facilitating the process of altering string encoding in PHP.",
+            "homepage": "https://github.com/paquettg/string-encoder",
+            "keywords": [
+                "charset",
+                "encoding",
+                "string"
+            ],
+            "time": "2018-12-21T02:25:09+00:00"
         },
         {
             "name": "phar-io/manifest",
