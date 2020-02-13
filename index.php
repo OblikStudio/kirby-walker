@@ -48,8 +48,8 @@ Kirby::plugin('oblik/outsource', [
             ],
             'textarea' => [
                 'serialize' => [
-                    'markdown' => true,
-                    'kirbytags' => true
+                    'kirbytags' => true,
+                    'markdown' => true
                 ]
             ],
             'tags' => [

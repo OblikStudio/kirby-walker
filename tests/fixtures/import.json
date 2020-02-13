@@ -27,7 +27,7 @@
         "text": "import"
       },
       "html": "<div><span><kirby link=\"#\" text=\"import\"/></span></div>",
-      "markdown": "<h1>Import</h1>Markdown converted to <strong>HTML</strong> and a <em><kirby link=\"#\" text=\"kirbytag\"/></em> here.",
+      "markdown": "<h1>Import</h1>Markdown converted to <strong>HTML</strong> and a <em><kirby link=\"https://example.com\" text=\"kirbytag\"/></em> here.",
       "contentitems": [
         {
           "yaml": {

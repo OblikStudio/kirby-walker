@@ -139,7 +139,7 @@ final class ImporterTest extends TestCase
     public function testMarkdownInHtml()
     {
         $this->assertEquals(
-            "# Import\n\nMarkdown converted to __HTML__ and a _(link: # text: kirbytag)_ here.",
+            "# Import\n\nMarkdown converted to __HTML__ and a _(link: https://example.com text: kirbytag)_ here.",
             self::$data['markdown']
         );
     }
