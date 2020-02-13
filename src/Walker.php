@@ -18,11 +18,6 @@ class Walker
     public $settings = [];
 
     /**
-     * Recursion level.
-     */
-    protected $level = 0;
-
-    /**
      * The blueprints stack, consisting of model, structure or field blueprints.
      */
     protected $blueprints = [];
@@ -156,8 +151,6 @@ class Walker
      */
     public function walk(Model $model, $input = [])
     {
-        $this->level++;
-
         // If the model has a blueprint, its fields should be pushed on the
         // blueprint stack.
         if (method_exists($model, 'blueprint')) {
@@ -193,7 +186,6 @@ class Walker
             }
         }
 
-        $this->level--;
         return $data;
     }
 
