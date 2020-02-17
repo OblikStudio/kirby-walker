@@ -67,13 +67,12 @@ class Importer extends Walker
         return $data;
     }
 
-    public function processModel($model, $data)
+    public function processModel($model, $data, string $lang)
     {
-        $lang = $this->settings[BP_LANGUAGE];
-
+        $content = $model->content($lang);
         $fields = $model->blueprint()->fields();
         $blueprint = $this->processBlueprint($fields);
-        $mergedData = $this->walk($model, $blueprint, $data);
+        $mergedData = $this->walk($content, $blueprint, $data);
         $newModel = $model->update($mergedData, $lang);
 
         return self::compare(
@@ -82,10 +81,8 @@ class Importer extends Walker
         );
     }
 
-    public function processVariables($data)
+    public function processVariables($data, string $lang)
     {
-        $lang = $this->settings[BP_LANGUAGE];
-
         $oldVariables = static::$variables::export($lang);
         static::$variables::import($lang, $data);
         $newVariables = static::$variables::export($lang);
@@ -93,13 +90,13 @@ class Importer extends Walker
         return self::compare($oldVariables ?? [], $newVariables ?? []);
     }
 
-    public function process($data = [])
+    public function process($data = [], string $lang)
     {
         $result = [];
         $site = site();
 
         if (!empty($data['site'])) {
-            $result['site'] = $this->processModel($site, $data['site']);
+            $result['site'] = $this->processModel($site, $data['site'], $lang);
         }
 
         if (!empty($data['pages'])) {
@@ -107,7 +104,7 @@ class Importer extends Walker
 
             foreach ($data['pages'] as $id => $pageData) {
                 if ($page = $site->page($id)) {
-                    $result['pages'][$id] = $this->processModel($page, $pageData);
+                    $result['pages'][$id] = $this->processModel($page, $pageData, $lang);
                 }
             }
         }
@@ -117,13 +114,13 @@ class Importer extends Walker
 
             foreach ($data['files'] as $id => $fileData) {
                 if ($file = $site->file($id)) {
-                    $result['files'][$id] = $this->processModel($file, $fileData);
+                    $result['files'][$id] = $this->processModel($file, $fileData, $lang);
                 }
             }
         }
 
         if (!empty($data['variables'])) {
-            $result['variables'] = $this->processVariables($data['variables']);
+            $result['variables'] = $this->processVariables($data['variables'], $lang);
         }
 
         return $result;

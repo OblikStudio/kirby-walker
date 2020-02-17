@@ -20,11 +20,9 @@ final class ImporterTest extends TestCase
 
         $importFilePath = realpath(__DIR__ . '/../fixtures/' . $importFile);
         $importData = json_decode(file_get_contents($importFilePath), true);
-        $importer = new Importer(testWalkerSettings([
-            'language' => 'bg'
-        ]));
+        $importer = new Importer(testWalkerSettings());
 
-        self::$compare = $importer->process($importData);
+        self::$compare = $importer->process($importData, 'bg');
 
         $textFilePath = realpath(__DIR__ . '/../roots/content/' . $textFile);
         $importResult = file_get_contents($textFilePath);

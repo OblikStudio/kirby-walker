@@ -67,19 +67,21 @@ class Exporter extends Walker
      * Extracts all content of a Model. Can be used by its own in case you need to
      * export a single page.
      */
-    public function extractModel(ModelWithContent $model)
+    public function extractModel(ModelWithContent $model, string $lang)
     {
+        $content = $model->content($lang);
         $fields = $model->blueprint()->fields();
         $blueprint = $this->processBlueprint($fields);
-        $data = $this->walk($model, $blueprint);
+        $data = $this->walk($content, $blueprint);
 
         $files = [];
 
         foreach ($model->files() as $file) {
             $fileId = $file->id();
+            $fileContent = $file->content($lang);
             $fileFields = $file->blueprint()->fields();
             $fileBlueprint = $this->processBlueprint($fileFields);
-            $fileData = $this->walk($file, $fileBlueprint);
+            $fileData = $this->walk($fileContent, $fileBlueprint);
 
             if (!empty($fileData)) {
                 $files[$fileId] = $fileData;
@@ -95,7 +97,7 @@ class Exporter extends Walker
     /**
      * @param ModelWithContent|Pages|array $input
      */
-    public function export($input)
+    public function export($input, string $lang)
     {
         $data = [];
         $targets = [];
@@ -117,7 +119,7 @@ class Exporter extends Walker
 
         foreach ($targets as $model) {
             if (is_subclass_of($model, ModelWithContent::class)) {
-                $modelData = $this->extractModel($model);
+                $modelData = $this->extractModel($model, $lang);
 
                 if (!empty($modelData['content'])) {
                     if (is_a($model, Site::class)) {
@@ -143,10 +145,8 @@ class Exporter extends Walker
             $data['files'] = $files;
         }
 
-        if ($lang = $this->settings[BP_LANGUAGE] ?? null) {
-            if ($variables = static::$variables::export($lang)) {
-                $data['variables'] = $variables;
-            }
+        if ($variables = static::$variables::export($lang)) {
+            $data['variables'] = $variables;
         }
 
         return $data;

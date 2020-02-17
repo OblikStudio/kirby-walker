@@ -5,12 +5,11 @@ namespace Oblik\Outsource;
 use Exception;
 use Throwable;
 use Kirby\Cms\Site;
-use Kirby\Cms\Model;
+use Kirby\Cms\Content;
 
 class Walker
 {
     private static $defaults = [
-        BP_LANGUAGE => null,
         BP_BLUEPRINT => [],
         BP_FIELDS => []
     ];
@@ -107,7 +106,8 @@ class Walker
                 $inputEntry = $input[$id] ?? null;
             }
 
-            $childData = $this->walk($entry, $fieldsBlueprint, $inputEntry);
+            $content = $entry->content();
+            $childData = $this->walk($content, $fieldsBlueprint, $inputEntry);
 
             if (!empty($childData)) {
                 if ($sync) {
@@ -121,10 +121,9 @@ class Walker
         return $data;
     }
 
-    public function walk(Model $model, array $fieldsBlueprint = [], $input = [])
+    public function walk(Content $content, array $fieldsBlueprint = [], $input = [])
     {
         $data = null;
-        $content = $model->content($this->settings[BP_LANGUAGE]);
 
         foreach ($fieldsBlueprint as $key => $fieldBlueprint) {
             $field = $content->$key();
@@ -134,11 +133,10 @@ class Walker
             try {
                 $fieldData = $this->walkField($field, $fieldBlueprint, $inputData);
             } catch (Throwable $e) {
-                $modelName = is_a($model, Site::class) ? 'site' : $model->id();
                 $fieldName = $field->key();
                 $errorName = $e->getMessage();
 
-                throw new Exception("Could not process $fieldName in $modelName: $errorName");
+                throw new Exception("Could not process $fieldName: $errorName");
             }
 
             if ($fieldData !== null) {

@@ -27,10 +27,11 @@ class Syncer extends Walker
 
                 if ($entry) {
                     // Get all unaltered child data.
-                    $childData = $entry->content()->toArray();
+                    $content = $entry->content();
+                    $childData = $content->toArray();
 
                     // Get data from nested structures.
-                    $nestedData = $this->walk($entry, $fieldsBlueprint, $inputEntry);
+                    $nestedData = $this->walk($content, $fieldsBlueprint, $inputEntry);
 
                     if (is_array($nestedData)) {
                         $childData = array_replace($childData, $nestedData);

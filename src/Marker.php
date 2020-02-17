@@ -46,9 +46,10 @@ class Marker extends Walker
 
         if ($sync) {
             foreach ($structure as $entry) {
-                $fields = $entry->content()->toArray();
+                $content = $entry->content();
+                $fields = $content->toArray();
 
-                if ($nestedStructures = $this->walk($entry, $fieldsBlueprint)) {
+                if ($nestedStructures = $this->walk($content, $fieldsBlueprint)) {
                     $fields = array_replace($fields, $nestedStructures);
                 }
 

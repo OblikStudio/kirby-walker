@@ -5,7 +5,6 @@ use Kirby\Toolkit\F;
 function testWalkerSettings($settings = [])
 {
     return array_replace_recursive([
-        'language' => 'en',
         'blueprint' => option('oblik.outsource.blueprint'),
         'fields' => array_replace_recursive(
             option('oblik.outsource.fields'), [
