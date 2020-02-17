@@ -7,13 +7,18 @@ use Kirby\Cms\Pages;
 use Kirby\Cms\ModelWithContent;
 use Oblik\Variables\Manager;
 
-/**
- * Recursively walks the content of a Model, serializes it, and returns it.
- */
 class Exporter extends Walker
 {
     public static $formatter = Formatter::class;
     public static $variables = Manager::class;
+
+    public $model;
+
+    public function __construct($config = [])
+    {
+        parent::__construct($config);
+        $this->model = new Model();
+    }
 
     public static function filter(array $data, array $settings)
     {
@@ -63,92 +68,60 @@ class Exporter extends Walker
         return $data;
     }
 
-    /**
-     * Extracts all content of a Model. Can be used by its own in case you need to
-     * export a single page.
-     */
-    public function extractModel(ModelWithContent $model, string $lang)
+    public function walkModel(ModelWithContent $model, string $lang)
     {
         $content = $model->content($lang);
         $fields = $model->blueprint()->fields();
         $blueprint = $this->processBlueprint($fields);
-        $data = $this->walk($content, $blueprint);
-
-        $files = [];
-
-        foreach ($model->files() as $file) {
-            $fileId = $file->id();
-            $fileContent = $file->content($lang);
-            $fileFields = $file->blueprint()->fields();
-            $fileBlueprint = $this->processBlueprint($fileFields);
-            $fileData = $this->walk($fileContent, $fileBlueprint);
-
-            if (!empty($fileData)) {
-                $files[$fileId] = $fileData;
-            }
-        }
-
-        return [
-            'content' => $data,
-            'files' => $files,
-        ];
+        return $this->walk($content, $blueprint);
     }
 
-    /**
-     * @param ModelWithContent|Pages|array $input
-     */
-    public function export($input, string $lang)
+    public function exportModel(ModelWithContent $model, string $lang, bool $children = true)
     {
-        $data = [];
-        $targets = [];
+        $data = $this->walkModel($model, $lang);
 
-        if (is_a($input, ModelWithContent::class)) {
-            $targets[] = $input;
-            $input = $input->index();
+        if (is_a($model, Site::class)) {
+            $this->model->setSite($data);
+        } else {
+            $this->model->addPage($model->id(), $data);
         }
 
-        if (is_a($input, Pages::class)) {
-            $targets = array_merge($targets, $input->values());
-        } else if (is_array($input)) {
-            $targets = array_merge($targets, $input);
-        }
-
-        $site = null;
-        $pages = [];
-        $files = [];
-
-        foreach ($targets as $model) {
-            if (is_subclass_of($model, ModelWithContent::class)) {
-                $modelData = $this->extractModel($model, $lang);
-
-                if (!empty($modelData['content'])) {
-                    if (is_a($model, Site::class)) {
-                        $site = $modelData['content'];
-                    } else {
-                        $pages[$model->id()] = $modelData['content'];
-                    }
-                }
-
-                $files = array_replace($files, $modelData['files']);
+        if (method_exists($model, 'children') && $children) {
+            foreach ($model->children() as $page) {
+                $this->exportModel($page, $lang);
             }
         }
 
-        if ($site) {
-            $data['site'] = $site;
-        }
-
-        if (!empty($pages)) {
-            $data['pages'] = $pages;
-        }
-
-        if (!empty($files)) {
-            $data['files'] = $files;
-        }
-
-        if ($variables = static::$variables::export($lang)) {
-            $data['variables'] = $variables;
+        if (method_exists($model, 'files')) {
+            foreach ($model->files() as $file) {
+                $fileData = $this->walkModel($file, $lang);
+                $this->model->addFile($file->id(), $fileData);
+            }
         }
 
         return $data;
+    }
+
+    public function exportVariables(string $lang)
+    {
+        $data = static::$variables::export($lang);
+        $this->model->setVariables($data);
+        return $data;
+    }
+
+    public function export($input, string $lang, bool $children = true)
+    {
+        if (is_subclass_of($input, ModelWithContent::class)) {
+            $this->exportModel($input, $lang, $children);
+        } else if (is_a($input, Pages::class)) {
+            foreach ($input as $page) {
+                $this->exportModel($page, $lang, $children);
+            }
+        }
+    }
+
+    public function data()
+    {
+        return $this->model->toArray();
     }
 }

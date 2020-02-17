@@ -22,8 +22,13 @@ final class ExporterTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
+        $lang = kirby()->defaultLanguage()->code();
+
         $exporter = new TestExporter(testWalkerSettings());
-        self::$data = $exporter->export(site(), kirby()->defaultLanguage()->code());
+        $exporter->export(site(), $lang);
+        $exporter->exportVariables($lang);
+
+        self::$data = $exporter->data();
         self::$site = self::$data['site'];
     }
 

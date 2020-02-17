@@ -22,7 +22,7 @@ final class ImporterTest extends TestCase
         $importData = json_decode(file_get_contents($importFilePath), true);
         $importer = new Importer(testWalkerSettings());
 
-        self::$compare = $importer->process($importData, 'bg');
+        self::$compare = $importer->import($importData, 'bg');
 
         $textFilePath = realpath(__DIR__ . '/../roots/content/' . $textFile);
         $importResult = file_get_contents($textFilePath);

@@ -2,6 +2,8 @@
 
 namespace Oblik\Outsource;
 
+use Kirby\Cms\Field;
+use Kirby\Cms\ModelWithContent;
 use Oblik\Variables\Manager;
 
 class Importer extends Walker
@@ -36,7 +38,7 @@ class Importer extends Walker
         return $data;
     }
 
-    public function fieldHandler($field, $blueprint, $input)
+    public function fieldHandler(Field $field, array $blueprint, $input)
     {
         if ($field->value() === null && $input === null) {
             return null;
@@ -62,12 +64,13 @@ class Importer extends Walker
         return $data;
     }
 
-    public function processModel($model, $data, string $lang)
+    public function importModel(ModelWithContent $model, array $data, string $lang)
     {
         $content = $model->content($lang);
         $fields = $model->blueprint()->fields();
         $blueprint = $this->processBlueprint($fields);
         $mergedData = $this->walk($content, $blueprint, $data);
+
         $newModel = $model->update($mergedData, $lang);
 
         return self::compare(
@@ -76,7 +79,7 @@ class Importer extends Walker
         );
     }
 
-    public function processVariables($data, string $lang)
+    public function importVariables(array $data, string $lang)
     {
         $oldVariables = static::$variables::export($lang);
         static::$variables::import($lang, $data);
@@ -85,39 +88,30 @@ class Importer extends Walker
         return self::compare($oldVariables ?? [], $newVariables ?? []);
     }
 
-    public function process($data = [], string $lang)
+    public function import(array $data, string $lang)
     {
-        $result = [];
+        $model = new Model($data);
+        $result = new Model();
         $site = site();
 
-        if (!empty($data['site'])) {
-            $result['site'] = $this->processModel($site, $data['site'], $lang);
+        $siteResult = $this->importModel($site, $model->site(), $lang);
+        $result->setSite($siteResult);
+
+        foreach ($model->pages() as $key => $pageData) {
+            $page = $site->page($key);
+            $pageResult = $this->importModel($page, $pageData, $lang);
+            $result->addPage($key, $pageResult);
         }
 
-        if (!empty($data['pages'])) {
-            $result['pages'] = [];
-
-            foreach ($data['pages'] as $id => $pageData) {
-                if ($page = $site->page($id)) {
-                    $result['pages'][$id] = $this->processModel($page, $pageData, $lang);
-                }
-            }
+        foreach ($model->files() as $key => $fileData) {
+            $file = $site->file($key);
+            $fileResult = $this->importModel($file, $fileData, $lang);
+            $result->addFile($key, $fileResult);
         }
 
-        if (!empty($data['files'])) {
-            $result['files'] = [];
+        $variablesResult = $this->importVariables($model->variables(), $lang);
+        $result->setVariables($variablesResult);
 
-            foreach ($data['files'] as $id => $fileData) {
-                if ($file = $site->file($id)) {
-                    $result['files'][$id] = $this->processModel($file, $fileData, $lang);
-                }
-            }
-        }
-
-        if (!empty($data['variables'])) {
-            $result['variables'] = $this->processVariables($data['variables'], $lang);
-        }
-
-        return $result;
+        return $result->toArray();
     }
 }
