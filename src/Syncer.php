@@ -2,6 +2,8 @@
 
 namespace Oblik\Outsource;
 
+use Kirby\Cms\Structure;
+
 /**
  * Synchronizes structures based on input data by comparing entry IDs.
  */
@@ -12,13 +14,9 @@ class Syncer extends Walker
         return $blueprint['type'] === 'structure';
     }
 
-    public function structureHandler($structure, $blueprint, $input)
+    public function walkStructure(Structure $structure, array $fieldsBlueprint, $input, $sync)
     {
         $data = [];
-
-        $sync = $blueprint[BLUEPRINT_KEY]['sync'] ?? false;
-        $fields = $blueprint['fields'] ?? [];
-        $fieldsBlueprint = $this->processBlueprint($fields);
 
         if ($sync && is_array($input)) {
             foreach ($input as $inputEntry) {

@@ -2,6 +2,7 @@
 
 namespace Oblik\Outsource;
 
+use Kirby\Cms\Structure;
 use Kirby\Toolkit\Str;
 
 /**
@@ -36,13 +37,9 @@ class Marker extends Walker
         return $blueprint['type'] === 'structure';
     }
 
-    public function structureHandler($structure, $blueprint, $input)
+    public function walkStructure(Structure $structure, array $fieldsBlueprint, $input, $sync)
     {
         $data = null;
-
-        $sync = $blueprint[BLUEPRINT_KEY]['sync'] ?? false;
-        $fields = $blueprint['fields'] ?? [];
-        $fieldsBlueprint = $this->processBlueprint($fields);
 
         if ($sync) {
             foreach ($structure as $entry) {

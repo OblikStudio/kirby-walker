@@ -6,6 +6,7 @@ use Exception;
 use Throwable;
 use Kirby\Cms\Site;
 use Kirby\Cms\Content;
+use Kirby\Cms\Structure;
 
 class Walker
 {
@@ -87,38 +88,13 @@ class Walker
     /**
      * Determines what data to return for this structure in the result.
      */
-    public function structureHandler($structure, $blueprint, $input)
+    public function structureHandler(Structure $structure, array $blueprint, $input)
     {
-        $data = null;
-
         $sync = $blueprint[BLUEPRINT_KEY]['sync'] ?? false;
         $fields = $blueprint['fields'] ?? [];
         $fieldsBlueprint = $this->processBlueprint($fields);
 
-        if ($sync && is_array($input)) {
-            $input = array_column($input, null, $sync);
-        }
-
-        foreach ($structure as $id => $entry) {
-            if ($sync) {
-                $inputEntry = $input[$entry->$sync()] ?? null;
-            } else {
-                $inputEntry = $input[$id] ?? null;
-            }
-
-            $content = $entry->content();
-            $childData = $this->walk($content, $fieldsBlueprint, $inputEntry);
-
-            if (!empty($childData)) {
-                if ($sync) {
-                    $childData[$sync] = $id;
-                }
-
-                $data[] = $childData;
-            }
-        }
-
-        return $data;
+        return $this->walkStructure($structure, $fieldsBlueprint, $input, $sync);
     }
 
     public function walk(Content $content, array $fieldsBlueprint = [], $input = [])
@@ -156,6 +132,36 @@ class Walker
                 $data = $this->structureHandler($field->toStructure(), $blueprint, $input);
             } else {
                 $data = $this->fieldHandler($field, $blueprint, $input);
+            }
+        }
+
+        return $data;
+    }
+
+    public function walkStructure(Structure $structure, array $fieldsBlueprint, $input, $sync)
+    {
+        $data = null;
+
+        if ($sync && is_array($input)) {
+            $input = array_column($input, null, $sync);
+        }
+
+        foreach ($structure as $id => $entry) {
+            if ($sync) {
+                $inputEntry = $input[$entry->$sync()] ?? null;
+            } else {
+                $inputEntry = $input[$id] ?? null;
+            }
+
+            $content = $entry->content();
+            $childData = $this->walk($content, $fieldsBlueprint, $inputEntry);
+
+            if (!empty($childData)) {
+                if ($sync) {
+                    $childData[$sync] = $id;
+                }
+
+                $data[] = $childData;
             }
         }
 
