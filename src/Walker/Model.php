@@ -21,22 +21,22 @@ class Model {
         return $this->$name ?? null;
     }
 
-    public function setSite(array $data)
+    public function setSite($data)
     {
         $this->site = $data;
     }
 
-    public function addPage(string $key, array $data)
+    public function addPage(string $key, $data)
     {
         $this->pages[$key] = $data;
     }
 
-    public function addFile(string $key, array $data)
+    public function addFile(string $key, $data)
     {
         $this->files[$key] = $data;
     }
 
-    public function setVariables(array $data)
+    public function setVariables($data)
     {
         $this->variables = $data;
     }
