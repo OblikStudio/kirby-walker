@@ -7,6 +7,7 @@ use Throwable;
 use Kirby\Cms\Content;
 use Kirby\Cms\Field;
 use Kirby\Cms\Structure;
+use Kirby\Cms\ModelWithContent;
 
 /**
  * Base class for walkers that need to recursively iterate over Kirby models.
@@ -36,7 +37,7 @@ class Walker
      * Formats a blueprint by adding artificial fields and changing the keys to
      * lowercase since that's what Kirby internally uses.
      */
-    public function processBlueprint(array $blueprint)
+    private function processBlueprint(array $blueprint)
     {
         $blueprint = array_replace_recursive($blueprint, $this->blueprint);
         $blueprint = array_change_key_case($blueprint, CASE_LOWER);
@@ -46,7 +47,7 @@ class Walker
     /**
      * Adds default outsource values to field settings.
      */
-    public function processFieldSettings(array $settings)
+    private function processFieldSettings(array $settings)
     {
         $config = $settings[KEY] ?? [];
         $fieldType = $settings['type'] ?? null;
@@ -168,5 +169,17 @@ class Walker
         }
 
         return $data;
+    }
+
+    /**
+     * Walks over the content of a model in a certain language.
+     */
+    public function walkModel(ModelWithContent $model, string $lang, $input = [])
+    {
+        $content = $model->content($lang);
+        $fields = $model->blueprint()->fields();
+        $blueprint = $this->processBlueprint($fields);
+
+        return $this->walk($content, $blueprint, $input);
     }
 }

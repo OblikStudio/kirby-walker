@@ -68,14 +68,6 @@ class Exporter extends Walker
         return $data;
     }
 
-    public function walkModel(ModelWithContent $model, string $lang)
-    {
-        $content = $model->content($lang);
-        $fields = $model->blueprint()->fields();
-        $blueprint = $this->processBlueprint($fields);
-        return $this->walk($content, $blueprint);
-    }
-
     public function exportModel(ModelWithContent $model, string $lang, bool $children = true)
     {
         $data = $this->walkModel($model, $lang);

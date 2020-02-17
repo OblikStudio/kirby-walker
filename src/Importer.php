@@ -66,11 +66,7 @@ class Importer extends Walker
 
     public function importModel(ModelWithContent $model, array $data, string $lang)
     {
-        $content = $model->content($lang);
-        $fields = $model->blueprint()->fields();
-        $blueprint = $this->processBlueprint($fields);
-        $mergedData = $this->walk($content, $blueprint, $data);
-
+        $mergedData = $this->walkModel($model, $lang, $data);
         $newModel = $model->update($mergedData, $lang);
 
         return self::compare(
