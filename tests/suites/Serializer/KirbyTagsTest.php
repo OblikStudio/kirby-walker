@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Outsource\Serializer;
+namespace Oblik\Outsource\Serialize;
 
 use PHPUnit\Framework\TestCase;
 
