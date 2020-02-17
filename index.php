@@ -2,45 +2,21 @@
 
 namespace Oblik\Outsource;
 
-use Kirby;
+use Kirby\Cms\App;
 
-/**
- * The property key used in blueprints for specifying plugin settings.
- */
-const BLUEPRINT_KEY = 'outsource';
-
-/**
- * Blueprint setting for the walked translation.
- */
-const BP_LANGUAGE = 'language';
-
-/**
- * Blueprint setting for custom fields artificially added to each Model
- * blueprint.
- */
-const BP_BLUEPRINT = 'blueprint';
-
-/**
- * Blueprint setting for supplying options to various field types
- */
-const BP_FIELDS = 'fields';
-
-/**
- * Blueprint setting that indicates the current field should be ignored
- */
-const BP_IGNORE = 'ignore';
+const KEY = 'outsource';
 
 require_once 'vendor/autoload.php';
 
-Kirby::plugin('oblik/outsource', [
+App::plugin('oblik/outsource', [
     'hooks' => include 'hooks.php',
     'options' => [
-        BP_BLUEPRINT => [
+        'blueprint' => [
             'title' => [
                 'type' => 'text'
             ]
         ],
-        BP_FIELDS => [
+        'fields' => [
             'text' => [
                 'serialize' => [
                     'kirbytags' => true

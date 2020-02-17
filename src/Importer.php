@@ -47,7 +47,7 @@ class Importer extends Walker
             return null;
         }
 
-        $merger = $blueprint[BLUEPRINT_KEY]['import']['merge'] ?? null;
+        $merger = $blueprint[KEY]['import']['merge'] ?? null;
         $data = static::$formatter::serialize($blueprint, $field);
 
         if (is_callable($merger)) {

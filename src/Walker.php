@@ -10,12 +10,8 @@ use Kirby\Cms\Structure;
 
 class Walker
 {
-    private static $defaults = [
-        BP_BLUEPRINT => [],
-        BP_FIELDS => []
-    ];
-
-    public $settings = [];
+    public $blueprint;
+    public $fields;
 
     /**
      * According to its blueprint, checks whether a field should be ignored by
@@ -23,26 +19,22 @@ class Walker
      */
     public static function isFieldIgnored(array $blueprint)
     {
-        return $blueprint[BLUEPRINT_KEY][BP_IGNORE] ?? false;
+        return $blueprint[KEY]['ignore'] ?? false;
     }
 
-    public function __construct($settings = [])
+    public function __construct($config = [])
     {
-        $this->settings = array_replace(
-            self::$defaults,
-            $this->settings,
-            $settings
-        );
+        $this->blueprint = $config['blueprint'] ?? [];
+        $this->fields = $config['fields'] ?? [];
     }
 
     /**
      * Formats a blueprint by adding custom fields and changing the keys to
      * lowercase since that's what Kirby internally uses.
      */
-    public function processBlueprint($blueprint)
+    public function processBlueprint(array $blueprint)
     {
-        $customBlueprint = $this->settings[BP_BLUEPRINT];
-        $blueprint = array_replace_recursive($blueprint, $customBlueprint);
+        $blueprint = array_replace_recursive($blueprint, $this->blueprint);
         $blueprint = array_change_key_case($blueprint, CASE_LOWER);
         return $blueprint;
     }
@@ -51,19 +43,18 @@ class Walker
      * Merges blueprint settings in `outsource` from the Walker instance with
      * those in the field blueprint.
      */
-    public function processFieldBlueprint($blueprint)
+    public function processFieldBlueprint(array $blueprint)
     {
-        $config = $blueprint[BLUEPRINT_KEY] ?? [];
+        $config = $blueprint[KEY] ?? [];
 
-        $customFields = $this->settings[BP_FIELDS];
         $fieldType = $blueprint['type'] ?? null;
-        $fieldConfig = $customFields[$fieldType] ?? null;
+        $fieldConfig = $this->fields[$fieldType] ?? null;
 
         if ($fieldConfig) {
             $config = array_replace($fieldConfig, $config);
         }
 
-        $blueprint[BLUEPRINT_KEY] = $config;
+        $blueprint[KEY] = $config;
         return $blueprint;
     }
 
@@ -91,7 +82,7 @@ class Walker
     public function structureHandler(Field $field, array $blueprint, $input)
     {
         $structure = $field->toStructure();
-        $sync = $blueprint[BLUEPRINT_KEY]['sync'] ?? false;
+        $sync = $blueprint[KEY]['sync'] ?? false;
         $fields = $blueprint['fields'] ?? [];
         $fieldsBlueprint = $this->processBlueprint($fields);
 

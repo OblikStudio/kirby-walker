@@ -20,7 +20,7 @@ class Formatter
 
     public static function serialize(array $blueprint, $field)
     {
-        $options = $blueprint[BLUEPRINT_KEY] ?? null;
+        $options = $blueprint[KEY] ?? null;
         $serialize = $options['serialize'] ?? [];
         $content = $field->value();
 
@@ -46,7 +46,7 @@ class Formatter
 
     public static function deserialize(array $blueprint, $data)
     {
-        $options = $blueprint[BLUEPRINT_KEY] ?? null;
+        $options = $blueprint[KEY] ?? null;
         $serializers = $options['deserialize'] ?? null;
 
         if (!is_array($serializers)) {
