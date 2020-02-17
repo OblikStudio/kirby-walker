@@ -4,8 +4,8 @@ namespace Oblik\Outsource;
 
 use Exception;
 use Throwable;
-use Kirby\Cms\Site;
 use Kirby\Cms\Content;
+use Kirby\Cms\Field;
 use Kirby\Cms\Structure;
 
 class Walker
@@ -70,7 +70,7 @@ class Walker
     /**
      * Determines if a field should be included in the resulting data.
      */
-    public function fieldPredicate($field, $blueprint, $input)
+    public function fieldPredicate(Field $field, $blueprint, $input)
     {
         $ignored = $this::isFieldIgnored($blueprint);
         $undefined = $field->value() === null;
@@ -80,7 +80,7 @@ class Walker
     /**
      * Determines what data to return for this field in the result.
      */
-    public function fieldHandler($field, $blueprint, $input)
+    public function fieldHandler(Field $field, array $blueprint, $input)
     {
         return $field->value();
     }
@@ -88,8 +88,9 @@ class Walker
     /**
      * Determines what data to return for this structure in the result.
      */
-    public function structureHandler(Structure $structure, array $blueprint, $input)
+    public function structureHandler(Field $field, array $blueprint, $input)
     {
+        $structure = $field->toStructure();
         $sync = $blueprint[BLUEPRINT_KEY]['sync'] ?? false;
         $fields = $blueprint['fields'] ?? [];
         $fieldsBlueprint = $this->processBlueprint($fields);
@@ -123,13 +124,13 @@ class Walker
         return $data;
     }
 
-    public function walkField($field, $blueprint, $input)
+    public function walkField(Field $field, array $blueprint, $input)
     {
         $data = null;
 
         if ($this->fieldPredicate($field, $blueprint, $input)) {
             if ($blueprint['type'] === 'structure') {
-                $data = $this->structureHandler($field->toStructure(), $blueprint, $input);
+                $data = $this->structureHandler($field, $blueprint, $input);
             } else {
                 $data = $this->fieldHandler($field, $blueprint, $input);
             }
