@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Kirby\Data\Txt;
 use Kirby\Data\Yaml;
 
-final class SynchronizerTest extends TestCase
+final class ModelUpdateTest extends TestCase
 {
     public static $default;
     public static $translation;

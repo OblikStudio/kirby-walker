@@ -7,7 +7,7 @@ use Kirby\Cms\Structure;
 /**
  * Synchronizes structures based on input data by comparing entry IDs.
  */
-class Syncer extends Walker
+class Synchronizer extends Walker
 {
     public function fieldPredicate($field, $blueprint, $input)
     {
