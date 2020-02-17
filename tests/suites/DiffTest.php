@@ -2,6 +2,8 @@
 
 namespace Oblik\Outsource;
 
+use Oblik\Outsource\Util\Diff;
+
 use PHPUnit\Framework\TestCase;
 
 final class DiffTest extends TestCase

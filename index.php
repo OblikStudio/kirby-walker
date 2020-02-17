@@ -2,6 +2,8 @@
 
 namespace Oblik\Outsource;
 
+use Oblik\Outsource\Util\Diff;
+
 use Kirby\Cms\App;
 
 const KEY = 'outsource';

@@ -1,11 +1,9 @@
 <?php
 
-namespace Oblik\Outsource;
+namespace Oblik\Outsource\Serializer;
 
-use Oblik\Outsource\Serializer\KirbyTags;
-use Oblik\Outsource\Serializer\Markdown;
-use Oblik\Outsource\Serializer\Yaml;
-use Oblik\Outsource\Serializer\Tags;
+use const Oblik\Outsource\KEY;
+
 use Kirby\Data\Json;
 
 class Formatter

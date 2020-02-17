@@ -2,7 +2,7 @@
 
 namespace Oblik\Outsource\Walker;
 
-use Oblik\Outsource\Formatter;
+use Oblik\Outsource\Serializer\Formatter;
 use const Oblik\Outsource\KEY;
 
 use Kirby\Cms\Site;
