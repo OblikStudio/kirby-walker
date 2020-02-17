@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Outsource;
+namespace Oblik\Outsource\Walker;
 
 use Kirby\Cms\Structure;
 use Kirby\Toolkit\Str;

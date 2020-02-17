@@ -4,7 +4,7 @@ namespace Oblik\Outsource;
 
 use PHPUnit\Framework\TestCase;
 use Kirby\Data\Txt;
-use Yaml;
+use Kirby\Data\Yaml;
 
 final class SynchronizerTest extends TestCase
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Outsource;
+namespace Oblik\Outsource\Walker;
 
 class Model {
     protected $site;

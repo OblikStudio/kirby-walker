@@ -1,6 +1,9 @@
 <?php
 
-namespace Oblik\Outsource;
+namespace Oblik\Outsource\Walker;
+
+use Oblik\Outsource\Formatter;
+use const Oblik\Outsource\KEY;
 
 use Kirby\Cms\Site;
 use Kirby\Cms\Pages;

@@ -1,6 +1,8 @@
 <?php
 
-namespace Oblik\Outsource;
+namespace Oblik\Outsource\Walker;
+
+use const Oblik\Outsource\KEY;
 
 use Exception;
 use Throwable;

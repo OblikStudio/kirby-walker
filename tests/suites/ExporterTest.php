@@ -2,6 +2,8 @@
 
 namespace Oblik\Outsource;
 
+use Oblik\Outsource\Walker\Exporter;
+
 use PHPUnit\Framework\TestCase;
 
 class TestExporter extends Exporter

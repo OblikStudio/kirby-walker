@@ -2,10 +2,12 @@
 
 namespace Oblik\Outsource;
 
+use Oblik\Outsource\Walker\Importer;
+
 use PHPUnit\Framework\TestCase;
 use Kirby\Data\Json;
 use Kirby\Data\Txt;
-use Yaml;
+use Kirby\Data\Yaml;
 
 final class ImporterTest extends TestCase
 {

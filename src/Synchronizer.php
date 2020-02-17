@@ -2,6 +2,9 @@
 
 namespace Oblik\Outsource;
 
+use Oblik\Outsource\Walker\Marker;
+use Oblik\Outsource\Walker\Syncer;
+
 class Synchronizer
 {
     public $model;
