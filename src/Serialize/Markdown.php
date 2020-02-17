@@ -7,7 +7,7 @@ use League\HTMLToMarkdown\HtmlConverter;
 
 class Markdown
 {
-    public static $decodeOptions = [
+    protected static $decodeOptions = [
         'header_style' => 'atx',
         'suppress_errors' => true,
         'strip_tags' => false,
@@ -27,7 +27,7 @@ class Markdown
 
     public static function encode(string $text, $options = [])
     {
-        $options = array_merge(self::$decodeOptions, $options);
+        $options = array_merge(static::$decodeOptions, $options);
         $converter = new HtmlConverter($options);
         return $converter->convert($text);
     }

@@ -20,7 +20,7 @@ class DOM
 
     public static function appendHTML(DOMNode $node, $source)
     {
-        $body = self::loadText($source);
+        $body = static::loadText($source);
 
         foreach ($body->childNodes as $child) {
             $child = $node->ownerDocument->importNode($child, true);
@@ -123,7 +123,7 @@ class KirbyTags
     /**
      * Turns the XML representation of a kirbytag to a valid kirbytag.
      */
-    public static function encodeTag(string $input, $options = [])
+    protected static function encodeTag(string $input, $options = [])
     {
         $xml = $input;
         $encodedEntities = $options['entities'] ?? false;
@@ -194,12 +194,11 @@ class KirbyTags
 
     /**
      * Turns all kirbytags to their text form.
-     * @return string
      */
     public static function encode(string $text, $options = [])
     {
         return preg_replace_callback('/<kirby(?:[^<]*\/>|.*?<\/kirby>)/s', function ($matches) use ($options) {
-            return self::encodeTag($matches[0], $options);
+            return static::encodeTag($matches[0], $options);
         }, $text);
     }
 }
