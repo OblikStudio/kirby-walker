@@ -14,7 +14,7 @@ class Syncer extends Walker
         return $blueprint['type'] === 'structure';
     }
 
-    public function walkStructure(Structure $structure, array $fieldsBlueprint, $input, $sync)
+    public function structureHandler(Structure $structure, array $fieldsBlueprint, $input, $sync)
     {
         $data = [];
 

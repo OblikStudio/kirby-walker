@@ -8,10 +8,23 @@ use Kirby\Cms\Content;
 use Kirby\Cms\Field;
 use Kirby\Cms\Structure;
 
+/**
+ * Base class for walkers that need to recursively iterate over Kirby models.
+ */
 class Walker
 {
-    public $blueprint;
-    public $fields;
+    /**
+     * Array with fields that are added artificially to each blueprint as if
+     * they were actually in it. Useful for the `title` field that Kirby
+     * automatically adds to models.
+     */
+    private $blueprint;
+
+    /**
+     * Array that is used to add default outsource settings for most common
+     * field types to avoid having to do that in each blueprint.
+     */
+    private $fields;
 
     public function __construct($config = [])
     {
@@ -20,7 +33,7 @@ class Walker
     }
 
     /**
-     * Formats a blueprint by adding custom fields and changing the keys to
+     * Formats a blueprint by adding artificial fields and changing the keys to
      * lowercase since that's what Kirby internally uses.
      */
     public function processBlueprint(array $blueprint)
@@ -31,96 +44,43 @@ class Walker
     }
 
     /**
-     * Merges blueprint settings in `outsource` from the Walker instance with
-     * those in the field blueprint.
+     * Adds default outsource values to field settings.
      */
-    public function processFieldBlueprint(array $blueprint)
+    public function processFieldSettings(array $settings)
     {
-        $config = $blueprint[KEY] ?? [];
-
-        $fieldType = $blueprint['type'] ?? null;
+        $config = $settings[KEY] ?? [];
+        $fieldType = $settings['type'] ?? null;
         $fieldConfig = $this->fields[$fieldType] ?? null;
 
         if ($fieldConfig) {
             $config = array_replace($fieldConfig, $config);
         }
 
-        $blueprint[KEY] = $config;
-        return $blueprint;
+        $settings[KEY] = $config;
+        return $settings;
     }
 
     /**
-     * Determines if a field should be included in the resulting data.
+     * Whether a field should be included in the resulting data.
      */
-    public function fieldPredicate(Field $field, $blueprint, $input)
+    protected function fieldPredicate(Field $field, $settings, $input)
     {
-        $ignored = $blueprint[KEY]['ignore'] ?? false;
+        $ignored = $settings[KEY]['ignore'] ?? false;
         return !$ignored;
     }
 
     /**
-     * Determines what data to return for this field in the result.
+     * What data to return for this field in the result.
      */
-    public function fieldHandler(Field $field, array $blueprint, $input)
+    protected function fieldHandler(Field $field, array $settings, $input)
     {
         return $field->value();
     }
 
     /**
-     * Determines what data to return for this structure in the result.
+     * What data to return for this structure field in the result.
      */
-    public function structureHandler(Field $field, array $blueprint, $input)
-    {
-        $structure = $field->toStructure();
-        $sync = $blueprint[KEY]['sync'] ?? false;
-        $fields = $blueprint['fields'] ?? [];
-        $fieldsBlueprint = $this->processBlueprint($fields);
-
-        return $this->walkStructure($structure, $fieldsBlueprint, $input, $sync);
-    }
-
-    public function walk(Content $content, array $fieldsBlueprint = [], $input = [])
-    {
-        $data = null;
-
-        foreach ($fieldsBlueprint as $key => $fieldBlueprint) {
-            $field = $content->$key();
-            $inputData = $input[$key] ?? null;
-            $fieldBlueprint = $this->processFieldBlueprint($fieldBlueprint);
-
-            try {
-                $fieldData = $this->walkField($field, $fieldBlueprint, $inputData);
-            } catch (Throwable $e) {
-                $fieldName = $field->key();
-                $errorName = $e->getMessage();
-
-                throw new Exception("Could not process $fieldName: $errorName");
-            }
-
-            if ($fieldData !== null) {
-                $data[$key] = $fieldData;
-            }
-        }
-
-        return $data;
-    }
-
-    public function walkField(Field $field, array $blueprint, $input)
-    {
-        $data = null;
-
-        if ($this->fieldPredicate($field, $blueprint, $input)) {
-            if ($blueprint['type'] === 'structure') {
-                $data = $this->structureHandler($field, $blueprint, $input);
-            } else {
-                $data = $this->fieldHandler($field, $blueprint, $input);
-            }
-        }
-
-        return $data;
-    }
-
-    public function walkStructure(Structure $structure, array $fieldsBlueprint, $input, $sync)
+    protected function structureHandler(Structure $structure, array $blueprint, $input, $sync)
     {
         $data = null;
 
@@ -136,7 +96,7 @@ class Walker
             }
 
             $content = $entry->content();
-            $childData = $this->walk($content, $fieldsBlueprint, $inputEntry);
+            $childData = $this->walk($content, $blueprint, $inputEntry);
 
             if (!empty($childData)) {
                 if ($sync) {
@@ -144,6 +104,66 @@ class Walker
                 }
 
                 $data[] = $childData;
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * How to walk over the currently iterated field.
+     */
+    protected function walkField(Field $field, array $settings, $input)
+    {
+        $data = null;
+
+        if ($this->fieldPredicate($field, $settings, $input)) {
+            if ($settings['type'] === 'structure') {
+                $data = $this->walkStructure($field, $settings, $input);
+            } else {
+                $data = $this->fieldHandler($field, $settings, $input);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * How to walk over the currently iterated structure field.
+     */
+    protected function walkStructure(Field $field, array $settings, $input)
+    {
+        $sync = $settings[KEY]['sync'] ?? false;
+        $fields = $settings['fields'] ?? [];
+        $blueprint = $this->processBlueprint($fields);
+
+        return $this->structureHandler($field->toStructure(), $blueprint, $input, $sync);
+    }
+
+    /**
+     * Iterates over the fields in a Content object based on a blueprint array and
+     * returns data for each field.
+     */
+    public function walk(Content $content, array $blueprint = [], $input = [])
+    {
+        $data = null;
+
+        foreach ($blueprint as $key => $settings) {
+            $field = $content->$key();
+            $fieldInput = $input[$key] ?? null;
+            $settings = $this->processFieldSettings($settings);
+
+            try {
+                $fieldData = $this->walkField($field, $settings, $fieldInput);
+            } catch (Throwable $e) {
+                $fieldName = $field->key();
+                $errorName = $e->getMessage();
+
+                throw new Exception("Could not process $fieldName: $errorName");
+            }
+
+            if ($fieldData !== null) {
+                $data[$key] = $fieldData;
             }
         }
 
