@@ -13,15 +13,6 @@ class Walker
     public $blueprint;
     public $fields;
 
-    /**
-     * According to its blueprint, checks whether a field should be ignored by
-     * the plugin
-     */
-    public static function isFieldIgnored(array $blueprint)
-    {
-        return $blueprint[KEY]['ignore'] ?? false;
-    }
-
     public function __construct($config = [])
     {
         $this->blueprint = $config['blueprint'] ?? [];
@@ -63,9 +54,8 @@ class Walker
      */
     public function fieldPredicate(Field $field, $blueprint, $input)
     {
-        $ignored = $this::isFieldIgnored($blueprint);
-        $undefined = $field->value() === null;
-        return (!$ignored && !$undefined);
+        $ignored = $blueprint[KEY]['ignore'] ?? false;
+        return !$ignored;
     }
 
     /**

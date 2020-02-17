@@ -36,11 +36,6 @@ class Importer extends Walker
         return $data;
     }
 
-    public function fieldPredicate($field, $blueprint, $input)
-    {
-        return !$this::isFieldIgnored($blueprint);
-    }
-
     public function fieldHandler($field, $blueprint, $input)
     {
         if ($field->value() === null && $input === null) {
