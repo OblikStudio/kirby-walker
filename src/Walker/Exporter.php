@@ -2,7 +2,6 @@
 
 namespace Oblik\Outsource\Walker;
 
-use Oblik\Outsource\Serialize\Formatter;
 use const Oblik\Outsource\KEY;
 
 use Kirby\Cms\Site;
@@ -10,12 +9,16 @@ use Kirby\Cms\Pages;
 use Kirby\Cms\ModelWithContent;
 use Oblik\Variables\Manager;
 
+/**
+ * Walks over Site, Page, and Pages objects, returns their data, and their
+ * files' data. Can also export language variables.
+ */
 class Exporter extends Walker
 {
-    public static $formatter = Formatter::class;
-    public static $variables = Manager::class;
-
-    public $model;
+    /**
+     * Object that holds the exported data.
+     */
+    private $model;
 
     public function __construct($config = [])
     {
@@ -23,7 +26,11 @@ class Exporter extends Walker
         $this->model = new Model();
     }
 
-    public static function filter(array $data, array $settings)
+    /**
+     * Removes keys from fields that have array values, based on a field's
+     * outsource settings.
+     */
+    protected static function filter(array $data, array $settings)
     {
         $keys = $settings['keys'];
         $numeric = $settings['numeric'] ?? true;
@@ -35,7 +42,7 @@ class Exporter extends Walker
             $unset = $inclusive !== $matched;
 
             if ($recursive && is_array($value)) {
-                $value = self::filter($value, $settings);
+                $value = static::filter($value, $settings);
                 $unset = $value === null;
             }
 
@@ -59,13 +66,13 @@ class Exporter extends Walker
         return $data;
     }
 
-    public function fieldHandler($field, $blueprint, $input)
+    protected function fieldHandler($field, $blueprint, $input)
     {
         $data = static::$formatter::serialize($blueprint, $field);
         $filter = $blueprint[KEY]['export']['filter'] ?? null;
 
         if (is_array($data) && is_array($filter)) {
-            $data = self::filter($data, $filter);
+            $data = static::filter($data, $filter);
         }
 
         return $data;
@@ -99,7 +106,7 @@ class Exporter extends Walker
 
     public function exportVariables(string $lang)
     {
-        $data = static::$variables::export($lang);
+        $data = Manager::export($lang);
         $this->model->setVariables($data);
         return $data;
     }
@@ -115,6 +122,9 @@ class Exporter extends Walker
         }
     }
 
+    /**
+     * Returns the accumulated export data.
+     */
     public function data()
     {
         return $this->model->toArray();

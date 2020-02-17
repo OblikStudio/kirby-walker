@@ -2,6 +2,9 @@
 
 namespace Oblik\Outsource\Walker;
 
+/**
+ * Class for storing walked data.
+ */
 class Model {
     protected $site;
     protected $pages;

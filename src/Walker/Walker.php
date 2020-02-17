@@ -2,6 +2,7 @@
 
 namespace Oblik\Outsource\Walker;
 
+use Oblik\Outsource\Serialize\Formatter;
 use const Oblik\Outsource\KEY;
 
 use Exception;
@@ -16,6 +17,11 @@ use Kirby\Cms\ModelWithContent;
  */
 class Walker
 {
+    /**
+     * Class for data serialization.
+     */
+    protected static $formatter = Formatter::class;
+
     /**
      * Array with fields that are added artificially to each blueprint as if
      * they were actually in it. Useful for the `title` field that Kirby
@@ -66,7 +72,7 @@ class Walker
     /**
      * Whether a field should be included in the resulting data.
      */
-    protected function fieldPredicate(Field $field, $settings, $input)
+    protected function fieldPredicate(Field $field, array $settings, $input)
     {
         $ignored = $settings[KEY]['ignore'] ?? false;
         return !$ignored;

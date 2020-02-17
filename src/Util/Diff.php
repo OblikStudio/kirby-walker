@@ -48,7 +48,7 @@ class Diff
             // If all entries have IDs, assume the array is keyed and process
             // entries according to their IDs.
             if (count($ids) === count($data)) {
-                $result = self::processKeyedArray($data, $snapshot, [self::class, 'process']);
+                $result = static::processKeyedArray($data, $snapshot, [static::class, 'process']);
                 $result = array_filter($result);
 
                 if (count($result) === 0) {
@@ -57,7 +57,7 @@ class Diff
             } else {
                 foreach ($data as $key => $entry) {
                     $snapshotEntry = $snapshot[$key] ?? null;
-                    $diff = self::process($entry, $snapshotEntry);
+                    $diff = static::process($entry, $snapshotEntry);
 
                     if ($diff !== null) {
                         $result[$key] = $diff;

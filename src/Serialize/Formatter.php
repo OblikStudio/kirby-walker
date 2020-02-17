@@ -4,10 +4,17 @@ namespace Oblik\Outsource\Serialize;
 
 use const Oblik\Outsource\KEY;
 
+use Kirby\Cms\Field;
 use Kirby\Data\Json;
 
+/**
+ * Serializes and deserializes data formats, optionally chaining them.
+ */
 class Formatter
 {
+    /**
+     * Array of classes that can be used for serialization.
+     */
     protected static $serializers = [
         'kirbytags' => KirbyTags::class,
         'markdown' => Markdown::class,
@@ -16,7 +23,7 @@ class Formatter
         'json' => Json::class
     ];
 
-    public static function serialize(array $blueprint, $field)
+    public static function serialize(array $blueprint, Field $field)
     {
         $options = $blueprint[KEY] ?? null;
         $serialize = $options['serialize'] ?? [];

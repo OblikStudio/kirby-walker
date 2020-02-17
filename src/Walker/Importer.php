@@ -2,19 +2,22 @@
 
 namespace Oblik\Outsource\Walker;
 
-use Oblik\Outsource\Serialize\Formatter;
 use const Oblik\Outsource\KEY;
 
 use Kirby\Cms\Field;
 use Kirby\Cms\ModelWithContent;
 use Oblik\Variables\Manager;
 
+/**
+ * Takes data in the walker model format, updates Kirby models according to it,
+ * and returns an array containing the old and new value of each updated field.
+ */
 class Importer extends Walker
 {
-    public static $formatter = Formatter::class;
-    public static $variables = Manager::class;
-
-    public static function compare(array $old, array $new)
+    /**
+     * Iterates over two arrays and returns one containing the values of both.
+     */
+    protected static function compare(array $old, array $new)
     {
         $keys = array_replace(array_keys($new), array_keys($old));
         $data = null;
@@ -25,7 +28,7 @@ class Importer extends Walker
             $entry = null;
 
             if (is_array($newValue) && is_array($oldValue)) {
-                $entry = self::compare($oldValue, $newValue);
+                $entry = static::compare($oldValue, $newValue);
             } else if ($newValue !== $oldValue) {
                 $entry = [
                     '$old' => $oldValue,
@@ -41,7 +44,7 @@ class Importer extends Walker
         return $data;
     }
 
-    public function fieldHandler(Field $field, array $blueprint, $input)
+    protected function fieldHandler(Field $field, array $blueprint, $input)
     {
         if ($field->value() === null && $input === null) {
             return null;
@@ -67,24 +70,24 @@ class Importer extends Walker
         return $data;
     }
 
-    public function importModel(ModelWithContent $model, array $data, string $lang)
+    protected function importModel(ModelWithContent $model, array $data, string $lang)
     {
         $mergedData = $this->walkModel($model, $lang, $data);
         $newModel = $model->update($mergedData, $lang);
 
-        return self::compare(
+        return static::compare(
             $model->content($lang)->data(),
             $newModel->content($lang)->data()
         );
     }
 
-    public function importVariables(array $data, string $lang)
+    protected function importVariables(array $data, string $lang)
     {
-        $oldVariables = static::$variables::export($lang);
-        static::$variables::import($lang, $data);
-        $newVariables = static::$variables::export($lang);
+        $oldVariables = Manager::export($lang);
+        Manager::import($lang, $data);
+        $newVariables = Manager::export($lang);
 
-        return self::compare($oldVariables ?? [], $newVariables ?? []);
+        return static::compare($oldVariables ?? [], $newVariables ?? []);
     }
 
     public function import(array $data, string $lang)

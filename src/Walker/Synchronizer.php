@@ -2,21 +2,23 @@
 
 namespace Oblik\Outsource\Walker;
 
+use Kirby\Cms\Field;
 use Kirby\Cms\Structure;
 
 /**
- * Synchronizes structures based on input data by comparing entry IDs.
+ * Updates structure fields' entries based on their own IDs and the IDs inside
+ * the input entries.
  */
 class Synchronizer extends Walker
 {
-    public function fieldPredicate($field, $blueprint, $input)
+    protected function fieldPredicate(Field $field, $settings, $input)
     {
-        return $blueprint['type'] === 'structure';
+        return $settings['type'] === 'structure';
     }
 
-    public function structureHandler(Structure $structure, array $fieldsBlueprint, $input, $sync)
+    protected function structureHandler(Structure $structure, array $blueprint, $input, $sync)
     {
-        $data = [];
+        $data = null;
 
         if ($sync && is_array($input)) {
             foreach ($input as $inputEntry) {
@@ -29,7 +31,7 @@ class Synchronizer extends Walker
                     $childData = $content->toArray();
 
                     // Get data from nested structures.
-                    $nestedData = $this->walk($content, $fieldsBlueprint, $inputEntry);
+                    $nestedData = $this->walk($content, $blueprint, $inputEntry);
 
                     if (is_array($nestedData)) {
                         $childData = array_replace($childData, $nestedData);
