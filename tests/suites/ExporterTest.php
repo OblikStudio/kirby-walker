@@ -6,9 +6,12 @@ use PHPUnit\Framework\TestCase;
 
 class TestExporter extends Exporter
 {
-    public function fieldPredicate($field, $input)
+    public function fieldPredicate($field, $blueprint, $input)
     {
-        return ($this->blueprint('translate') ?? true) && parent::fieldPredicate($field, $input);
+        $translate = $blueprint['translate'] ?? true;
+        $predicate = parent::fieldPredicate($field, $blueprint, $input);
+
+        return $translate && $predicate;
     }
 }
 

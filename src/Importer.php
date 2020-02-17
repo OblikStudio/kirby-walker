@@ -36,19 +36,18 @@ class Importer extends Walker
         return $data;
     }
 
-    public function fieldPredicate($field, $input)
+    public function fieldPredicate($field, $blueprint, $input)
     {
-        return !$this::isFieldIgnored($this->blueprint());
+        return !$this::isFieldIgnored($blueprint);
     }
 
-    public function fieldHandler($field, $input)
+    public function fieldHandler($field, $blueprint, $input)
     {
         if ($field->value() === null && $input === null) {
             return null;
         }
 
-        $blueprint = $this->blueprint();
-        $merger = $this->blueprintSetting('import')['merge'] ?? null;
+        $merger = $blueprint[BLUEPRINT_KEY]['import']['merge'] ?? null;
         $data = static::$formatter::serialize($blueprint, $field);
 
         if (is_callable($merger)) {
@@ -72,7 +71,7 @@ class Importer extends Walker
     {
         $lang = $this->settings[BP_LANGUAGE];
 
-        $mergedData = $this->walk($model, $data);
+        $mergedData = $this->walk($model, [], $data);
         $newModel = $model->update($mergedData, $lang);
 
         return self::compare(

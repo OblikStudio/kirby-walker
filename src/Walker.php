@@ -18,11 +18,6 @@ class Walker
     public $settings = [];
 
     /**
-     * The blueprints stack, consisting of model, structure or field blueprints.
-     */
-    protected $blueprints = [];
-
-    /**
      * According to its blueprint, checks whether a field should be ignored by
      * the plugin
      */
@@ -38,28 +33,6 @@ class Walker
             $this->settings,
             $settings
         );
-    }
-
-    /**
-     * Returns the last blueprint in the stack or a key from it.
-     */
-    public function blueprint($key = null)
-    {
-        $data = $this->blueprints[array_key_last($this->blueprints)];
-
-        if ($key) {
-            $data = $data[$key] ?? null;
-        }
-
-        return $data;
-    }
-
-    /**
-     * Returns a setting from the `outsource` property in the current blueprint.
-     */
-    public function blueprintSetting($key)
-    {
-        return $this->blueprint(BLUEPRINT_KEY)[$key] ?? null;
     }
 
     /**
@@ -97,9 +70,9 @@ class Walker
     /**
      * Determines if a field should be included in the resulting data.
      */
-    public function fieldPredicate($field, $input)
+    public function fieldPredicate($field, $blueprint, $input)
     {
-        $ignored = $this::isFieldIgnored($this->blueprint());
+        $ignored = $this::isFieldIgnored($blueprint);
         $undefined = $field->value() === null;
         return (!$ignored && !$undefined);
     }
@@ -107,19 +80,21 @@ class Walker
     /**
      * Determines what data to return for this field in the result.
      */
-    public function fieldHandler($field, $input)
+    public function fieldHandler($field, $blueprint, $input)
     {
         return $field->value();
     }
 
     /**
-     * Determines what data to return for this structure in the result. For
-     * performance, the current blueprint scope would be that of the fields so
-     * each entry can share it.
+     * Determines what data to return for this structure in the result.
      */
-    public function structureHandler($structure, $input, $sync)
+    public function structureHandler($structure, $blueprint, $input)
     {
         $data = null;
+
+        $sync = $blueprint[BLUEPRINT_KEY]['sync'] ?? false;
+        $fields = $blueprint['fields'] ?? [];
+        $fieldsBlueprint = $this->processBlueprint($fields);
 
         if ($sync && is_array($input)) {
             $input = array_column($input, null, $sync);
@@ -132,7 +107,7 @@ class Walker
                 $inputEntry = $input[$id] ?? null;
             }
 
-            $childData = $this->walk($entry, $inputEntry);
+            $childData = $this->walk($entry, $fieldsBlueprint, $inputEntry);
 
             if (!empty($childData)) {
                 if ($sync) {
@@ -149,28 +124,25 @@ class Walker
     /**
      * @return array|null
      */
-    public function walk(Model $model, $input = [])
+    public function walk(Model $model, array $fieldsBlueprint = [], $input = [])
     {
         // If the model has a blueprint, its fields should be pushed on the
         // blueprint stack.
         if (method_exists($model, 'blueprint')) {
             $fieldsBlueprint = $model->blueprint()->fields();
             $fieldsBlueprint = $this->processBlueprint($fieldsBlueprint);
-            array_push($this->blueprints, $fieldsBlueprint);
         }
 
         $data = null;
         $content = $model->content($this->settings[BP_LANGUAGE]);
 
-        foreach ($this->blueprint() as $key => $fieldBlueprint) {
+        foreach ($fieldsBlueprint as $key => $fieldBlueprint) {
             $field = $content->$key();
             $inputData = $input[$key] ?? null;
             $fieldBlueprint = $this->processFieldBlueprint($fieldBlueprint);
 
-            array_push($this->blueprints, $fieldBlueprint);
-
             try {
-                $fieldData = $this->walkField($field, $inputData);
+                $fieldData = $this->walkField($field, $fieldBlueprint, $inputData);
             } catch (Throwable $e) {
                 $modelName = is_a($model, Site::class) ? 'site' : $model->id();
                 $fieldName = $field->key();
@@ -178,8 +150,6 @@ class Walker
 
                 throw new Exception("Could not process $fieldName in $modelName: $errorName");
             }
-
-            array_pop($this->blueprints);
 
             if ($fieldData !== null) {
                 $data[$key] = $fieldData;
@@ -189,29 +159,17 @@ class Walker
         return $data;
     }
 
-    public function walkField($field, $input)
+    public function walkField($field, $blueprint, $input)
     {
         $data = null;
 
-        if ($this->fieldPredicate($field, $input)) {
-            if ($this->blueprint('type') === 'structure') {
-                $data = $this->walkStructure($field->toStructure(), $input);
+        if ($this->fieldPredicate($field, $blueprint, $input)) {
+            if ($blueprint['type'] === 'structure') {
+                $data = $this->structureHandler($field->toStructure(), $blueprint, $input);
             } else {
-                $data = $this->fieldHandler($field, $input);
+                $data = $this->fieldHandler($field, $blueprint, $input);
             }
         }
-
-        return $data;
-    }
-
-    public function walkStructure($structure, $input)
-    {
-        $sync = $this->blueprintSetting('sync');
-        $fieldsBlueprint = $this->processBlueprint($this->blueprint('fields'));
-
-        array_push($this->blueprints, $fieldsBlueprint);
-        $data = $this->structureHandler($structure, $input, $sync);
-        array_pop($this->blueprints);
 
         return $data;
     }
