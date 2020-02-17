@@ -121,18 +121,8 @@ class Walker
         return $data;
     }
 
-    /**
-     * @return array|null
-     */
     public function walk(Model $model, array $fieldsBlueprint = [], $input = [])
     {
-        // If the model has a blueprint, its fields should be pushed on the
-        // blueprint stack.
-        if (method_exists($model, 'blueprint')) {
-            $fieldsBlueprint = $model->blueprint()->fields();
-            $fieldsBlueprint = $this->processBlueprint($fieldsBlueprint);
-        }
-
         $data = null;
         $content = $model->content($this->settings[BP_LANGUAGE]);
 

@@ -71,7 +71,9 @@ class Importer extends Walker
     {
         $lang = $this->settings[BP_LANGUAGE];
 
-        $mergedData = $this->walk($model, [], $data);
+        $fields = $model->blueprint()->fields();
+        $blueprint = $this->processBlueprint($fields);
+        $mergedData = $this->walk($model, $blueprint, $data);
         $newModel = $model->update($mergedData, $lang);
 
         return self::compare(

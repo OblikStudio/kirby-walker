@@ -69,12 +69,17 @@ class Exporter extends Walker
      */
     public function extractModel(ModelWithContent $model)
     {
-        $data = $this->walk($model);
+        $fields = $model->blueprint()->fields();
+        $blueprint = $this->processBlueprint($fields);
+        $data = $this->walk($model, $blueprint);
+
         $files = [];
 
         foreach ($model->files() as $file) {
             $fileId = $file->id();
-            $fileData = $this->walk($file);
+            $fileFields = $file->blueprint()->fields();
+            $fileBlueprint = $this->processBlueprint($fileFields);
+            $fileData = $this->walk($file, $fileBlueprint);
 
             if (!empty($fileData)) {
                 $files[$fileId] = $fileData;

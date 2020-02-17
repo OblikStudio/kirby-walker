@@ -16,8 +16,10 @@ class Synchronizer
     public function mark()
     {
         $marker = new Marker();
+        $fields = $this->model->blueprint()->fields();
+        $blueprint = $marker->processBlueprint($fields);
 
-        if ($data = $marker->walk($this->model)) {
+        if ($data = $marker->walk($this->model, $blueprint)) {
             $this->model = $this->model->update($data, $this->lang);
         }
 
@@ -33,8 +35,10 @@ class Synchronizer
 
             if ($lang !== $this->lang) {
                 $syncer->settings[BP_LANGUAGE] = $lang;
+                $fields = $this->model->blueprint()->fields();
+                $blueprint = $syncer->processBlueprint($fields);
 
-                if ($data = $syncer->walk($this->model, [], $input)) {
+                if ($data = $syncer->walk($this->model, $blueprint, $input)) {
                     $this->model->update($data, $lang);
                 }
             }
