@@ -22,8 +22,8 @@ class Synchronizer extends Walker
 
         if ($sync && is_array($input)) {
             foreach ($input as $inputEntry) {
-                $id = $inputEntry[$sync] ?? null;
-                $entry = $structure->findBy($sync, $id);
+                $id = $inputEntry['id'] ?? null;
+                $entry = $structure->findBy('id', $id);
 
                 if ($entry) {
                     // Get all unaltered child data.

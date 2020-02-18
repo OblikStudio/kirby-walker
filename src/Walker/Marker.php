@@ -56,7 +56,7 @@ class Marker extends Walker
             }
 
             if ($data) {
-                $data = static::addIds($data, $sync);
+                $data = static::addIds($data, 'id');
             }
         } else {
             // If the current structure is not synced, it's impossible to sync

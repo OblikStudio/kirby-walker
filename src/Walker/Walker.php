@@ -94,12 +94,12 @@ class Walker
         $data = null;
 
         if ($sync && is_array($input)) {
-            $input = array_column($input, null, $sync);
+            $input = array_column($input, null, 'id');
         }
 
         foreach ($structure as $id => $entry) {
             if ($sync) {
-                $inputEntry = $input[$entry->$sync()] ?? null;
+                $inputEntry = $input[$entry->id()] ?? null;
             } else {
                 $inputEntry = $input[$id] ?? null;
             }
@@ -109,7 +109,7 @@ class Walker
 
             if (!empty($childData)) {
                 if ($sync) {
-                    $childData[$sync] = $id;
+                    $childData['id'] = $id;
                 }
 
                 $data[] = $childData;
@@ -182,7 +182,7 @@ class Walker
     /**
      * Walks over the content of a model in a certain language.
      */
-    public function walkModel(ModelWithContent $model, string $lang, $input = [])
+    public function walkModel(ModelWithContent $model, string $lang = null, $input = [])
     {
         $content = $model->content($lang);
         $fields = $model->blueprint()->fields();

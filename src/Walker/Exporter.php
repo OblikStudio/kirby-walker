@@ -78,7 +78,7 @@ class Exporter extends Walker
         return $data;
     }
 
-    public function exportModel(ModelWithContent $model, string $lang, bool $children = true)
+    public function exportModel(ModelWithContent $model, string $lang = null, bool $children = true)
     {
         $data = $this->walkModel($model, $lang);
 
@@ -111,7 +111,7 @@ class Exporter extends Walker
         return $data;
     }
 
-    public function export($input, string $lang, bool $children = true)
+    public function export($input, string $lang = null, bool $children = true)
     {
         if (is_subclass_of($input, ModelWithContent::class)) {
             $this->exportModel($input, $lang, $children);
