@@ -18,14 +18,14 @@ class Markdown
         'list_item_style' => '-'
     ];
 
-    public static function decode(string $text, $options = [])
+    public static function decode(string $text, array $options)
     {
         $parser = new MarkdownParser($options);
         $output = $parser->parse($text);
         return str_replace(">\n<", '><', $output);
     }
 
-    public static function encode(string $text, $options = [])
+    public static function encode(string $text, array $options)
     {
         $options = array_merge(static::$decodeOptions, $options);
         $converter = new HtmlConverter($options);

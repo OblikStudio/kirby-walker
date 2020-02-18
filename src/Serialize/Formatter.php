@@ -23,49 +23,50 @@ class Formatter
         'json' => Json::class
     ];
 
-    public static function serialize(array $blueprint, Field $field)
+    public static function serialize(array $settings, Field $field)
     {
-        $options = $blueprint[KEY] ?? null;
-        $serialize = $options['serialize'] ?? [];
-        $content = $field->value();
+        $serializers = $settings[KEY]['serialize'] ?? null;
+        $data = $field->value();
 
-        if ($content === null || $content === '') {
-            // Field has no value.
-            return null;
-        }
+        if (is_array($serializers) && !empty($data)) {
+            foreach ($serializers as $key => $config) {
+                $serializer = static::$serializers[$key] ?? null;
 
-        foreach ($serialize as $key => $config) {
-            $serializer = self::$serializers[$key] ?? null;
-
-            if ($serializer) {
-                $content = $serializer::decode($content, [
-                    'field' => $field,
-                    'blueprint' => $blueprint,
-                    'config' => $config
-                ]);
+                if ($serializer) {
+                    $data = $serializer::decode($data, [
+                        'field' => $field,
+                        'settings' => $settings,
+                        'serialize' => $config
+                    ]);
+                }
             }
         }
 
-        return $content;
+        return $data;
     }
 
-    public static function deserialize(array $blueprint, $data)
+    public static function deserialize(array $settings, $data)
     {
-        $options = $blueprint[KEY] ?? null;
-        $serializers = $options['deserialize'] ?? null;
+        $serializers = $settings[KEY]['deserialize'] ?? null;
 
         if (!is_array($serializers)) {
-            $serializers = array_reverse($options['serialize'] ?? [], true);
+            $serializers = $settings[KEY]['serialize'] ?? null;
+
+            if (is_array($serializers)) {
+                $serializers = array_reverse($serializers);
+            }
         }
 
-        foreach ($serializers as $key => $config) {
-            $serializer = self::$serializers[$key] ?? null;
+        if (is_array($serializers)) {
+            foreach ($serializers as $key => $config) {
+                $serializer = static::$serializers[$key] ?? null;
 
-            if ($serializer) {
-                $data = $serializer::encode($data, [
-                    'blueprint' => $blueprint,
-                    'config' => $config
-                ]);
+                if ($serializer) {
+                    $data = $serializer::encode($data, [
+                        'settings' => $settings,
+                        'serialize' => $config
+                    ]);
+                }
             }
         }
 
