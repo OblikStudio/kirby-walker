@@ -70,7 +70,7 @@ class Importer extends Walker
         return $data;
     }
 
-    protected function importModel(ModelWithContent $model, array $data, string $lang)
+    public function importModel(ModelWithContent $model, array $data, string $lang = null)
     {
         $mergedData = $this->walkModel($model, $lang, $data);
         $newModel = $model->update($mergedData, $lang);
@@ -81,7 +81,7 @@ class Importer extends Walker
         );
     }
 
-    protected function importVariables(array $data, string $lang)
+    public function importVariables(array $data, string $lang)
     {
         $oldVariables = Manager::export($lang);
         Manager::import($lang, $data);
@@ -90,7 +90,7 @@ class Importer extends Walker
         return static::compare($oldVariables ?? [], $newVariables ?? []);
     }
 
-    public function import(array $data, string $lang)
+    public function import(array $data, string $lang = null)
     {
         $model = new Model($data);
         $result = new Model();
