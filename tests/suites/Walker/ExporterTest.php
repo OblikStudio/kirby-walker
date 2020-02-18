@@ -31,22 +31,14 @@ final class ExporterTest extends TestCase
             ]
         ]);
 
-        $data = new Page([
+        $data = $exporter->exportModel(new Page([
             'slug' => 'test',
-            'translations' => [
-                [
-                    'code' => 'en',
-                    'content' => [
-                        'title' => 'test'
-                    ]
-                ]
+            'content' => [
+                'title' => 'test'
             ]
-        ]);
+        ]));
 
-        $exporter->export($data, 'en');
-        $data = $exporter->data();
-
-        $this->assertArrayHasKey('title', $data['pages']['test']);
+        $this->assertEquals('test', $data['title']);
     }
 
     public function testSerialization()
