@@ -2,36 +2,24 @@
 
 namespace Oblik\Outsource\Util;
 
+use Oblik\Outsource\TestCase;
+
 use Kirby\Cms\App;
-use Kirby\Cms\Dir;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
-use PHPUnit\Framework\TestCase;
 
 final class UpdaterTest extends TestCase
 {
-    protected $fixtures = __DIR__ . '/fixtures/UpdaterTest';
-
-    public function setUp(): void
-    {
-        Dir::make($this->fixtures);
-    }
-
-    public function tearDown(): void
-    {
-        Dir::remove($this->fixtures);
-    }
-
     public function testStructureImportSync()
     {
-        $app = new App([
+        $this->app = new App([
             'roots' => [
                 'index' => $this->fixtures
             ],
             'hooks' => Updater::getHooks()
         ]);
 
-        $app->impersonate('kirby');
+        $this->app->impersonate('kirby');
 
         $page = new Page([
             'slug' => 'test',
@@ -98,7 +86,7 @@ final class UpdaterTest extends TestCase
         ];
 
         $page->update($input);
-        $updatedPage = $app->page('test');
+        $updatedPage = $this->app->page('test');
         $updatedPageData = $updatedPage->content()->toArray();
         $data = Yaml::decode($updatedPageData['items']);
 

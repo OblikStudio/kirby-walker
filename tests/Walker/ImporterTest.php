@@ -3,38 +3,17 @@
 namespace Oblik\Outsource\Walker;
 
 use Oblik\Outsource\Util\Diff;
+use Oblik\Outsource\TestCase;
 
 use Kirby\Cms\App;
-use Kirby\Cms\Dir;
 use Kirby\Cms\Page;
 use Kirby\Data\Json;
 use Kirby\Data\Yaml;
 use Kirby\Toolkit\F;
 use Oblik\Variables\Manager;
-use PHPUnit\Framework\TestCase;
 
 final class ImporterTest extends TestCase
 {
-    protected $fixtures = __DIR__ . '/fixtures/ImporterTest';
-
-    public function setUp(): void
-    {
-        $app = new App([
-            'roots' => [
-                'index' => $this->fixtures
-            ]
-        ]);
-
-        $app->impersonate('kirby');
-
-        Dir::make($this->fixtures);
-    }
-
-    public function tearDown(): void
-    {
-        Dir::remove($this->fixtures);
-    }
-
     public function testReportsChanges()
     {
         $importer = new Importer();
@@ -293,7 +272,7 @@ final class ImporterTest extends TestCase
             'foo: a'
         );
 
-        new App([
+        $this->app = new App([
             'roots' => [
                 'index' => $this->fixtures
             ],
