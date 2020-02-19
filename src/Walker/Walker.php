@@ -98,14 +98,8 @@ class Walker
         }
 
         foreach ($structure as $id => $entry) {
-            if ($sync) {
-                $inputEntry = $input[$entry->id()] ?? null;
-            } else {
-                $inputEntry = $input[$id] ?? null;
-            }
-
-            $content = $entry->content();
-            $childData = $this->walk($content, $blueprint, $inputEntry);
+            $inputEntry = $input[$id] ?? null;
+            $childData = $this->walk($entry->content(), $blueprint, $inputEntry);
 
             if (!empty($childData)) {
                 if ($sync) {

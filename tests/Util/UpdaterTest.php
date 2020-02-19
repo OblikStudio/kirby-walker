@@ -100,4 +100,64 @@ final class UpdaterTest extends TestCase
         $this->assertEquals('djzw', $data[1]['id']);
         $this->assertEquals(['foo' => 'b', 'id' => 'pajt'], $data[1]['nested'][1]);
     }
+
+    public function testNonSyncStructureUnchanged()
+    {
+        $this->app = new App([
+            'roots' => [
+                'index' => $this->fixtures
+            ],
+            'hooks' => Updater::getHooks()
+        ]);
+
+        $this->app->impersonate('kirby');
+
+        $page = new Page([
+            'slug' => 'test',
+            'content' => [
+                'items' => Yaml::encode([
+                    [
+                        'foo' => 'a'
+                    ]
+                ])
+            ],
+            'blueprint' => [
+                'fields' => [
+                    'items' => [
+                        'type' => 'structure',
+                        'fields' => [
+                            'foo' => [
+                                'type' => 'text'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+
+        $input = [
+            'items' => [
+                [
+                    'foo' => 'b'
+                ],
+                [
+                    'foo' => 'new'
+                ]
+            ]
+        ];
+
+        $page->update($input);
+        $updatedPage = $this->app->page('test');
+        $updatedPageData = $updatedPage->content()->toArray();
+        $data = Yaml::decode($updatedPageData['items']);
+
+        $this->assertEquals([
+            [
+                'foo' => 'b'
+            ],
+            [
+                'foo' => 'new'
+            ]
+        ], $data);
+    }
 }
