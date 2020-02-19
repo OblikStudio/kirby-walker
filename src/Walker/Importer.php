@@ -44,14 +44,14 @@ class Importer extends Walker
         return $data;
     }
 
-    protected function fieldHandler(Field $field, array $blueprint, $input)
+    protected function fieldHandler(Field $field, array $settings, $input)
     {
         if ($field->value() === null && $input === null) {
             return null;
         }
 
-        $merger = $blueprint[KEY]['import']['merge'] ?? null;
-        $data = static::$formatter::serialize($blueprint, $field);
+        $merger = $settings[KEY]['import']['merge'] ?? null;
+        $data = static::$formatter::serialize($settings, $field);
 
         if (is_callable($merger)) {
             $data = $merger($data, $input);
@@ -64,7 +64,7 @@ class Importer extends Walker
         }
 
         if ($data !== null) {
-            $data = static::$formatter::deserialize($blueprint, $data);
+            $data = static::$formatter::deserialize($settings, $data);
         }
 
         return $data;

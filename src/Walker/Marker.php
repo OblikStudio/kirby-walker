@@ -48,7 +48,7 @@ class Marker extends Walker
                 $content = $entry->content();
                 $fields = $content->toArray();
 
-                if ($nestedStructures = $this->walk($content, $blueprint)) {
+                if ($nestedStructures = $this->walk($content, $blueprint, $input)) {
                     $fields = array_replace($fields, $nestedStructures);
                 }
 
