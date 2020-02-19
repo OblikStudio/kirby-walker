@@ -143,9 +143,7 @@ class Walker
     protected function walkStructure(Field $field, array $settings, $input)
     {
         $sync = $settings[KEY]['sync'] ?? false;
-        $fields = $settings['fields'] ?? [];
-        $blueprint = $this->processBlueprint($fields);
-
+        $blueprint = $settings['fields'] ?? [];
         return $this->structureHandler($field->toStructure(), $blueprint, $input, $sync);
     }
 
@@ -156,6 +154,7 @@ class Walker
     public function walk(Content $content, array $blueprint = [], $input = [])
     {
         $data = null;
+        $blueprint = $this->processBlueprint($blueprint);
 
         foreach ($blueprint as $key => $settings) {
             $field = $content->$key();
@@ -185,9 +184,7 @@ class Walker
     public function walkModel(ModelWithContent $model, string $lang = null, $input = [])
     {
         $content = $model->content($lang);
-        $fields = $model->blueprint()->fields();
-        $blueprint = $this->processBlueprint($fields);
-
+        $blueprint = $model->blueprint()->fields();
         return $this->walk($content, $blueprint, $input);
     }
 }
