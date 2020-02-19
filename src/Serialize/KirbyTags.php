@@ -70,16 +70,23 @@ class KirbyTag extends KirbyTagNative
 
     public function render(): string
     {
+        $serialize = $this->option('serialize');
+
         /**
          * Array of tags that should be rendered in their own <value> XML tags,
          * instead of being attributes of the <kirby> tag.
          */
-        $externalTags = $this->option('tags', []);
+        $externalTags = [];
 
         /**
          * Encode HTML entities in external tags?
          */
-        $encodeEntities = $this->option('entities', false);
+        $encodeEntities = false;
+
+        if (is_array($serialize)) {
+            $externalTags = $serialize['tags'] ?? $externalTags;
+            $encodeEntities = $serialize['entities'] ?? $encodeEntities;
+        }
 
         $parts = array_merge([
             $this->type => $this->value
@@ -140,7 +147,7 @@ class KirbyTags
      */
     protected static function encodeTag(string $xml, array $options)
     {
-        $encodeEntities = $options['entities'] ?? false;
+        $encodeEntities = $options['serialize']['entities'] ?? false;
 
         if (!$encodeEntities) {
             // If no entities are placed by encode(), entities in the original

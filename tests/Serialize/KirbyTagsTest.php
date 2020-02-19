@@ -8,10 +8,16 @@ final class KirbyTagsTest extends TestCase
 {
     public function serialize($input, $expected, $decodeOptions = [], $encodeOptions = [])
     {
-        $xml = KirbyTags::decode($input, $decodeOptions);
+        $xml = KirbyTags::decode($input, [
+            'serialize' => $decodeOptions
+        ]);
+
         $this->assertEquals($expected, $xml);
 
-        $text = KirbyTags::encode($xml, $encodeOptions);
+        $text = KirbyTags::encode($xml, [
+            'serialize' => $encodeOptions
+        ]);
+
         $this->assertEquals($input, $text);
     }
 

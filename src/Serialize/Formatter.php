@@ -29,6 +29,9 @@ class Formatter
         $data = $field->value();
 
         if (is_array($serializers) && !empty($data)) {
+            // Filter out serializers set to `false`.
+            $serializers = array_filter($serializers);
+
             foreach ($serializers as $key => $config) {
                 $serializer = static::$serializers[$key] ?? null;
 
@@ -58,6 +61,8 @@ class Formatter
         }
 
         if (is_array($serializers)) {
+            $serializers = array_filter($serializers);
+
             foreach ($serializers as $key => $config) {
                 $serializer = static::$serializers[$key] ?? null;
 
