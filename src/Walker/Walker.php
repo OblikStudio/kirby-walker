@@ -124,7 +124,13 @@ class Walker
             if ($settings['type'] === 'structure') {
                 $data = $this->walkStructure($field, $settings, $input);
             } else {
-                $data = $this->fieldHandler($field, $settings, $input);
+                $walkHandler = $settings[KEY]['walk'] ?? null;
+
+                if (is_callable($walkHandler)) {
+                    $data = $walkHandler($this, ...func_get_args());
+                } else {
+                    $data = $this->fieldHandler($field, $settings, $input);
+                }
             }
         }
 

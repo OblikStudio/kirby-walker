@@ -36,6 +36,21 @@ App::plugin('oblik/outsource', [
                     'tags' => true
                 ]
             ],
+
+            /**
+             * Support for Entity Field.
+             * @see https://github.com/OblikStudio/kirby-entity-field
+             */
+            'entity' => [
+                'walk' => function ($walker, $field, $settings, $input) {
+                    return $walker->walk($field->toEntity(), $settings['fields'], $input);
+                }
+            ],
+
+            /**
+             * Support for Kirby Editor.
+             * @see https://github.com/getkirby/editor
+             */
             'editor' => [
                 'serialize' => [
                     'json' => true
