@@ -2,9 +2,12 @@
 
 namespace Oblik\Outsource\Walker;
 
+use Oblik\Outsource\Util\Diff;
+
 use Kirby\Cms\App;
 use Kirby\Cms\Dir;
 use Kirby\Cms\Page;
+use Kirby\Data\Json;
 use Kirby\Data\Yaml;
 use Kirby\Toolkit\F;
 use Oblik\Variables\Manager;
@@ -205,6 +208,82 @@ final class ImporterTest extends TestCase
             ['foo' => 'a'],
             ['foo' => 'b']
         ]), $data['items']['$new']);
+    }
+
+    public function testCustomMergers()
+    {
+        $importer = new Importer([
+            'fields' => [
+                'editor' => [
+                    'serialize' => [
+                        'json' => true
+                    ],
+                    'import' => [
+                        'merge' => function ($data, $input) {
+                            return Diff::processKeyedArray($data, $input, 'array_replace_recursive');
+                        }
+                    ]
+                ]
+            ]
+        ]);
+
+        $page = new Page([
+            'slug' => 'test',
+            'content' => [
+                'text' => Json::encode([
+                    [
+                        'attrs' => [],
+                        'content' => 'Hello!',
+                        'id' => '_3i2q91mx6',
+                        'type' => 'h1'
+                    ],
+                    [
+                        'attrs' => [],
+                        'content' => 'This is the Kirby editor!',
+                        'id' => '_ml7ufpb8n',
+                        'type' => 'paragraph'
+                    ]
+                ])
+            ],
+            'blueprint' => [
+                'fields' => [
+                    'text' => [
+                        'type' => 'editor'
+                    ]
+                ]
+            ]
+        ]);
+
+        $import = [
+            'text' => [
+                [
+                    'id' => '_ml7ufpb8n',
+                    'content' => 'Imported content'
+                ],
+                [
+                    'id' => '_3i2q91mx6',
+                    'content' => 'Imported heading'
+                ]
+            ]
+        ];
+
+        $expected = [
+            [
+                'attrs' => [],
+                'content' => 'Imported heading',
+                'id' => '_3i2q91mx6',
+                'type' => 'h1'
+            ],
+            [
+                'attrs' => [],
+                'content' => 'Imported content',
+                'id' => '_ml7ufpb8n',
+                'type' => 'paragraph'
+            ]
+        ];
+
+        $data = $importer->importModel($page, $import);
+        $this->assertEquals($expected, Json::decode($data['text']['$new']));
     }
 
     public function testImportsVariables()
