@@ -3,8 +3,10 @@
 namespace Oblik\Outsource\Walker;
 
 use Kirby\Cms\App;
+use Kirby\Cms\Dir;
 use Kirby\Cms\Page;
 use Kirby\Data\Yaml;
+use Kirby\Toolkit\F;
 use Oblik\Variables\Manager;
 use PHPUnit\Framework\TestCase;
 
@@ -21,6 +23,18 @@ class TranslateExporter extends Exporter
 
 final class ExporterTest extends TestCase
 {
+    protected $fixtures = __DIR__ . '/fixtures/ExporterTest';
+
+    public function setUp(): void
+    {
+        Dir::make($this->fixtures);
+    }
+
+    public function tearDown(): void
+    {
+        Dir::remove($this->fixtures);
+    }
+
     public function testArtificialFields()
     {
         $exporter = new Exporter([
@@ -278,9 +292,14 @@ final class ExporterTest extends TestCase
 
     public function testVariablesExported()
     {
+        F::write(
+            $this->fixtures . '/site/languages/en.yml',
+            'foo: test'
+        );
+
         new App([
             'roots' => [
-                'languages' => __DIR__ . '/fixtures/ExporterTest'
+                'index' => $this->fixtures
             ],
             'languages' => [
                 ['code' => 'en']
