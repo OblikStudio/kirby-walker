@@ -20,17 +20,9 @@ App::plugin('oblik/outsource', [
             ]
         ],
         'fields' => [
-            'text' => [
-                'serialize' => [
-                    'kirbytags' => true
-                ]
-            ],
-            'textarea' => [
-                'serialize' => [
-                    'kirbytags' => true,
-                    'markdown' => true
-                ]
-            ],
+            /**
+             * @see https://getkirby.com/docs/reference/panel/fields/tags
+             */
             'tags' => [
                 'serialize' => [
                     'tags' => true
@@ -38,17 +30,6 @@ App::plugin('oblik/outsource', [
             ],
 
             /**
-             * Support for Entity Field.
-             * @see https://github.com/OblikStudio/kirby-entity-field
-             */
-            'entity' => [
-                'walk' => function ($walker, $field, $settings, $input) {
-                    return $walker->walk($field->toEntity(), $settings['fields'], $input);
-                }
-            ],
-
-            /**
-             * Support for Kirby Editor.
              * @see https://github.com/getkirby/editor
              */
             'editor' => [
@@ -68,6 +49,33 @@ App::plugin('oblik/outsource', [
                             'array_replace_recursive'
                         );
                     }
+                ]
+            ],
+
+            /**
+             * @see https://github.com/OblikStudio/kirby-link-field
+             */
+            'link' => [
+                'serialize' => [
+                    'yaml' => true
+                ]
+            ],
+
+            /**
+             * @see https://github.com/OblikStudio/kirby-entity-field
+             */
+            'entity' => [
+                'walk' => function ($walker, $field, $settings, $input) {
+                    return $walker->walk($field->toEntity(), $settings['fields'], $input);
+                }
+            ],
+
+            /**
+             * @see https://github.com/OblikStudio/kirby-json
+             */
+            'json' => [
+                'serialize' => [
+                    'json' => true
                 ]
             ]
         ]
