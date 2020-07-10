@@ -1,3 +1,7 @@
 <?php
 
-include_once 'TestCase.php';
+use Kirby\Cms\App;
+
+require 'TestCase.php';
+
+new App();

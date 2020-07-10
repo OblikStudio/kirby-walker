@@ -1,2 +1,5 @@
-/vendor/
+/kirby
+/site/plugins/*
+!/site/plugins/outsource
+/vendor
 *phpunit*
