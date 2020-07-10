@@ -2,14 +2,11 @@
 
 namespace Oblik\Outsource;
 
+use Kirby\Cms\App;
 use Oblik\Outsource\Util\Diff;
 use Oblik\Outsource\Util\Updater;
 
-use Kirby\Cms\App;
-
 const KEY = 'outsource';
-
-require_once 'vendor/autoload.php';
 
 App::plugin('oblik/outsource', [
     'hooks' => Updater::getHooks(),

@@ -39,14 +39,14 @@ class Updater
     public static function getHooks()
     {
         return [
-            'site.update:after' => function ($site) {
-                Updater::update($site);
+            'site.update:after' => function ($newSite) {
+                Updater::update($newSite);
             },
-            'file.update:after' => function ($file) {
-                Updater::update($file);
+            'file.update:after' => function ($newFile) {
+                Updater::update($newFile);
             },
-            'page.update:after' => function ($page) {
-                Updater::update($page);
+            'page.update:after' => function ($newPage) {
+                Updater::update($newPage);
             }
         ];
     }
