@@ -157,7 +157,7 @@ class Walker
         $blueprint = $this->processBlueprint($blueprint);
 
         foreach ($blueprint as $key => $settings) {
-            $field = $content->$key();
+            $field = $content->get($key);
             $fieldInput = $input[$key] ?? null;
             $settings = $this->processFieldSettings($settings);
 
