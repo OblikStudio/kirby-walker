@@ -11,9 +11,13 @@ use Kirby\Cms\Structure;
  */
 class Synchronizer extends Walker
 {
-    protected function fieldPredicate(Field $field, $settings, $input)
+    protected function fieldHandler(Field $field, array $settings, $input)
     {
-        return $settings['type'] === 'structure';
+        if ($settings['translate'] ?? true) {
+            return null; // do not update
+        } else {
+            return $input; // use the original value
+        }
     }
 
     protected function structureHandler(Structure $structure, array $blueprint, $input, $sync)
