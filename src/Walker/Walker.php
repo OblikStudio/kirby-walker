@@ -101,11 +101,11 @@ class Walker
             $inputEntry = $input[$id] ?? null;
             $childData = $this->walk($entry->content(), $blueprint, $inputEntry);
 
-            if (!empty($childData)) {
-                if ($sync) {
-                    $childData['id'] = $id;
-                }
+            if ($sync) {
+                $childData['id'] = $id;
+            }
 
+            if (!empty($childData)) {
                 $data[] = $childData;
             }
         }
