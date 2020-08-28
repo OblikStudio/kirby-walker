@@ -1,35 +1,35 @@
-# Outsource
+# Walker
 
 Plugin that allows you to walk, export, and import all site data according to specified blueprints. It is created with the intention of being used as a dependency for other plugins. Features:
 
-- Flexible configurability in blueprints, _config.php_, or the API itself
-- Serialize content on a per-field basis; convert kirbytags their XML representation, parse JSON and YAML, convert Markdown to HTML, etc.
-- Export serialized site data for easy consumation by another API
-- Import data and deserialize it so Kirby can use it
-- Export/import language variables via [kirby-variables](https://github.com/OblikStudio/kirby-variables)
-- Add IDs to structure entries on page update so consuming APIs can identify them and to avoid incorrectly merging content when importing data
-- Synchronize structures in multi-lang sites so manipulating entries in one language applies the same changes in others
-- Built-in support for [the Kirby Editor](https://github.com/getkirby/editor)
+-   Flexible configurability in blueprints, _config.php_, or the API itself
+-   Serialize content on a per-field basis; convert kirbytags their XML representation, parse JSON and YAML, convert Markdown to HTML, etc.
+-   Export serialized site data for easy consumation by another API
+-   Import data and deserialize it so Kirby can use it
+-   Export/import language variables via [kirby-variables](https://github.com/OblikStudio/kirby-variables)
+-   Add IDs to structure entries on page update so consuming APIs can identify them and to avoid incorrectly merging content when importing data
+-   Synchronize structures in multi-lang sites so manipulating entries in one language applies the same changes in others
+-   Built-in support for [the Kirby Editor](https://github.com/getkirby/editor)
 
 For example, this plugin is used as a dependency for [kirby-memsource](https://github.com/OblikStudio/kirby-memsource). It is used to export all site data and after it's translated in [Memsource](https://www.memsource.com/) - import it back.
 
 ## Installation
 
-With [Composer](http://packagist.org/packages/oblik/kirby-outsource):
+With [Composer](http://packagist.org/packages/oblik/kirby-walker):
 
 ```
-composer require oblik/kirby-outsource
+composer require oblik/kirby-walker
 ```
 
 ## Usage
 
 Class synopsis:
 
-- [Walker](src/Walker.php) iterates over a Kirby Model's fields and recurses in structures
-- [Serializers](src/Serializer) convert data from one format to another and back
-- [Formatter](src/Formatter.php) uses Serializers and applies value transformations according to blueprint
-- [Exporter](src/Exporter.php) extends Walker and uses Formatter to export serialized site data
-- [Importer](src/Importer.php) extends Walker and uses Formatter to serialize current site data, merge it with some input data, deserialize it, and save it
+-   [Walker](src/Walker.php) iterates over a Kirby Model's fields and recurses in structures
+-   [Serializers](src/Serializer) convert data from one format to another and back
+-   [Formatter](src/Formatter.php) uses Serializers and applies value transformations according to blueprint
+-   [Exporter](src/Exporter.php) extends Walker and uses Formatter to export serialized site data
+-   [Importer](src/Importer.php) extends Walker and uses Formatter to serialize current site data, merge it with some input data, deserialize it, and save it
 
 Check the other classes [here](src/).
 
@@ -78,35 +78,35 @@ These alter how field types are processed by the various plugin classes:
 ]
 ```
 
-You can specify these settings in your blueprints. For example, the `pages` field is stored as YAML. Let's say you want to use the YAML serializer to parse the field value. You can do that in the blueprint under the `outsource` property:
+You can specify these settings in your blueprints. For example, the `pages` field is stored as YAML. Let's say you want to use the YAML serializer to parse the field value. You can do that in the blueprint under the `walker` property:
 
 ```yml
 fields:
-  articles:
-    type: pages
-    outsource:
-      serialize:
-        yaml: true
+    articles:
+        type: pages
+        walker:
+            serialize:
+                yaml: true
 ```
 
 If you don't want to explicitly set that for each `pages` field in the blueprint, you can set it in the global `fields` plugin setting in your _config.php_:
 
 ```php
 return [
-    'oblik.outsource.fields' => [
+    'oblik.walker.fields' => [
         'pages' => [
             'serialize' => [
                 'yaml' => true
             ]
         ]
-    ]  
+    ]
 ];
 ```
 
 ...or, when used directly, in the Walker instance options:
 
 ```php
-$exporter = new \Oblik\Outsource\Exporter([
+$exporter = new \Oblik\Walker\Exporter([
     'fields' => [
         'pages' => [
             'serialize' => [
@@ -125,11 +125,11 @@ Since everything is processed according to the blueprints, you can't process a f
 
 ```php
 return [
-    'oblik.outsource.blueprint' => [
+    'oblik.walker.blueprint' => [
         'title' => [
             'type' => 'text'
         ]
-    ]  
+    ]
 ];
 ```
 
@@ -137,8 +137,8 @@ return [
 
 ```yml
 fields:
-  title:
-    type: text
+    title:
+        type: text
 ```
 
 **Note:** This is the default value for the `blueprint` plugin option, so you don't have to explicitly set it.
@@ -150,7 +150,7 @@ The core class of the plugin is the Walker which processes a Model's fields and 
 #### Exporting
 
 ```php
-$exporter = new Oblik\Outsource\Exporter([
+$exporter = new Oblik\Walker\Exporter([
     // Translation which should be used when walking the Model.
     'language' => 'en',
 
@@ -202,7 +202,7 @@ Resulting data will be in the form of:
 #### Importing
 
 ```php
-$importer = new Oblik\Outsource\Importer([
+$importer = new Oblik\Walker\Importer([
     'language' => 'bg'
 ]);
 $importer->process([
@@ -255,41 +255,35 @@ To have that working, you must mark the structure as a synced structure:
 
 ```yml
 fields:
-  items:
-    type: structure
-    outsource:
-      sync: id # `id` is the field name used to store the ID
+    items:
+        type: structure
+        walker:
+            sync: id # `id` is the field name used to store the ID
 ```
 
 When you save that structure in the panel, you'd get:
 
 ```yml
-- 
-  text: foo
+- text: foo
   id: cmrc
-- 
-  text: bar
+- text: bar
   id: djzw
 ```
 
 Then, in a translation, if you reorder those entries like this:
 
 ```yml
-- 
-  text: translated bar
+- text: translated bar
   id: djzw
-- 
-  text: translated foo
+- text: translated foo
   id: cmrc
 ```
 
 ...the values in the default language would be reordered in the same way:
 
 ```yml
-- 
-  text: bar
+- text: bar
   id: djzw
-- 
-  text: foo
+- text: foo
   id: cmrc
 ```

@@ -1,9 +1,9 @@
 <?php
 
-namespace Oblik\Outsource\Util;
+namespace Oblik\Walker\Util;
 
-use Oblik\Outsource\Walker\Marker;
-use Oblik\Outsource\Walker\Synchronizer;
+use Oblik\Walker\Walker\Marker;
+use Oblik\Walker\Walker\Synchronizer;
 
 use Kirby\Cms\ModelWithContent;
 

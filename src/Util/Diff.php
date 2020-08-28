@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Outsource\Util;
+namespace Oblik\Walker\Util;
 
 /**
  * Recursively returns the differences between two input arrays. Attempts to

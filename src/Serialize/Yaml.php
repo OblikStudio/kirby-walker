@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Outsource\Serialize;
+namespace Oblik\Walker\Serialize;
 
 use Kirby\Data\Yaml as YamlParser;
 

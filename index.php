@@ -1,14 +1,14 @@
 <?php
 
-namespace Oblik\Outsource;
+namespace Oblik\Walker;
 
 use Kirby\Cms\App;
-use Oblik\Outsource\Util\Diff;
-use Oblik\Outsource\Util\Updater;
+use Oblik\Walker\Util\Diff;
+use Oblik\Walker\Util\Updater;
 
-const KEY = 'outsource';
+const KEY = 'walker';
 
-App::plugin('oblik/outsource', [
+App::plugin('oblik/walker', [
     'hooks' => Updater::getHooks(),
     'options' => [
         'blueprint' => [

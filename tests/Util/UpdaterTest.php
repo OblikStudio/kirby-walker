@@ -1,8 +1,8 @@
 <?php
 
-namespace Oblik\Outsource\Util;
+namespace Oblik\Walker\Util;
 
-use Oblik\Outsource\TestCase;
+use Oblik\Walker\TestCase;
 
 use Kirby\Cms\App;
 use Kirby\Cms\Page;
@@ -48,12 +48,12 @@ final class UpdaterTest extends TestCase
                                         'type' => 'text'
                                     ]
                                 ],
-                                'outsource' => [
+                                'walker' => [
                                     'sync' => true
                                 ]
                             ]
                         ],
-                        'outsource' => [
+                        'walker' => [
                             'sync' => true
                         ]
                     ]

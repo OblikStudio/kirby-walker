@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Outsource\Serialize;
+namespace Oblik\Walker\Serialize;
 
 use DOMDocument;
 use DOMElement;

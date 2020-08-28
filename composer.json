@@ -1,5 +1,5 @@
 {
-  "name": "oblik/kirby-outsource",
+  "name": "oblik/kirby-walker",
   "description": "Kirby plugin for exporting and importing site content.",
   "type": "kirby-plugin",
   "license": "MIT",
@@ -25,10 +25,10 @@
   },
   "autoload": {
     "psr-4": {
-      "Oblik\\Outsource\\": "src/"
+      "Oblik\\Walker\\": "src/"
     }
   },
   "extra": {
-    "installer-name": "outsource"
+    "installer-name": "walker"
   }
 }

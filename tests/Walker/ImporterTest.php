@@ -1,9 +1,9 @@
 <?php
 
-namespace Oblik\Outsource\Walker;
+namespace Oblik\Walker\Walker;
 
-use Oblik\Outsource\Util\Diff;
-use Oblik\Outsource\TestCase;
+use Oblik\Walker\Util\Diff;
+use Oblik\Walker\TestCase;
 
 use Kirby\Cms\App;
 use Kirby\Cms\Page;
@@ -60,7 +60,7 @@ final class ImporterTest extends TestCase
                 'fields' => [
                     'tagfield' => [
                         'type' => 'tags',
-                        'outsource' => [
+                        'walker' => [
                             'serialize' => [
                                 'tags' => true
                             ]
@@ -130,7 +130,7 @@ final class ImporterTest extends TestCase
                                 'type' => 'text'
                             ]
                         ],
-                        'outsource' => [
+                        'walker' => [
                             'sync' => true
                         ]
                     ]

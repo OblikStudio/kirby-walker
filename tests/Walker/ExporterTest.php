@@ -1,8 +1,8 @@
 <?php
 
-namespace Oblik\Outsource\Walker;
+namespace Oblik\Walker\Walker;
 
-use Oblik\Outsource\TestCase;
+use Oblik\Walker\TestCase;
 
 use Kirby\Cms\App;
 use Kirby\Cms\Page;
@@ -55,7 +55,7 @@ final class ExporterTest extends TestCase
                 'fields' => [
                     'text' => [
                         'type' => 'text',
-                        'outsource' => [
+                        'walker' => [
                             'serialize' => [
                                 'kirbytags' => true
                             ]
@@ -84,7 +84,7 @@ final class ExporterTest extends TestCase
                     ],
                     'ignoredText' => [
                         'type' => 'text',
-                        'outsource' => [
+                        'walker' => [
                             'ignore' => true
                         ]
                     ]
@@ -141,7 +141,7 @@ final class ExporterTest extends TestCase
                         'fields' => [
                             'ignoredText' => [
                                 'type' => 'text',
-                                'outsource' => [
+                                'walker' => [
                                     'ignore' => true
                                 ]
                             ]
@@ -169,7 +169,7 @@ final class ExporterTest extends TestCase
                 'fields' => [
                     'test' => [
                         'type' => 'text',
-                        'outsource' => [
+                        'walker' => [
                             'serialize' => [
                                 'yaml' => true
                             ],
@@ -266,7 +266,7 @@ final class ExporterTest extends TestCase
                                 'type' => 'text'
                             ]
                         ],
-                        'outsource' => [
+                        'walker' => [
                             'sync' => true
                         ]
                     ]

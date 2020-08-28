@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Outsource\Walker;
+namespace Oblik\Walker\Walker;
 
 /**
  * Class for storing walked data.

@@ -1,8 +1,8 @@
 <?php
 
-namespace Oblik\Outsource\Walker;
+namespace Oblik\Walker\Walker;
 
-use const Oblik\Outsource\KEY;
+use const Oblik\Walker\KEY;
 
 use Kirby\Cms\Site;
 use Kirby\Cms\Pages;
@@ -28,7 +28,7 @@ class Exporter extends Walker
 
     /**
      * Removes keys from fields that have array values, based on a field's
-     * outsource settings.
+     * walker settings.
      */
     protected static function filter(array $data, array $settings)
     {

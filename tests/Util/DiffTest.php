@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Outsource\Util;
+namespace Oblik\Walker\Util;
 
 use PHPUnit\Framework\TestCase;
 

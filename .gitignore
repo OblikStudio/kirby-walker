@@ -1,5 +1,5 @@
 /kirby
 /site/plugins/*
-!/site/plugins/outsource
+!/site/plugins/walker
 /vendor
 *phpunit*

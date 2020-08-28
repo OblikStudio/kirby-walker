@@ -1,8 +1,8 @@
 <?php
 
-namespace Oblik\Outsource\Walker;
+namespace Oblik\Walker\Walker;
 
-use const Oblik\Outsource\KEY;
+use const Oblik\Walker\KEY;
 
 use Kirby\Cms\Field;
 use Kirby\Cms\ModelWithContent;

@@ -1,9 +1,9 @@
 <?php
 
-namespace Oblik\Outsource\Walker;
+namespace Oblik\Walker\Walker;
 
-use Oblik\Outsource\Serialize\Formatter;
-use const Oblik\Outsource\KEY;
+use Oblik\Walker\Serialize\Formatter;
+use const Oblik\Walker\KEY;
 
 use Exception;
 use Throwable;
@@ -30,7 +30,7 @@ class Walker
     private $blueprint;
 
     /**
-     * Array that is used to add default outsource settings for most common
+     * Array that is used to add default walker settings for most common
      * field types to avoid having to do that in each blueprint.
      */
     private $fields;
@@ -53,7 +53,7 @@ class Walker
     }
 
     /**
-     * Adds default outsource values to field settings.
+     * Adds default walker values to field settings.
      */
     private function processFieldSettings(array $settings)
     {

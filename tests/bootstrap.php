@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Outsource;
+namespace Oblik\Walker;
 
 use ReflectionClass;
 use Kirby\Cms\App;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Oblik\Outsource\Serialize;
+namespace Oblik\Walker\Serialize;
 
-use const Oblik\Outsource\KEY;
+use const Oblik\Walker\KEY;
 
 use Kirby\Cms\Field;
 use Kirby\Data\Json;

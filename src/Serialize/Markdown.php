@@ -1,6 +1,6 @@
 <?php
 
-namespace Oblik\Outsource\Serialize;
+namespace Oblik\Walker\Serialize;
 
 use Kirby\Text\Markdown as MarkdownParser;
 use League\HTMLToMarkdown\HtmlConverter;
