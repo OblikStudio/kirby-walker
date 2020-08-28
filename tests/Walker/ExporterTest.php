@@ -122,7 +122,7 @@ final class ExporterTest extends TestCase
         $this->assertArrayNotHasKey('notTranslatedText', $data);
     }
 
-    public function testEmptyStructure()
+    public function testEmptyStructureEntries()
     {
         $exporter = new Exporter();
         $data = $exporter->exportModel(new Page([
@@ -131,6 +131,9 @@ final class ExporterTest extends TestCase
                 'items' => Yaml::encode([
                     [
                         'ignoredText' => 'foo'
+                    ],
+                    [
+                        'text' => 'bar'
                     ]
                 ]),
             ],
@@ -144,6 +147,9 @@ final class ExporterTest extends TestCase
                                 'walker' => [
                                     'ignore' => true
                                 ]
+                            ],
+                            'text' => [
+                                'type' => 'text'
                             ]
                         ]
                     ]
@@ -151,7 +157,16 @@ final class ExporterTest extends TestCase
             ]
         ]));
 
-        $this->assertEquals(null, $data);
+        $expected = [
+            'items' => [
+                null,
+                [
+                    'text' => 'bar'
+                ]
+            ]
+        ];
+
+        $this->assertEquals($expected, $data);
     }
 
     public function testFiltering()
