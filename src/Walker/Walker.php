@@ -105,9 +105,7 @@ class Walker
                 $childData['id'] = $id;
             }
 
-            if (!empty($childData)) {
-                $data[] = $childData;
-            }
+            $data[] = $childData;
         }
 
         return $data;
