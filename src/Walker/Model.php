@@ -5,7 +5,8 @@ namespace Oblik\Outsource\Walker;
 /**
  * Class for storing walked data.
  */
-class Model {
+class Model
+{
     protected $site;
     protected $pages;
     protected $files;
@@ -50,7 +51,7 @@ class Model {
 
         foreach (['site', 'pages', 'files', 'variables'] as $prop) {
             if (!empty($this->$prop)) {
-                $result[$prop] = $this->$prop;
+                $result[$prop] = array_filter($this->$prop);
             }
         }
 
