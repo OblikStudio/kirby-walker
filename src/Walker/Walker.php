@@ -57,7 +57,12 @@ class Walker
      */
     private function processFieldSettings(array $settings)
     {
-        $config = $settings[KEY] ?? [];
+        if (isset($settings[KEY]) && is_array($settings[KEY])) {
+            $config = $settings[KEY];
+        } else {
+            $config = [];
+        }
+
         $fieldType = $settings['type'] ?? null;
         $fieldConfig = $this->fields[$fieldType] ?? null;
 
