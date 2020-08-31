@@ -50,7 +50,7 @@ class KirbyTag extends KirbyTagNative
      * Adds `index` attributes to <value> tags inside <kirby> to ensure that
      * upon decoding, the tag can preserve the initial order of its settings.
      */
-    public function index(DOMElement $kirby, array $orderedNames)
+    public static function index(DOMElement $kirby, array $orderedNames)
     {
         // Since attribute values are decoded first, indices of <value> tags
         // start after the length of all present attributes.
