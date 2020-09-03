@@ -1,34 +1,34 @@
 {
-  "name": "oblik/kirby-walker",
-  "description": "Kirby plugin for exporting and importing site content.",
-  "type": "kirby-plugin",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Hristiyan Dodov",
-      "email": "h.dodov@gmail.com",
-      "homepage": "https://dodov.me/"
-    }
-  ],
-  "scripts": {
-    "test": "phpunit"
-  },
-  "require": {
-    "getkirby/cms": "^3.4",
-    "getkirby/composer-installer": "^1.1",
-    "league/html-to-markdown": "^4.8"
-  },
-  "require-dev": {
-    "getkirby/editor": "^1.0",
-    "oblik/kirby-variables": "^2.0",
-    "phpunit/phpunit": "^8"
-  },
-  "autoload": {
-    "psr-4": {
-      "Oblik\\Walker\\": "src/"
-    }
-  },
-  "extra": {
-    "installer-name": "walker"
-  }
+	"name": "oblik/kirby-walker",
+	"description": "Kirby plugin for exporting and importing site content.",
+	"type": "kirby-plugin",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Hristiyan Dodov",
+			"email": "h.dodov@gmail.com",
+			"homepage": "https://dodov.me/"
+		}
+	],
+	"scripts": {
+		"test": "phpunit"
+	},
+	"require": {
+		"getkirby/cms": "^3.4",
+		"getkirby/composer-installer": "^1.1",
+		"league/html-to-markdown": "^4.8"
+	},
+	"require-dev": {
+		"getkirby/editor": "^1.0",
+		"oblik/kirby-variables": "^2.0",
+		"phpunit/phpunit": "^8"
+	},
+	"autoload": {
+		"psr-4": {
+			"Oblik\\Walker\\": "src/"
+		}
+	},
+	"extra": {
+		"installer-name": "walker"
+	}
 }

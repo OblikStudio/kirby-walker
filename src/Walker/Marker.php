@@ -12,58 +12,58 @@ use Kirby\Toolkit\Str;
  */
 class Marker extends Walker
 {
-    protected static function uid(array $blacklist)
-    {
-        do {
-            $id = Str::random(4, 'alphaLower');
-        } while (in_array($id, $blacklist));
+	protected static function uid(array $blacklist)
+	{
+		do {
+			$id = Str::random(4, 'alphaLower');
+		} while (in_array($id, $blacklist));
 
-        return $id;
-    }
+		return $id;
+	}
 
-    protected static function addIds(array $data, string $key)
-    {
-        $ids = array_column($data, $key);
+	protected static function addIds(array $data, string $key)
+	{
+		$ids = array_column($data, $key);
 
-        foreach ($data as &$entry) {
-            if (empty($entry[$key])) {
-                $entry[$key] = static::uid($ids);
-            }
-        }
+		foreach ($data as &$entry) {
+			if (empty($entry[$key])) {
+				$entry[$key] = static::uid($ids);
+			}
+		}
 
-        return $data;
-    }
+		return $data;
+	}
 
-    protected function fieldPredicate(Field $field, array $settings, $input)
-    {
-        return $settings['type'] === 'structure';
-    }
+	protected function fieldPredicate(Field $field, array $settings, $input)
+	{
+		return $settings['type'] === 'structure';
+	}
 
-    protected function structureHandler(Structure $structure, array $blueprint, $input, $sync)
-    {
-        $data = null;
+	protected function structureHandler(Structure $structure, array $blueprint, $input, $sync)
+	{
+		$data = null;
 
-        if ($sync) {
-            foreach ($structure as $entry) {
-                $content = $entry->content();
-                $fields = $content->toArray();
+		if ($sync) {
+			foreach ($structure as $entry) {
+				$content = $entry->content();
+				$fields = $content->toArray();
 
-                if ($nestedStructures = $this->walk($content, $blueprint, $input)) {
-                    $fields = array_replace($fields, $nestedStructures);
-                }
+				if ($nestedStructures = $this->walk($content, $blueprint, $input)) {
+					$fields = array_replace($fields, $nestedStructures);
+				}
 
-                $data[] = $fields;
-            }
+				$data[] = $fields;
+			}
 
-            if ($data) {
-                $data = static::addIds($data, 'id');
-            }
-        } else {
-            // If the current structure is not synced, it's impossible to sync
-            // any nested structures, so return `null` and don't bother
-            // recursing further.
-        }
+			if ($data) {
+				$data = static::addIds($data, 'id');
+			}
+		} else {
+			// If the current structure is not synced, it's impossible to sync
+			// any nested structures, so return `null` and don't bother
+			// recursing further.
+		}
 
-        return $data;
-    }
+		return $data;
+	}
 }
