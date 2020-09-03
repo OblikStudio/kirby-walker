@@ -1,13 +1,13 @@
 {
 	"name": "oblik/kirby-walker",
-	"description": "Kirby plugin for exporting and importing site content.",
+	"description": "Kirby plugin for exporting, importing, and iterating over site content.",
 	"type": "kirby-plugin",
 	"license": "MIT",
 	"authors": [
 		{
 			"name": "Hristiyan Dodov",
 			"email": "h.dodov@gmail.com",
-			"homepage": "https://dodov.me/"
+			"homepage": "https://dodov.me"
 		}
 	],
 	"scripts": {
