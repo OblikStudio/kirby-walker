@@ -27,6 +27,10 @@ class Updater
 			foreach ($model->translations() as $translation) {
 				$lang = $translation->code();
 
+				if (!file_exists($model->contentFile($lang, true))) {
+					continue;
+				}
+
 				if ($lang !== $mutatedLang) {
 					if ($syncedData = $synchronizer->walkModel($model, $lang, $markedData)) {
 						$model = $model->update($syncedData, $lang);
