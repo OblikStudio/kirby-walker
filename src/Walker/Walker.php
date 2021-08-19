@@ -170,7 +170,7 @@ class Walker
 				$fieldName = $field->key();
 				$errorName = $e->getMessage();
 
-				throw new Exception("Could not process $fieldName: $errorName");
+				throw new Exception("Field \"$fieldName\": $errorName");
 			}
 
 			if ($fieldData !== null) {
@@ -188,6 +188,14 @@ class Walker
 	{
 		$content = $model->content($lang);
 		$blueprint = $model->blueprint()->fields();
-		return $this->walk($content, $blueprint, $input);
+
+		try {
+			return $this->walk($content, $blueprint, $input);
+		} catch (Throwable $e) {
+			$id = $model->id();
+			$error = $e->getMessage();
+
+			throw new Exception("Model \"$id\": $error");
+		}
 	}
 }
