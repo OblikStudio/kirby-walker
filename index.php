@@ -3,6 +3,7 @@
 namespace Oblik\Walker;
 
 use Kirby\Cms\App;
+use Kirby\Form\Field;
 use Oblik\Walker\Util\Diff;
 use Oblik\Walker\Util\Updater;
 
@@ -24,6 +25,31 @@ App::plugin('oblik/walker', [
 				'serialize' => [
 					'tags' => true
 				]
+			],
+
+			/**
+			 * @see https://getkirby.com/docs/reference/panel/fields/blocks
+			 */
+			'blocks' => [
+				'walk' => function ($walker, $field, $settings, $input) {
+					$data = [];
+
+					if (is_array($input)) {
+						$input = array_column($input, null, 'id');
+					}
+
+					$blocks = $field->toBlocks();
+					$sets = Field::factory('blocks', $settings)->fieldsets();
+
+					foreach ($blocks as $id => $block) {
+						$set = $sets->get($block->type());
+						$childData = $walker->walk($block->content(), $set->fields(), $input[$id] ?? null);
+						$childData['id'] = $id;
+						$data[] = $childData;
+					}
+
+					return $data;
+				}
 			],
 
 			/**
