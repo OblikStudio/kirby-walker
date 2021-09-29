@@ -43,8 +43,8 @@ App::plugin('oblik/walker', [
 
 					foreach ($blocks as $id => $block) {
 						$set = $sets->get($block->type());
-						$childData = $walker->walk($block->content(), $set->fields(), $input[$id] ?? null);
-						$childData['id'] = $id;
+						$childData = $block->toArray();
+						$childData['content'] = $walker->walk($block->content(), $set->fields(), $input[$id] ?? null);
 						$data[] = $childData;
 					}
 
