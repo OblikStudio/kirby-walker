@@ -50,10 +50,12 @@ class Model
 		$result = null;
 
 		foreach (['site', 'pages', 'files', 'variables'] as $prop) {
-			$data = array_filter($this->$prop);
+			if (is_array($this->$prop)) {
+				$data = array_filter($this->$prop);
 
-			if (!empty($data)) {
-				$result[$prop] = $data;
+				if (!empty($data)) {
+					$result[$prop] = $data;
+				}
 			}
 		}
 

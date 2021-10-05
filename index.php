@@ -2,6 +2,7 @@
 
 namespace Oblik\Walker;
 
+use Error;
 use Kirby\Cms\App;
 use Kirby\Form\Field;
 use Oblik\Walker\Util\Diff;
@@ -43,9 +44,17 @@ App::plugin('oblik/walker', [
 
 					foreach ($blocks as $id => $block) {
 						$set = $sets->get($block->type());
+
+						if (empty($set)) {
+							throw new Error('Missing fieldset for block type: "' . $block->type() . '"');
+						}
+
 						$childData = $block->toArray();
 						$childData['content'] = $walker->walk($block->content(), $set->fields(), $input[$id]['content'] ?? null);
-						$data[] = $childData;
+
+						if (!empty($childData['content'])) {
+							$data[] = $childData;
+						}
 					}
 
 					return $data;

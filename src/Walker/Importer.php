@@ -44,10 +44,24 @@ class Importer extends Walker
 		return $data;
 	}
 
+	protected function fieldPredicate(Field $field, array $settings, $input)
+	{
+		// We need to include all fields, including non-translatable ones, with
+		// their default values, to avoid desynchronization between the default
+		// language and the translation.
+		return true;
+	}
+
 	protected function fieldHandler(Field $field, array $settings, $input)
 	{
 		if ($field->value() === null && $input === null) {
 			return null;
+		}
+
+		if (($settings['translate'] ?? true) === false) {
+			// Since we walk over all fields, including non-translatable ones,
+			// we must use the default language for them.
+			return $field->value();
 		}
 
 		$merger = $settings[KEY]['import']['merge'] ?? null;
@@ -72,7 +86,8 @@ class Importer extends Walker
 
 	public function importModel(ModelWithContent $model, array $data, string $lang = null)
 	{
-		$mergedData = $this->walkModel($model, $lang, $data);
+		$defaultLang = kirby()->defaultLanguage()->code();
+		$mergedData = $this->walkModel($model, $defaultLang, $data);
 		$newModel = $model->update($mergedData, $lang);
 
 		return static::compare(
@@ -96,8 +111,10 @@ class Importer extends Walker
 		$result = new Model();
 		$site = site();
 
-		$siteResult = $this->importModel($site, $model->site(), $lang);
-		$result->setSite($siteResult);
+		if (!empty($model->site())) {
+			$siteResult = $this->importModel($site, $model->site(), $lang);
+			$result->setSite($siteResult);
+		}
 
 		foreach ($model->pages() as $key => $pageData) {
 			$page = $site->page($key);
@@ -111,8 +128,10 @@ class Importer extends Walker
 			$result->addFile($key, $fileResult);
 		}
 
-		$variablesResult = $this->importVariables($model->variables(), $lang);
-		$result->setVariables($variablesResult);
+		if (!empty($model->variables())) {
+			$variablesResult = $this->importVariables($model->variables(), $lang);
+			$result->setVariables($variablesResult);
+		}
 
 		return $result->toArray();
 	}
