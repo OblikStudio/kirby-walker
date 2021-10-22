@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ae1219d90aa1bdfb958e4f1a6f7f38cc",
+    "content-hash": "f8af16d7202780a4a293213373d16c3a",
     "packages": [
         {
             "name": "claviska/simpleimage",
@@ -1001,6 +1001,50 @@
                 "object graph"
             ],
             "time": "2020-06-29T13:22:24+00:00"
+        },
+        {
+            "name": "oblik/kirby-link-field",
+            "version": "3.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/OblikStudio/kirby-link-field.git",
+                "reference": "9c5fab20e6bc82849884501ef47be38784071eb3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/OblikStudio/kirby-link-field/zipball/9c5fab20e6bc82849884501ef47be38784071eb3",
+                "reference": "9c5fab20e6bc82849884501ef47be38784071eb3",
+                "shasum": ""
+            },
+            "require": {
+                "getkirby/cms": "^3.2",
+                "getkirby/composer-installer": "^1.1"
+            },
+            "require-dev": {
+                "oblik/kirby-tester": "^1.2",
+                "phpunit/phpunit": "^9.0"
+            },
+            "type": "kirby-plugin",
+            "extra": {
+                "installer-name": "link-field"
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Hristiyan Dodov",
+                    "email": "h.dodov@gmail.com",
+                    "homepage": "https://dodov.me/"
+                }
+            ],
+            "description": "Kirby 3 field for all types of links.",
+            "support": {
+                "issues": "https://github.com/OblikStudio/kirby-link-field/issues",
+                "source": "https://github.com/OblikStudio/kirby-link-field/tree/3.0.3"
+            },
+            "time": "2021-10-21T08:54:39+00:00"
         },
         {
             "name": "oblik/kirby-variables",

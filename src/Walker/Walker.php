@@ -9,6 +9,7 @@ use Kirby\Cms\Content;
 use Kirby\Cms\Field;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
+use Kirby\Data\Json;
 use Kirby\Data\Yaml;
 use Kirby\Form\Field as FormField;
 
@@ -25,12 +26,10 @@ class Walker
 		$content = $model->content($lang);
 		$blueprint = $model->blueprint()->fields();
 
-		if (is_a($model, Page::class)) {
-			$blueprint = array_replace([
-				'title' => [
-					'type' => 'text'
-				]
-			], $blueprint);
+		if (is_a($model, Page::class) && empty($blueprint['title'])) {
+			$blueprint['title'] = [
+				'type' => 'text'
+			];
 		}
 
 		try {
@@ -54,6 +53,10 @@ class Walker
 		foreach ($blueprint as $key => $settings) {
 			$field = $content->get($key);
 			$fieldInput = $input[$key] ?? null;
+
+			if (!isset($settings['translate'])) {
+				$settings['translate'] = true;
+			}
 
 			try {
 				$fieldData = $this->walkField($field, $settings, $fieldInput);
@@ -122,6 +125,21 @@ class Walker
 		return $data;
 	}
 
+	protected function walkFieldEditor($field, $settings, $input)
+	{
+		return Json::decode($field->value());
+	}
+
+	protected function walkFieldTags($field)
+	{
+		return $field->split();
+	}
+
+	protected function walkFieldToggle($field)
+	{
+		return $field->toBool();
+	}
+
 	protected function walkFieldEntity($field, $settings, $input)
 	{
 		return $this->walkContent($field->toEntity(), $settings['fields'], $input);
@@ -130,5 +148,10 @@ class Walker
 	protected function walkFieldLink($field, $settings, $input)
 	{
 		return Yaml::decode($field->value());
+	}
+
+	protected function walkFieldJson($field, $settings, $input)
+	{
+		return Json::decode($field->value());
 	}
 }

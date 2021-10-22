@@ -21,7 +21,8 @@
 	"require-dev": {
 		"getkirby/editor": "^1.0",
 		"oblik/kirby-variables": "^2.0",
-		"phpunit/phpunit": "^8"
+		"phpunit/phpunit": "^8",
+		"oblik/kirby-link-field": "^3.0"
 	},
 	"autoload": {
 		"psr-4": {
