@@ -14,6 +14,18 @@ class Exporter extends Walker
 		}
 	}
 
+	protected function walkFieldBlocks($field, $settings, $input)
+	{
+		$data = parent::walkFieldBlocks($field, $settings, $input);
+
+		foreach ($data as &$block) {
+			unset($block['isHidden']);
+			unset($block['type']);
+		}
+
+		return $data;
+	}
+
 	protected function walkFieldText($field, $settings, $input)
 	{
 		return KirbyTags::decode($field->value(), [
