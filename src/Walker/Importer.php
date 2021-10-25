@@ -5,6 +5,7 @@ namespace Oblik\Walker\Walker;
 use Error;
 use Kirby\Cms\Field;
 use Kirby\Cms\ModelWithContent;
+use Kirby\Data\Json;
 use Kirby\Form\Field as FormField;
 
 class Importer extends Walker
@@ -55,6 +56,26 @@ class Importer extends Walker
 
 			if (!empty($childData['content'])) {
 				$data[] = $childData;
+			}
+		}
+
+		return $data;
+	}
+
+	protected function walkFieldEditor($field, $settings, $input)
+	{
+		$data = Json::decode($field->value());
+
+		if (is_array($input)) {
+			$input = array_column($input, null, 'id');
+		}
+
+		foreach ($data as &$block) {
+			$id = $block['id'];
+			$inputContent = $input[$id]['content'] ?? null;
+
+			if (!empty($inputContent)) {
+				$block['content'] = $inputContent;
 			}
 		}
 

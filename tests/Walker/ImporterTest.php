@@ -187,4 +187,83 @@ final class ImporterTest extends TestCase
 		$result = (new Importer())->walk($page, null, $import);
 		$this->assertEquals($expected, $result);
 	}
+
+	public function testImportsEditor()
+	{
+		$page = new Page([
+			'slug' => 'test',
+			'content' => [
+				'text' => Json::encode([
+					[
+						"attrs" => [],
+						"content" => "original 1",
+						"id" => "_zyusghhiw",
+						"type" => "paragraph"
+					],
+					[
+						"attrs" => [],
+						"content" => "original 2",
+						"id" => "_rtq8tflwv",
+						"type" => "paragraph"
+					],
+					[
+						"attrs" => [],
+						"content" => "original 3",
+						"id" => "_ux4q8wu0c",
+						"type" => "paragraph"
+					]
+				])
+			],
+			'blueprint' => [
+				'fields' => [
+					'text' => [
+						'type' => 'editor'
+					]
+				]
+			]
+		]);
+
+		$import = [
+			'text' => [
+				[
+					"content" => "imported 3",
+					"id" => "_ux4q8wu0c"
+				],
+				[
+					"content" => "outdated",
+					"id" => "_5zzr7jl3x"
+				],
+				[
+					"content" => "imported 1",
+					"id" => "_zyusghhiw"
+				]
+			]
+		];
+
+		$expected = [
+			'text' => [
+				[
+					"attrs" => [],
+					"content" => "imported 1",
+					"id" => "_zyusghhiw",
+					"type" => "paragraph"
+				],
+				[
+					"attrs" => [],
+					"content" => "original 2",
+					"id" => "_rtq8tflwv",
+					"type" => "paragraph"
+				],
+				[
+					"attrs" => [],
+					"content" => "imported 3",
+					"id" => "_ux4q8wu0c",
+					"type" => "paragraph"
+				]
+			]
+		];
+
+		$result = (new Importer())->walk($page, null, $import);
+		$this->assertEquals($expected, $result);
+	}
 }
