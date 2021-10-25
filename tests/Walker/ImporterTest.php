@@ -88,7 +88,7 @@ final class ImporterTest extends TestCase
 		$this->assertEquals($original, $result);
 	}
 
-	public function testImportsBlocks()
+	public function testBlocks()
 	{
 		$page = new Page([
 			'slug' => 'test',
@@ -188,7 +188,7 @@ final class ImporterTest extends TestCase
 		$this->assertEquals($expected, $result);
 	}
 
-	public function testImportsEditor()
+	public function testEditor()
 	{
 		$page = new Page([
 			'slug' => 'test',
