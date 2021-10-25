@@ -18,7 +18,12 @@ class Exporter extends Walker
 	{
 		$data = parent::walkFieldBlocks($field, $settings, $input);
 
-		foreach ($data as &$block) {
+		foreach ($data as $i => &$block) {
+			if (empty($block['content'])) {
+				array_splice($data, $i, 1);
+				continue;
+			}
+
 			unset($block['isHidden']);
 			unset($block['type']);
 		}

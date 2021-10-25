@@ -31,6 +31,22 @@ final class ExporterTest extends TestCase
 				'text' => Json::encode([
 					[
 						'content' => [
+							'text' => ''
+						],
+						"id" => "0c34d9f1-de9b-456a-818b-fbcb9cefea58",
+						"isHidden" => false,
+						"type" => "text"
+					],
+					[
+						'content' => [
+							'text' => '<p>hidden block</p>'
+						],
+						"id" => "f96cfd81-56df-42a0-a05d-7eebe35f5cb9",
+						"isHidden" => true,
+						"type" => "text"
+					],
+					[
+						'content' => [
 							'text' => '<p>text</p>'
 						],
 						"id" => "c14c1bff-6a9d-4179-9aa9-b9df25dca891",

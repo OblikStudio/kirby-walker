@@ -116,10 +116,7 @@ class Walker
 
 			$childData = $block->toArray();
 			$childData['content'] = $this->walkContent($block->content(), $set->fields());
-
-			if (!empty($childData['content'])) {
-				$data[] = $childData;
-			}
+			$data[] = $childData;
 		}
 
 		return $data;
