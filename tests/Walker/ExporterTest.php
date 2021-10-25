@@ -78,6 +78,47 @@ final class ExporterTest extends TestCase
 		$this->assertEquals($expected, $result);
 	}
 
+	public function testEditor()
+	{
+		$result = (new Exporter())->walk(new Page([
+			'slug' => 'test',
+			'content' => [
+				'text' => Json::encode([
+					[
+						"attrs" => [],
+						"content" => "",
+						"id" => "_rtq8tflwv",
+						"type" => "paragraph"
+					],
+					[
+						"attrs" => [],
+						"content" => "text",
+						"id" => "_zyusghhiw",
+						"type" => "paragraph"
+					]
+				])
+			],
+			'blueprint' => [
+				'fields' => [
+					'text' => [
+						'type' => 'editor'
+					]
+				]
+			]
+		]));
+
+		$expected = [
+			'text' => [
+				[
+					"content" => "text",
+					"id" => "_zyusghhiw"
+				]
+			]
+		];
+
+		$this->assertEquals($expected, $result);
+	}
+
 	public function testLinkField()
 	{
 		$result = (new Exporter())->walk(new Page([
