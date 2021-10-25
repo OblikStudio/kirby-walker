@@ -1,6 +1,9 @@
-kirby/
-site/plugins/*
-!site/plugins/walker
-vendor/
+/kirby/
+/site/accounts/
+/site/plugins/*
+!/site/plugins/walker
+/site/sessions/
+/media/
+/vendor/
 
 *.cache
