@@ -26,10 +26,12 @@ class Walker
 		$content = $model->content($lang);
 		$blueprint = $model->blueprint()->fields();
 
-		if (is_a($model, Page::class) && empty($blueprint['title'])) {
-			$blueprint['title'] = [
-				'type' => 'text'
-			];
+		if (is_a($model, Page::class)) {
+			$blueprint = array_replace([
+				'title' => [
+					'type' => 'text'
+				]
+			], $blueprint);
 		}
 
 		try {

@@ -10,7 +10,20 @@ class Exporter extends Walker
 	protected function walkField(Field $field, array $settings, $input)
 	{
 		if ($field->isNotEmpty() && $settings['translate'] !== false) {
-			return parent::walkField($field, $settings, $input);
+			$data = parent::walkField($field, $settings, $input);
+
+			if (!empty($data)) {
+				return $data;
+			}
+		}
+	}
+
+	protected function walkFieldStructure($field, $settings, $input)
+	{
+		$data = parent::walkFieldStructure($field, $settings, $input);
+
+		if (!empty(array_filter($data))) {
+			return $data;
 		}
 	}
 
@@ -52,7 +65,10 @@ class Exporter extends Walker
 	{
 		return KirbyTags::decode($field->value(), [
 			'serialize' => [
-				'tags' => ['text']
+				'tags' => [
+					'text',
+					'tooltip'
+				]
 			]
 		]);
 	}
