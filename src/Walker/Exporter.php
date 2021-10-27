@@ -81,8 +81,11 @@ class Exporter extends Walker
 	protected function walkFieldLink($field, $settings, $input)
 	{
 		$data = parent::walkFieldLink($field, $settings, $input);
-		$data = array_intersect_key($data, ['text' => true]);
-		return !empty($data) ? $data : null;
+		$text = $data['text'] ?? null;
+
+		if (!empty($text) && !preg_match('/^[a-z]+:\/\//', $text)) {
+			return ['text' => $text];
+		}
 	}
 
 	protected function walkFieldToggle($field)
