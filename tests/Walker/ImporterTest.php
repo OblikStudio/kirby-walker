@@ -5,6 +5,7 @@ namespace Oblik\Walker\Walker;
 use Kirby\Cms\App;
 use Kirby\Cms\Page;
 use Kirby\Data\Json;
+use Kirby\Data\Yaml;
 use Oblik\Walker\TestCase;
 
 final class ImporterTest extends TestCase
@@ -86,6 +87,116 @@ final class ImporterTest extends TestCase
 		$result = (new Importer())->walk($page, null, $content);
 
 		$this->assertEquals($original, $result);
+	}
+
+	public function testStructure()
+	{
+		$page = new Page([
+			'slug' => 'test',
+			'content' => [
+				'items' => Yaml::encode([
+					[
+						'text' => 'original 1'
+					],
+					[
+						'text' => 'original 2'
+					]
+				])
+			],
+			'blueprint' => [
+				'fields' => [
+					'items' => [
+						'type' => 'structure',
+						'fields' => [
+							'text' => [
+								'type' => 'text'
+							]
+						]
+					]
+				]
+			]
+		]);
+
+		$import = [
+			'items' => [
+				null,
+				[
+					'text' => 'imported 2'
+				]
+			]
+		];
+
+		$expected = [
+			'items' => [
+				[
+					'text' => 'original 1'
+				],
+				[
+					'text' => 'imported 2'
+				]
+			]
+		];
+
+		$result = (new Importer())->walk($page, null, $import);
+		$this->assertEquals($expected, $result);
+	}
+
+	public function testStructureWithIds()
+	{
+		$page = new Page([
+			'slug' => 'test',
+			'content' => [
+				'items' => Yaml::encode([
+					[
+						'id' => 'a',
+						'text' => 'original 1'
+					],
+					[
+						'text' => 'original 2'
+					]
+				])
+			],
+			'blueprint' => [
+				'fields' => [
+					'items' => [
+						'type' => 'structure',
+						'fields' => [
+							'id' => [
+								'type' => 'text'
+							],
+							'text' => [
+								'type' => 'text'
+							]
+						]
+					]
+				]
+			]
+		]);
+
+		$import = [
+			'items' => [
+				null,
+				[
+					'id' => 'a',
+					'text' => 'imported 1'
+				]
+			]
+		];
+
+		$expected = [
+			'items' => [
+				[
+					'id' => 'a',
+					'text' => 'imported 1'
+				],
+				[
+					'text' => 'original 2'
+				]
+			]
+		];
+
+		$result = (new Importer())->walk($page, null, $import);
+		$this->assertEquals($expected, $result);
 	}
 
 	public function testBlocks()

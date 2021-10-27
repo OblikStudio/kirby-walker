@@ -33,6 +33,23 @@ class Importer extends Walker
 		return !empty($input) ? $input : $field->value();
 	}
 
+	protected function walkFieldStructure($field, $settings, $input)
+	{
+		$data = null;
+
+		if (is_array($input)) {
+			$input = array_column($input, null, 'id');
+		}
+
+		foreach ($field->toStructure() as $key => $entry) {
+			// `$key` is either an integer or a string, depending on whether the
+			// structure entry has an `id` field or not.
+			$data[] = $this->walkContent($entry->content(), $settings['fields'], $input[$key] ?? null);
+		}
+
+		return $data;
+	}
+
 	protected function walkFieldBlocks($field, $settings, $input)
 	{
 		$data = [];
