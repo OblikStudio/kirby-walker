@@ -31,25 +31,25 @@ final class ExporterTest extends TestCase
 						'content' => [
 							'text' => ''
 						],
-						"id" => "0c34d9f1-de9b-456a-818b-fbcb9cefea58",
-						"isHidden" => false,
-						"type" => "text"
+						'id' => '0c34d9f1-de9b-456a-818b-fbcb9cefea58',
+						'isHidden' => false,
+						'type' => 'text'
 					],
 					[
 						'content' => [
 							'text' => '<p>hidden block</p>'
 						],
-						"id" => "f96cfd81-56df-42a0-a05d-7eebe35f5cb9",
-						"isHidden" => true,
-						"type" => "text"
+						'id' => 'f96cfd81-56df-42a0-a05d-7eebe35f5cb9',
+						'isHidden' => true,
+						'type' => 'text'
 					],
 					[
 						'content' => [
 							'text' => '<p>text</p>'
 						],
-						"id" => "c14c1bff-6a9d-4179-9aa9-b9df25dca891",
-						"isHidden" => false,
-						"type" => "text"
+						'id' => 'c14c1bff-6a9d-4179-9aa9-b9df25dca891',
+						'isHidden' => false,
+						'type' => 'text'
 					]
 				])
 			],
@@ -68,7 +68,7 @@ final class ExporterTest extends TestCase
 					'content' => [
 						'text' => '<p>text</p>'
 					],
-					"id" => "c14c1bff-6a9d-4179-9aa9-b9df25dca891"
+					'id' => 'c14c1bff-6a9d-4179-9aa9-b9df25dca891'
 				]
 			]
 		];
@@ -83,16 +83,16 @@ final class ExporterTest extends TestCase
 			'content' => [
 				'text' => Json::encode([
 					[
-						"attrs" => [],
-						"content" => "",
-						"id" => "_rtq8tflwv",
-						"type" => "paragraph"
+						'attrs' => [],
+						'content' => '',
+						'id' => '_rtq8tflwv',
+						'type' => 'paragraph'
 					],
 					[
-						"attrs" => [],
-						"content" => "text",
-						"id" => "_zyusghhiw",
-						"type" => "paragraph"
+						'attrs' => [],
+						'content' => 'text',
+						'id' => '_zyusghhiw',
+						'type' => 'paragraph'
 					]
 				])
 			],
@@ -108,8 +108,8 @@ final class ExporterTest extends TestCase
 		$expected = [
 			'text' => [
 				[
-					"content" => "text",
-					"id" => "_zyusghhiw"
+					'content' => 'text',
+					'id' => '_zyusghhiw'
 				]
 			]
 		];

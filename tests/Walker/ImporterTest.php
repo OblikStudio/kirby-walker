@@ -209,25 +209,25 @@ final class ImporterTest extends TestCase
 						'content' => [
 							'text' => '<p>original 1</p>'
 						],
-						"id" => "c14c1bff-6a9d-4179-9aa9-b9df25dca891",
-						"isHidden" => false,
-						"type" => "text"
+						'id' => 'c14c1bff-6a9d-4179-9aa9-b9df25dca891',
+						'isHidden' => false,
+						'type' => 'text'
 					],
 					[
 						'content' => [
 							'text' => '<p>original 2</p>'
 						],
-						"id" => "9da43326-6118-4f4a-b4cd-23ca5bd5c35f",
-						"isHidden" => false,
-						"type" => "text"
+						'id' => '9da43326-6118-4f4a-b4cd-23ca5bd5c35f',
+						'isHidden' => false,
+						'type' => 'text'
 					],
 					[
 						'content' => [
 							'text' => '<p>original 3</p>'
 						],
-						"id" => "fdd25d51-8ac5-42aa-8476-b63dac8c577b",
-						"isHidden" => false,
-						"type" => "text"
+						'id' => 'fdd25d51-8ac5-42aa-8476-b63dac8c577b',
+						'isHidden' => false,
+						'type' => 'text'
 					]
 				])
 			],
@@ -249,19 +249,19 @@ final class ImporterTest extends TestCase
 					'content' => [
 						'text' => '<p>imported 3</p>'
 					],
-					"id" => "fdd25d51-8ac5-42aa-8476-b63dac8c577b"
+					'id' => 'fdd25d51-8ac5-42aa-8476-b63dac8c577b'
 				],
 				[
 					'content' => [
 						'text' => '<p>outdated block</p>'
 					],
-					"id" => "bb8ca9fd-d1ee-4567-a130-4946afdee9a8"
+					'id' => 'bb8ca9fd-d1ee-4567-a130-4946afdee9a8'
 				],
 				[
 					'content' => [
 						'text' => '<p>imported 1</p>'
 					],
-					"id" => "c14c1bff-6a9d-4179-9aa9-b9df25dca891"
+					'id' => 'c14c1bff-6a9d-4179-9aa9-b9df25dca891'
 				]
 			]
 		];
@@ -272,25 +272,25 @@ final class ImporterTest extends TestCase
 					'content' => [
 						'text' => '<p>imported 1</p>'
 					],
-					"id" => "c14c1bff-6a9d-4179-9aa9-b9df25dca891",
-					"isHidden" => false,
-					"type" => "text"
+					'id' => 'c14c1bff-6a9d-4179-9aa9-b9df25dca891',
+					'isHidden' => false,
+					'type' => 'text'
 				],
 				[
 					'content' => [
 						'text' => '<p>original 2</p>'
 					],
-					"id" => "9da43326-6118-4f4a-b4cd-23ca5bd5c35f",
-					"isHidden" => false,
-					"type" => "text"
+					'id' => '9da43326-6118-4f4a-b4cd-23ca5bd5c35f',
+					'isHidden' => false,
+					'type' => 'text'
 				],
 				[
 					'content' => [
 						'text' => '<p>imported 3</p>'
 					],
-					"id" => "fdd25d51-8ac5-42aa-8476-b63dac8c577b",
-					"isHidden" => false,
-					"type" => "text"
+					'id' => 'fdd25d51-8ac5-42aa-8476-b63dac8c577b',
+					'isHidden' => false,
+					'type' => 'text'
 				]
 			]
 		];
@@ -306,22 +306,22 @@ final class ImporterTest extends TestCase
 			'content' => [
 				'text' => Json::encode([
 					[
-						"attrs" => [],
-						"content" => "original 1",
-						"id" => "_zyusghhiw",
-						"type" => "paragraph"
+						'attrs' => [],
+						'content' => 'original 1',
+						'id' => '_zyusghhiw',
+						'type' => 'paragraph'
 					],
 					[
-						"attrs" => [],
-						"content" => "original 2",
-						"id" => "_rtq8tflwv",
-						"type" => "paragraph"
+						'attrs' => [],
+						'content' => 'original 2',
+						'id' => '_rtq8tflwv',
+						'type' => 'paragraph'
 					],
 					[
-						"attrs" => [],
-						"content" => "original 3",
-						"id" => "_ux4q8wu0c",
-						"type" => "paragraph"
+						'attrs' => [],
+						'content' => 'original 3',
+						'id' => '_ux4q8wu0c',
+						'type' => 'paragraph'
 					]
 				])
 			],
@@ -337,16 +337,16 @@ final class ImporterTest extends TestCase
 		$import = [
 			'text' => [
 				[
-					"content" => "imported 3",
-					"id" => "_ux4q8wu0c"
+					'content' => 'imported 3',
+					'id' => '_ux4q8wu0c'
 				],
 				[
-					"content" => "outdated",
-					"id" => "_5zzr7jl3x"
+					'content' => 'outdated',
+					'id' => '_5zzr7jl3x'
 				],
 				[
-					"content" => "imported 1",
-					"id" => "_zyusghhiw"
+					'content' => 'imported 1',
+					'id' => '_zyusghhiw'
 				]
 			]
 		];
@@ -354,22 +354,22 @@ final class ImporterTest extends TestCase
 		$expected = [
 			'text' => [
 				[
-					"attrs" => [],
-					"content" => "imported 1",
-					"id" => "_zyusghhiw",
-					"type" => "paragraph"
+					'attrs' => [],
+					'content' => 'imported 1',
+					'id' => '_zyusghhiw',
+					'type' => 'paragraph'
 				],
 				[
-					"attrs" => [],
-					"content" => "original 2",
-					"id" => "_rtq8tflwv",
-					"type" => "paragraph"
+					'attrs' => [],
+					'content' => 'original 2',
+					'id' => '_rtq8tflwv',
+					'type' => 'paragraph'
 				],
 				[
-					"attrs" => [],
-					"content" => "imported 3",
-					"id" => "_ux4q8wu0c",
-					"type" => "paragraph"
+					'attrs' => [],
+					'content' => 'imported 3',
+					'id' => '_ux4q8wu0c',
+					'type' => 'paragraph'
 				]
 			]
 		];
