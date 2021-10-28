@@ -119,7 +119,7 @@ final class ExporterTest extends TestCase
 		$this->assertEquals($expected, $result);
 	}
 
-	public function testLinkField()
+	public function testLink()
 	{
 		$result = (new Exporter())->walk(new Page([
 			'slug' => 'test',
@@ -128,11 +128,19 @@ final class ExporterTest extends TestCase
 					'type' => 'url',
 					'value' => 'https://example.com',
 					'text' => 'test'
+				]),
+				'link2' => Yaml::encode([
+					'type' => 'url',
+					'value' => 'https://example.com',
+					'text' => 'https://example.com'
 				])
 			],
 			'blueprint' => [
 				'fields' => [
 					'link' => [
+						'type' => 'link'
+					],
+					'link2' => [
 						'type' => 'link'
 					]
 				]
