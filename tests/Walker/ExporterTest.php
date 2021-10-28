@@ -3,22 +3,30 @@
 namespace Oblik\Walker\Walker;
 
 use Kirby\Cms\Page;
+use Kirby\Cms\Site;
 use Kirby\Data\Json;
 use Kirby\Data\Yaml;
 use Oblik\Walker\TestCase;
 
 final class ExporterTest extends TestCase
 {
-	public function testTitleField()
+	public function testTitle()
 	{
-		$data = Exporter::walk(new Page([
+		$siteData = Exporter::walk(new Site([
+			'content' => [
+				'title' => 'test'
+			]
+		]));
+
+		$pageData = Exporter::walk(new Page([
 			'slug' => 'test',
 			'content' => [
 				'title' => 'test'
 			]
 		]));
 
-		$this->assertEquals('test', $data['title']);
+		$this->assertEquals('test', $siteData['title']);
+		$this->assertEquals('test', $pageData['title']);
 	}
 
 	public function testBlocks()

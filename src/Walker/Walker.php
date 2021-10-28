@@ -9,6 +9,7 @@ use Kirby\Cms\Content;
 use Kirby\Cms\Field;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
+use Kirby\Cms\Site;
 use Kirby\Data\Json;
 use Kirby\Data\Yaml;
 use Kirby\Form\Field as FormField;
@@ -26,7 +27,7 @@ class Walker
 		$content = $model->content($lang);
 		$blueprint = $model->blueprint()->fields();
 
-		if (is_a($model, Page::class)) {
+		if (is_a($model, Page::class) || is_a($model, Site::class)) {
 			$blueprint = array_replace([
 				'title' => [
 					'type' => 'text'
