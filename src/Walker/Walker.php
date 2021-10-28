@@ -21,7 +21,7 @@ class Walker
 	/**
 	 * Walks over the content of a model in a certain language.
 	 */
-	public function walk(ModelWithContent $model, string $lang = null, $input = [])
+	public static function walk(ModelWithContent $model, string $lang = null, $input = [])
 	{
 		$content = $model->content($lang);
 		$blueprint = $model->blueprint()->fields();
@@ -35,7 +35,7 @@ class Walker
 		}
 
 		try {
-			return $this->walkContent($content, $blueprint, $input);
+			return static::walkContent($content, $blueprint, $input);
 		} catch (Throwable $e) {
 			$id = $model->id();
 			$error = $e->getMessage();
@@ -48,7 +48,7 @@ class Walker
 	 * Iterates over the fields in a Content object based on a blueprint array and
 	 * returns data for each field.
 	 */
-	public function walkContent(Content $content, array $blueprint = [], $input = [])
+	public static function walkContent(Content $content, array $blueprint = [], $input = [])
 	{
 		$data = null;
 
@@ -61,7 +61,7 @@ class Walker
 			}
 
 			try {
-				$fieldData = $this->walkField($field, $settings, $fieldInput);
+				$fieldData = static::walkField($field, $settings, $fieldInput);
 			} catch (Throwable $e) {
 				$fieldName = $field->key();
 				$errorName = $e->getMessage();
@@ -80,30 +80,30 @@ class Walker
 	/**
 	 * How to walk over the currently iterated field.
 	 */
-	protected function walkField(Field $field, array $settings, $input)
+	protected static function walkField(Field $field, array $settings, $input)
 	{
 		$method = 'walkField' . ucfirst($settings['type']);
-		$method = method_exists($this, $method) ? $method : 'walkFieldDefault';
-		return $this->$method($field, $settings, $input);
+		$method = method_exists(static::class, $method) ? $method : 'walkFieldDefault';
+		return static::$method($field, $settings, $input);
 	}
 
-	protected function walkFieldDefault($field, $settings, $input)
+	protected static function walkFieldDefault($field, $settings, $input)
 	{
 		return $field->value();
 	}
 
-	protected function walkFieldStructure($field, $settings, $input)
+	protected static function walkFieldStructure($field, $settings, $input)
 	{
 		$data = null;
 
 		foreach ($field->toStructure() as $entry) {
-			$data[] = $this->walkContent($entry->content(), $settings['fields']);
+			$data[] = static::walkContent($entry->content(), $settings['fields']);
 		}
 
 		return $data;
 	}
 
-	protected function walkFieldBlocks($field, $settings, $input)
+	protected static function walkFieldBlocks($field, $settings, $input)
 	{
 		$data = [];
 		$blocks = $field->toBlocks();
@@ -117,39 +117,39 @@ class Walker
 			}
 
 			$childData = $block->toArray();
-			$childData['content'] = $this->walkContent($block->content(), $set->fields());
+			$childData['content'] = static::walkContent($block->content(), $set->fields());
 			$data[] = $childData;
 		}
 
 		return $data;
 	}
 
-	protected function walkFieldEditor($field, $settings, $input)
+	protected static function walkFieldEditor($field, $settings, $input)
 	{
 		return Json::decode($field->value());
 	}
 
-	protected function walkFieldTags($field)
+	protected static function walkFieldTags($field)
 	{
 		return $field->split();
 	}
 
-	protected function walkFieldToggle($field)
+	protected static function walkFieldToggle($field)
 	{
 		return $field->toBool();
 	}
 
-	protected function walkFieldEntity($field, $settings, $input)
+	protected static function walkFieldEntity($field, $settings, $input)
 	{
-		return $this->walkContent($field->toEntity(), $settings['fields'], $input);
+		return static::walkContent($field->toEntity(), $settings['fields'], $input);
 	}
 
-	protected function walkFieldLink($field, $settings, $input)
+	protected static function walkFieldLink($field, $settings, $input)
 	{
 		return Yaml::decode($field->value());
 	}
 
-	protected function walkFieldJson($field, $settings, $input)
+	protected static function walkFieldJson($field, $settings, $input)
 	{
 		return Json::decode($field->value());
 	}

@@ -11,9 +11,7 @@ final class ExporterTest extends TestCase
 {
 	public function testTitleField()
 	{
-		$exporter = new Exporter();
-
-		$data = $exporter->walk(new Page([
+		$data = Exporter::walk(new Page([
 			'slug' => 'test',
 			'content' => [
 				'title' => 'test'
@@ -25,7 +23,7 @@ final class ExporterTest extends TestCase
 
 	public function testBlocks()
 	{
-		$result = (new Exporter())->walk(new Page([
+		$result = Exporter::walk(new Page([
 			'slug' => 'test',
 			'content' => [
 				'text' => Json::encode([
@@ -80,7 +78,7 @@ final class ExporterTest extends TestCase
 
 	public function testEditor()
 	{
-		$result = (new Exporter())->walk(new Page([
+		$result = Exporter::walk(new Page([
 			'slug' => 'test',
 			'content' => [
 				'text' => Json::encode([
@@ -121,7 +119,7 @@ final class ExporterTest extends TestCase
 
 	public function testLink()
 	{
-		$result = (new Exporter())->walk(new Page([
+		$result = Exporter::walk(new Page([
 			'slug' => 'test',
 			'content' => [
 				'link' => Yaml::encode([
@@ -158,8 +156,7 @@ final class ExporterTest extends TestCase
 
 	public function testSerialization()
 	{
-		$exporter = new Exporter();
-		$data = $exporter->walk(new Page([
+		$data = Exporter::walk(new Page([
 			'slug' => 'test',
 			'content' => [
 				'text' => '(link: https://example.com)'

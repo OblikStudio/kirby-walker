@@ -10,7 +10,7 @@ use Kirby\Form\Field as FormField;
 
 class Importer extends Walker
 {
-	public function walk(ModelWithContent $model, string $lang = null, $input = [])
+	public static function walk(ModelWithContent $model, string $lang = null, $input = [])
 	{
 		if (kirby()->multilang()) {
 			$lang = kirby()->defaultLanguage()->code();
@@ -19,7 +19,7 @@ class Importer extends Walker
 		return parent::walk($model, $lang, $input);
 	}
 
-	protected function walkField(Field $field, array $settings, $input)
+	protected static function walkField(Field $field, array $settings, $input)
 	{
 		if ($settings['translate'] !== false) {
 			return parent::walkField($field, $settings, $input);
@@ -28,12 +28,12 @@ class Importer extends Walker
 		}
 	}
 
-	protected function walkFieldDefault($field, $settings, $input)
+	protected static function walkFieldDefault($field, $settings, $input)
 	{
 		return !empty($input) ? $input : $field->value();
 	}
 
-	protected function walkFieldStructure($field, $settings, $input)
+	protected static function walkFieldStructure($field, $settings, $input)
 	{
 		$data = null;
 
@@ -44,13 +44,13 @@ class Importer extends Walker
 		foreach ($field->toStructure() as $key => $entry) {
 			// `$key` is either an integer or a string, depending on whether the
 			// structure entry has an `id` field or not.
-			$data[] = $this->walkContent($entry->content(), $settings['fields'], $input[$key] ?? null);
+			$data[] = static::walkContent($entry->content(), $settings['fields'], $input[$key] ?? null);
 		}
 
 		return $data;
 	}
 
-	protected function walkFieldBlocks($field, $settings, $input)
+	protected static function walkFieldBlocks($field, $settings, $input)
 	{
 		$data = [];
 
@@ -69,14 +69,14 @@ class Importer extends Walker
 			}
 
 			$childData = $block->toArray();
-			$childData['content'] = $this->walkContent($block->content(), $set->fields(), $input[$id]['content'] ?? null);
+			$childData['content'] = static::walkContent($block->content(), $set->fields(), $input[$id]['content'] ?? null);
 			$data[] = $childData;
 		}
 
 		return $data;
 	}
 
-	protected function walkFieldEditor($field, $settings, $input)
+	protected static function walkFieldEditor($field, $settings, $input)
 	{
 		$data = Json::decode($field->value());
 
@@ -96,7 +96,7 @@ class Importer extends Walker
 		return $data;
 	}
 
-	protected function walkFieldLink($field, $settings, $input)
+	protected static function walkFieldLink($field, $settings, $input)
 	{
 		$data = parent::walkFieldLink($field, $settings, $input);
 		$text = $input['text'] ?? null;

@@ -7,7 +7,7 @@ use Oblik\Walker\Serialize\KirbyTags;
 
 class Exporter extends Walker
 {
-	protected function walkField(Field $field, array $settings, $input)
+	protected static function walkField(Field $field, array $settings, $input)
 	{
 		if ($field->isNotEmpty() && $settings['translate'] !== false) {
 			$data = parent::walkField($field, $settings, $input);
@@ -18,7 +18,7 @@ class Exporter extends Walker
 		}
 	}
 
-	protected function walkFieldStructure($field, $settings, $input)
+	protected static function walkFieldStructure($field, $settings, $input)
 	{
 		$data = parent::walkFieldStructure($field, $settings, $input);
 
@@ -27,7 +27,7 @@ class Exporter extends Walker
 		}
 	}
 
-	protected function walkFieldBlocks($field, $settings, $input)
+	protected static function walkFieldBlocks($field, $settings, $input)
 	{
 		$data = parent::walkFieldBlocks($field, $settings, $input);
 
@@ -44,7 +44,7 @@ class Exporter extends Walker
 		return $data;
 	}
 
-	protected function walkFieldEditor($field, $settings, $input)
+	protected static function walkFieldEditor($field, $settings, $input)
 	{
 		$data = parent::walkFieldEditor($field, $settings, $input);
 
@@ -61,7 +61,7 @@ class Exporter extends Walker
 		return $data;
 	}
 
-	protected function walkFieldText($field, $settings, $input)
+	protected static function walkFieldText($field, $settings, $input)
 	{
 		return KirbyTags::decode($field->value(), [
 			'serialize' => [
@@ -73,12 +73,12 @@ class Exporter extends Walker
 		]);
 	}
 
-	protected function walkFieldTextarea($field, $settings, $input)
+	protected static function walkFieldTextarea($field, $settings, $input)
 	{
-		return $this->walkFieldText($field, $settings, $input);
+		return static::walkFieldText($field, $settings, $input);
 	}
 
-	protected function walkFieldLink($field, $settings, $input)
+	protected static function walkFieldLink($field, $settings, $input)
 	{
 		$data = parent::walkFieldLink($field, $settings, $input);
 		$text = $data['text'] ?? null;
@@ -88,32 +88,32 @@ class Exporter extends Walker
 		}
 	}
 
-	protected function walkFieldToggle($field)
+	protected static function walkFieldToggle($field)
 	{
 		return null;
 	}
 
-	protected function walkFieldDate()
+	protected static function walkFieldDate()
 	{
 		return null;
 	}
 
-	protected function walkFieldPages()
+	protected static function walkFieldPages()
 	{
 		return null;
 	}
 
-	protected function walkFieldFiles()
+	protected static function walkFieldFiles()
 	{
 		return null;
 	}
 
-	protected function walkFieldUrl()
+	protected static function walkFieldUrl()
 	{
 		return null;
 	}
 
-	protected function walkFieldNumber()
+	protected static function walkFieldNumber()
 	{
 		return null;
 	}
