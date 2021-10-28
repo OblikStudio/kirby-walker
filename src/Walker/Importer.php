@@ -95,4 +95,16 @@ class Importer extends Walker
 
 		return $data;
 	}
+
+	protected function walkFieldLink($field, $settings, $input)
+	{
+		$data = parent::walkFieldLink($field, $settings, $input);
+		$text = $input['text'] ?? null;
+
+		if (!empty($text)) {
+			$data['text'] = $text;
+		}
+
+		return $data;
+	}
 }

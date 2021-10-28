@@ -377,4 +377,42 @@ final class ImporterTest extends TestCase
 		$result = (new Importer())->walk($page, null, $import);
 		$this->assertEquals($expected, $result);
 	}
+
+	public function testLink()
+	{
+		$page = new Page([
+			'slug' => 'test',
+			'content' => [
+				'link' => Yaml::encode([
+					'type' => 'url',
+					'value' => 'https://example.com',
+					'text' => 'original'
+				])
+			],
+			'blueprint' => [
+				'fields' => [
+					'link' => [
+						'type' => 'link'
+					]
+				]
+			]
+		]);
+
+		$import = [
+			'link' => [
+				'text' => 'imported'
+			]
+		];
+
+		$expected = [
+			'link' => [
+				'type' => 'url',
+				'value' => 'https://example.com',
+				'text' => 'imported'
+			]
+		];
+
+		$result = (new Importer())->walk($page, null, $import);
+		$this->assertEquals($expected, $result);
+	}
 }
