@@ -70,10 +70,7 @@ class Importer extends Walker
 
 			$childData = $block->toArray();
 			$childData['content'] = $this->walkContent($block->content(), $set->fields(), $input[$id]['content'] ?? null);
-
-			if (!empty($childData['content'])) {
-				$data[] = $childData;
-			}
+			$data[] = $childData;
 		}
 
 		return $data;
