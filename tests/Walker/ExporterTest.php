@@ -167,7 +167,7 @@ final class ExporterTest extends TestCase
 		$data = Exporter::walk(new Page([
 			'slug' => 'test',
 			'content' => [
-				'text' => '(link: https://example.com)'
+				'text' => '{{ test1 }}(link: https://example.com rel: {{ test2 }} text: {{ test3 }})'
 			],
 			'blueprint' => [
 				'fields' => [
@@ -178,6 +178,6 @@ final class ExporterTest extends TestCase
 			]
 		]));
 
-		$this->assertEquals('<kirby link="https://example.com"/>', $data['text']);
+		$this->assertEquals('<template value=" test1 "/><kirby link="https://example.com" rel="&lt;template value=&quot; test2 &quot;/&gt;"><value name="text"><template value=" test3 "/></value></kirby>', $data['text']);
 	}
 }

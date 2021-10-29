@@ -4,6 +4,7 @@ namespace Oblik\Walker\Walker;
 
 use Kirby\Cms\Field;
 use Oblik\Walker\Serialize\KirbyTags;
+use Oblik\Walker\Serialize\Template;
 
 class Exporter extends Walker
 {
@@ -63,14 +64,21 @@ class Exporter extends Walker
 
 	protected static function walkFieldText($field, $settings, $input)
 	{
-		return KirbyTags::decode($field->value(), [
-			'serialize' => [
-				'tags' => [
-					'text',
-					'tooltip'
+		$text = $field->value();
+
+		if (is_string($text)) {
+			$text = Template::decode($text);
+			$text = KirbyTags::decode($text, [
+				'serialize' => [
+					'tags' => [
+						'text',
+						'tooltip'
+					]
 				]
-			]
-		]);
+			]);
+		}
+
+		return $text;
 	}
 
 	protected static function walkFieldTextarea($field, $settings, $input)
