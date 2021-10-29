@@ -6,19 +6,15 @@ use PHPUnit\Framework\TestCase;
 
 final class KirbyTagsTest extends TestCase
 {
-	public function serialize($input, $expected, $decodeOptions = [], $encodeOptions = [])
+	public function serialize($input, $expected)
 	{
-		$xml = KirbyTags::decode($input, [
-			'serialize' => $decodeOptions
-		]);
-
+		$xml = KirbyTags::decode($input);
 		$this->assertEquals($expected, $xml);
-
-		$text = KirbyTags::encode($xml, [
-			'serialize' => $encodeOptions
-		]);
-
+		$text = KirbyTags::encode($xml);
 		$this->assertEquals($input, $text);
+
+		KirbyTags::$externalAttrs = ['text'];
+		KirbyTags::$encodeEntities = false;
 	}
 
 	public function testInvalidTag()
@@ -41,16 +37,15 @@ final class KirbyTagsTest extends TestCase
 	{
 		$this->serialize(
 			'(link: text:)',
-			'<kirby link=""><value name="text"/></kirby>',
-			['tags' => ['text']]
+			'<kirby link=""><value name="text"/></kirby>'
 		);
 	}
 
 	public function testSelfClosingTag()
 	{
 		$this->serialize(
-			'(link: https://example.com/ text: foo)',
-			'<kirby link="https://example.com/" text="foo"/>'
+			'(link: https://example.com/ rel: nofollow)',
+			'<kirby link="https://example.com/" rel="nofollow"/>'
 		);
 	}
 
@@ -58,41 +53,34 @@ final class KirbyTagsTest extends TestCase
 	{
 		$this->serialize(
 			'(link: https://example.com/ text: hello text)',
-			'<kirby link="https://example.com/"><value name="text">hello text</value></kirby>',
-			['tags' => ['text']]
+			'<kirby link="https://example.com/"><value name="text">hello text</value></kirby>'
 		);
 	}
 
 	public function testTagsOrder()
 	{
-		$this->serialize(
-			'(link: https://example.com/ text: foo target: _blank)',
-			'<kirby text="foo"><value name="link" index="0">https://example.com/</value><value name="target">_blank</value></kirby>',
-			['tags' => ['link', 'target']]
-		);
+		KirbyTags::$externalAttrs = ['link', 'target'];
 
 		$this->serialize(
 			'(link: https://example.com/ text: foo target: _blank)',
-			'<kirby target="_blank"><value name="link" index="0">https://example.com/</value><value name="text" index="1">foo</value></kirby>',
-			['tags' => ['link', 'text']]
+			'<kirby text="foo"><value name="link" index="0">https://example.com/</value><value name="target">_blank</value></kirby>'
 		);
-	}
 
-	public function testHtmlContent()
-	{
+		KirbyTags::$externalAttrs = ['link', 'text'];
+
 		$this->serialize(
-			'(link: #&lt;ha<s"h\' text: <div>is "5\' &lt; <br> &amp; three</div>?)',
-			'<kirby link="#&amp;lt;ha&lt;s&quot;h\'"><value name="text"><div>is "5\' &lt; <br/> &amp; three</div>?</value></kirby>',
-			['tags' => ['text']]
+			'(link: https://example.com/ text: foo target: _blank)',
+			'<kirby target="_blank"><value name="link" index="0">https://example.com/</value><value name="text" index="1">foo</value></kirby>'
 		);
 	}
 
 	public function testAllExternal()
 	{
+		KirbyTags::$externalAttrs = ['link', 'text'];
+
 		$this->serialize(
 			'(link: #example text: random: yes)',
-			'<kirby><value name="link">#example</value><value name="text">random: yes</value></kirby>',
-			['tags' => ['link', 'text']]
+			'<kirby><value name="link">#example</value><value name="text">random: yes</value></kirby>'
 		);
 	}
 
@@ -100,18 +88,17 @@ final class KirbyTagsTest extends TestCase
 	{
 		$this->serialize(
 			'(link: #т§رト text: тест§اختبار テスト)',
-			'<kirby link="#т§رト"><value name="text">тест§اختبار テスト</value></kirby>',
-			['tags' => ['text']]
+			'<kirby link="#т§رト"><value name="text">тест§اختبار テスト</value></kirby>'
 		);
 	}
 
 	public function testEntitiesEncode()
 	{
+		KirbyTags::$encodeEntities = true;
+
 		$this->serialize(
 			'(link: ">\' text: \'"<>&&gt;)',
-			'<kirby link="&quot;&gt;\'"><value name="text">\'"&lt;&gt;&amp;&amp;gt;</value></kirby>',
-			['tags' => ['text'], 'entities' => true],
-			['entities' => true]
+			'<kirby link="&quot;&gt;\'"><value name="text">\'"&lt;&gt;&amp;&amp;gt;</value></kirby>'
 		);
 	}
 
@@ -123,8 +110,7 @@ final class KirbyTagsTest extends TestCase
 	{
 		$this->serialize(
 			"(link: # text: <div>text<br></div>)",
-			"<kirby link=\"#\"><value name=\"text\"><div>text<br/></div></value></kirby>",
-			['tags' => ['text']]
+			"<kirby link=\"#\"><value name=\"text\"><div>text<br/></div></value></kirby>"
 		);
 	}
 }
