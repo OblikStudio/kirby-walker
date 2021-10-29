@@ -7,6 +7,8 @@ use Kirby\Cms\Field;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Data\Json;
 use Kirby\Form\Field as FormField;
+use Oblik\Walker\Serialize\KirbyTags;
+use Oblik\Walker\Serialize\Template;
 
 class Importer extends Walker
 {
@@ -31,6 +33,23 @@ class Importer extends Walker
 	protected static function walkFieldDefault($field, $settings, $input)
 	{
 		return !empty($input) ? $input : $field->value();
+	}
+
+	protected static function walkFieldText($field, $settings, $input)
+	{
+		$text = $field->value();
+
+		if (is_string($input)) {
+			$text = KirbyTags::encode($input);
+			$text = Template::encode($text);
+		}
+
+		return $text;
+	}
+
+	protected static function walkFieldTextarea($field, $settings, $input)
+	{
+		return static::walkFieldText($field, $settings, $input);
 	}
 
 	protected static function walkFieldStructure($field, $settings, $input)

@@ -68,14 +68,7 @@ class Exporter extends Walker
 
 		if (is_string($text)) {
 			$text = Template::decode($text);
-			$text = KirbyTags::decode($text, [
-				'serialize' => [
-					'tags' => [
-						'text',
-						'tooltip'
-					]
-				]
-			]);
+			$text = KirbyTags::decode($text);
 		}
 
 		return $text;
