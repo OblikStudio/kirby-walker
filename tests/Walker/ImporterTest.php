@@ -415,4 +415,32 @@ final class ImporterTest extends TestCase
 		$result = Importer::walk($page, null, $import);
 		$this->assertEquals($expected, $result);
 	}
+
+	public function testSerialization()
+	{
+		$page = new Page([
+			'slug' => 'test',
+			'content' => [
+				'text' => ''
+			],
+			'blueprint' => [
+				'fields' => [
+					'text' => [
+						'type' => 'text'
+					]
+				]
+			]
+		]);
+
+		$import = [
+			'text' => '<meta template=" test1 "/><kirby link="https://example.com" rel="&lt;meta template=&quot; test2 &quot;/&gt;"><value name="text"><meta template=" test3 "/></value></kirby>'
+		];
+
+		$expected = [
+			'text' => '{{ test1 }}(link: https://example.com rel: {{ test2 }} text: {{ test3 }})'
+		];
+
+		$result = Importer::walk($page, null, $import);
+		$this->assertEquals($expected, $result);
+	}
 }

@@ -18,7 +18,7 @@ final class TemplateTest extends TestCase
 	{
 		$this->serialize(
 			'{{ test }}',
-			'<template value=" test "/>'
+			'<meta template=" test "/>'
 		);
 	}
 }

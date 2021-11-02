@@ -178,6 +178,6 @@ final class ExporterTest extends TestCase
 			]
 		]));
 
-		$this->assertEquals('<template value=" test1 "/><kirby link="https://example.com" rel="&lt;template value=&quot; test2 &quot;/&gt;"><value name="text"><template value=" test3 "/></value></kirby>', $data['text']);
+		$this->assertEquals('<meta template=" test1 "/><kirby link="https://example.com" rel="&lt;meta template=&quot; test2 &quot;/&gt;"><value name="text"><meta template=" test3 "/></value></kirby>', $data['text']);
 	}
 }
