@@ -88,9 +88,17 @@ class Walker
 		return static::$method($field, $settings, $input);
 	}
 
+	/**
+	 * How to handle text in all fields. Can be extended to parse KirbyTags.
+	 */
+	protected static function walkText($text)
+	{
+		return $text;
+	}
+
 	protected static function walkFieldDefault($field, $settings, $input)
 	{
-		return $field->value();
+		return static::walkText($field->value());
 	}
 
 	protected static function walkFieldStructure($field, $settings, $input)
@@ -127,7 +135,15 @@ class Walker
 
 	protected static function walkFieldEditor($field, $settings, $input)
 	{
-		return Json::decode($field->value());
+		$blocks = Json::decode($field->value());
+
+		foreach ($blocks as &$block) {
+			if (!empty($block['content'])) {
+				$block['content'] = static::walkText($block['content']);
+			}
+		}
+
+		return $blocks;
 	}
 
 	protected static function walkFieldTags($field)
@@ -147,7 +163,13 @@ class Walker
 
 	protected static function walkFieldLink($field, $settings, $input)
 	{
-		return Yaml::decode($field->value());
+		$data = Yaml::decode($field->value());
+
+		if (!empty($data['text'])) {
+			$data['text'] = static::walkText($data['text']);
+		}
+
+		return $data;
 	}
 
 	protected static function walkFieldJson($field, $settings, $input)

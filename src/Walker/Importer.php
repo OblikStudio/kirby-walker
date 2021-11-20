@@ -12,6 +12,16 @@ use Oblik\Walker\Serialize\Template;
 
 class Importer extends Walker
 {
+	protected static function walkText($text)
+	{
+		if (is_string($text)) {
+			$text = KirbyTags::encode($text);
+			$text = Template::encode($text);
+		}
+
+		return $text;
+	}
+
 	public static function walk(ModelWithContent $model, string $lang = null, $input = [])
 	{
 		if (kirby()->multilang()) {
@@ -32,24 +42,7 @@ class Importer extends Walker
 
 	protected static function walkFieldDefault($field, $settings, $input)
 	{
-		return !empty($input) ? $input : $field->value();
-	}
-
-	protected static function walkFieldText($field, $settings, $input)
-	{
-		$text = $field->value();
-
-		if (is_string($input)) {
-			$text = KirbyTags::encode($input);
-			$text = Template::encode($text);
-		}
-
-		return $text;
-	}
-
-	protected static function walkFieldTextarea($field, $settings, $input)
-	{
-		return static::walkFieldText($field, $settings, $input);
+		return !empty($input) ? static::walkText($input) : $field->value();
 	}
 
 	protected static function walkFieldStructure($field, $settings, $input)
@@ -108,7 +101,7 @@ class Importer extends Walker
 			$inputContent = $input[$id]['content'] ?? null;
 
 			if (!empty($inputContent)) {
-				$block['content'] = $inputContent;
+				$block['content'] = static::walkText($inputContent);
 			}
 		}
 
@@ -121,7 +114,7 @@ class Importer extends Walker
 		$text = $input['text'] ?? null;
 
 		if (!empty($text)) {
-			$data['text'] = $text;
+			$data['text'] = static::walkText($text);
 		}
 
 		return $data;

@@ -8,6 +8,16 @@ use Oblik\Walker\Serialize\Template;
 
 class Exporter extends Walker
 {
+	protected static function walkText($text)
+	{
+		if (is_string($text)) {
+			$text = Template::decode($text);
+			$text = KirbyTags::decode($text);
+		}
+
+		return $text;
+	}
+
 	protected static function walkField(Field $field, array $settings, $input)
 	{
 		if ($field->isNotEmpty() && $settings['translate'] !== false) {
@@ -60,23 +70,6 @@ class Exporter extends Walker
 		}
 
 		return $data;
-	}
-
-	protected static function walkFieldText($field, $settings, $input)
-	{
-		$text = $field->value();
-
-		if (is_string($text)) {
-			$text = Template::decode($text);
-			$text = KirbyTags::decode($text);
-		}
-
-		return $text;
-	}
-
-	protected static function walkFieldTextarea($field, $settings, $input)
-	{
-		return static::walkFieldText($field, $settings, $input);
 	}
 
 	protected static function walkFieldLink($field, $settings, $input)
