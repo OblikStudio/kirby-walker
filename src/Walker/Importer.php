@@ -2,11 +2,9 @@
 
 namespace Oblik\Walker\Walker;
 
-use Error;
 use Kirby\Cms\Field;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Data\Json;
-use Kirby\Form\Field as FormField;
 use Oblik\Walker\Serialize\KirbyTags;
 use Oblik\Walker\Serialize\Template;
 
@@ -44,59 +42,6 @@ class Importer extends Walker
 	{
 		$input = $context['input'];
 		return !empty($input) ? static::walkText($input) : $field->value();
-	}
-
-	protected static function walkFieldStructure($field, $context)
-	{
-		$data = null;
-		$context['fields'] = $context['blueprint']['fields'];
-		$input = $context['input'];
-
-		if (is_array($input)) {
-			$input = array_column($input, null, 'id');
-		}
-
-		foreach ($field->toStructure() as $key => $entry) {
-			// `$key` is either an integer or a string, depending on whether the
-			// structure entry has an `id` field or not.
-			$entryContext = $context;
-			$entryContext['input'] = $input[$key] ?? null;
-
-			$data[] = static::walkContent($entry->content(), $entryContext);
-		}
-
-		return $data;
-	}
-
-	protected static function walkFieldBlocks($field, $context)
-	{
-		$data = [];
-		$input = $context['input'];
-
-		if (is_array($input)) {
-			$input = array_column($input, null, 'id');
-		}
-
-		$blocks = $field->toBlocks();
-		$sets = FormField::factory('blocks', $context['blueprint'])->fieldsets();
-
-		foreach ($blocks as $id => $block) {
-			$set = $sets->get($block->type());
-
-			if (empty($set)) {
-				throw new Error('Missing fieldset for block type: "' . $block->type() . '"');
-			}
-
-			$childContext = $context;
-			$childContext['fields'] = $set->fields();
-			$childContext['input'] = $input[$id]['content'] ?? null;
-
-			$childData = $block->toArray();
-			$childData['content'] = static::walkContent($block->content(), $childContext);
-			$data[] = $childData;
-		}
-
-		return $data;
 	}
 
 	protected static function walkFieldEditor($field, $context)

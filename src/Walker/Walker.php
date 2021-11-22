@@ -54,6 +54,11 @@ class Walker
 	{
 		$data = null;
 
+		// Needed when walking over structure or block entries. Otherwise, the
+		// entry's fields are treated as structure/block entries in
+		// `findMatchingEntry()` and expected to have `id` fields.
+		unset($context['blueprint']);
+
 		if (empty($context['fields'])) {
 			throw new Error('Missing fields context');
 		}
@@ -65,9 +70,8 @@ class Walker
 				$blueprint['translate'] = true;
 			}
 
-			$fieldContext = $context;
+			$fieldContext = static::subcontext($key, $context);
 			$fieldContext['blueprint'] = $blueprint;
-			$fieldContext['input'] = $context['input'][$key] ?? null;
 
 			try {
 				$fieldData = static::walkField($field, $fieldContext);
@@ -81,6 +85,60 @@ class Walker
 			if ($fieldData !== null) {
 				$data[$key] = $fieldData;
 			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Prepares the context for that of a child entry, such as an item in a
+	 * structure field or a block in a blocks field.
+	 */
+	protected static function subcontext($key, $context)
+	{
+		$input = $context['input'] ?? null;
+
+		if (!empty($input)) {
+			$context['input'] = static::findMatchingEntry($key, $input, $context);
+		}
+
+		return $context;
+	}
+
+	/**
+	 * Attempts to find a key in an array of data using different strategies,
+	 * depending on the field's blueprint type, as given by the context.
+	 */
+	protected static function findMatchingEntry($key, $data, $context)
+	{
+		if (!is_array($data)) {
+			return null;
+		}
+
+		$type = $context['blueprint']['type'] ?? null;
+
+		if (
+			$type === 'blocks' ||
+			($type === 'structure' &&
+				!empty($context['blueprint']['fields']['id']))
+		) {
+			foreach ($data as $entry) {
+				if (($entry['id'] ?? null) === $key) {
+					$data = $entry;
+					break;
+				}
+			}
+		} else {
+			foreach ($data as $i => $entry) {
+				if ($i === $key) {
+					$data = $entry;
+					break;
+				}
+			}
+		}
+
+		if ($type === 'blocks') {
+			$data = $data['content'] ?? null;
 		}
 
 		return $data;
@@ -114,8 +172,11 @@ class Walker
 		$data = null;
 		$context['fields'] = $context['blueprint']['fields'];
 
-		foreach ($field->toStructure() as $entry) {
-			$data[] = static::walkContent($entry->content(), $context);
+		foreach ($field->toStructure() as $key => $entry) {
+			// `$key` is either an integer or a string, depending on whether the
+			// structure entry has an `id` field or not.
+			$entryContext = static::subcontext($key, $context);
+			$data[] = static::walkContent($entry->content(), $entryContext);
 		}
 
 		return $data;
@@ -127,14 +188,14 @@ class Walker
 		$blocks = $field->toBlocks();
 		$sets = FormField::factory('blocks', $context['blueprint'])->fieldsets();
 
-		foreach ($blocks as $block) {
+		foreach ($blocks as $id => $block) {
 			$set = $sets->get($block->type());
 
 			if (empty($set)) {
 				throw new Error('Missing fieldset for block type: "' . $block->type() . '"');
 			}
 
-			$childContext = $context;
+			$childContext = static::subcontext($id, $context);
 			$childContext['fields'] = $set->fields();
 
 			$childData = $block->toArray();
