@@ -18,10 +18,10 @@ class Exporter extends Walker
 		return $text;
 	}
 
-	protected static function walkField(Field $field, array $settings, $input)
+	protected static function walkField(Field $field, $context)
 	{
-		if ($field->isNotEmpty() && $settings['translate'] !== false) {
-			$data = parent::walkField($field, $settings, $input);
+		if ($field->isNotEmpty() && $context['blueprint']['translate'] !== false) {
+			$data = parent::walkField($field, $context);
 
 			if (!empty($data)) {
 				return $data;
@@ -29,18 +29,18 @@ class Exporter extends Walker
 		}
 	}
 
-	protected static function walkFieldStructure($field, $settings, $input)
+	protected static function walkFieldStructure($field, $context)
 	{
-		$data = parent::walkFieldStructure($field, $settings, $input);
+		$data = parent::walkFieldStructure($field, $context);
 
 		if (!empty(array_filter($data))) {
 			return $data;
 		}
 	}
 
-	protected static function walkFieldBlocks($field, $settings, $input)
+	protected static function walkFieldBlocks($field, $context)
 	{
-		$data = parent::walkFieldBlocks($field, $settings, $input);
+		$data = parent::walkFieldBlocks($field, $context);
 
 		foreach ($data as $i => &$block) {
 			if (empty($block['content'])) {
@@ -55,9 +55,9 @@ class Exporter extends Walker
 		return $data;
 	}
 
-	protected static function walkFieldEditor($field, $settings, $input)
+	protected static function walkFieldEditor($field, $context)
 	{
-		$data = parent::walkFieldEditor($field, $settings, $input);
+		$data = parent::walkFieldEditor($field, $context);
 
 		foreach ($data as $i => &$block) {
 			if (empty($block['content'])) {
@@ -72,9 +72,9 @@ class Exporter extends Walker
 		return $data;
 	}
 
-	protected static function walkFieldLink($field, $settings, $input)
+	protected static function walkFieldLink($field, $context)
 	{
-		$data = parent::walkFieldLink($field, $settings, $input);
+		$data = parent::walkFieldLink($field, $context);
 		$text = $data['text'] ?? null;
 
 		if (!empty($text) && !preg_match('/^[a-z]+:\/\//', $text)) {
@@ -82,7 +82,7 @@ class Exporter extends Walker
 		}
 	}
 
-	protected static function walkFieldToggle($field)
+	protected static function walkFieldToggle($field, $context)
 	{
 		return null;
 	}

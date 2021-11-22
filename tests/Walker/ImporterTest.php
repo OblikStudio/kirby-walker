@@ -27,7 +27,9 @@ final class ImporterTest extends TestCase
 		]);
 
 		$content = ['text' => 'imported'];
-		$result = Importer::walk($page, null, $content);
+		$result = Importer::walk($page, [
+			'input' => $content
+		]);
 
 		$this->assertEquals($content, $result);
 	}
@@ -61,7 +63,9 @@ final class ImporterTest extends TestCase
 		]);
 
 		$content = ['text' => 'imported'];
-		$result = Importer::walk($page, null, $content);
+		$result = Importer::walk($page, [
+			'input' => $content
+		]);
 
 		$this->assertEquals($content, $result);
 	}
@@ -83,8 +87,11 @@ final class ImporterTest extends TestCase
 			]
 		]);
 
-		$content = ['text' => 'imported'];
-		$result = Importer::walk($page, null, $content);
+		$result = Importer::walk($page, [
+			'input' => [
+				'text' => 'imported'
+			]
+		]);
 
 		$this->assertEquals($original, $result);
 	}
@@ -137,7 +144,10 @@ final class ImporterTest extends TestCase
 			]
 		];
 
-		$result = Importer::walk($page, null, $import);
+		$result = Importer::walk($page, [
+			'input' => $import
+		]);
+
 		$this->assertEquals($expected, $result);
 	}
 
@@ -195,7 +205,10 @@ final class ImporterTest extends TestCase
 			]
 		];
 
-		$result = Importer::walk($page, null, $import);
+		$result = Importer::walk($page, [
+			'input' => $import
+		]);
+
 		$this->assertEquals($expected, $result);
 	}
 
@@ -295,7 +308,10 @@ final class ImporterTest extends TestCase
 			]
 		];
 
-		$result = Importer::walk($page, null, $import);
+		$result = Importer::walk($page, [
+			'input' => $import
+		]);
+
 		$this->assertEquals($expected, $result);
 	}
 
@@ -374,7 +390,10 @@ final class ImporterTest extends TestCase
 			]
 		];
 
-		$result = Importer::walk($page, null, $import);
+		$result = Importer::walk($page, [
+			'input' => $import
+		]);
+
 		$this->assertEquals($expected, $result);
 	}
 
@@ -412,7 +431,10 @@ final class ImporterTest extends TestCase
 			]
 		];
 
-		$result = Importer::walk($page, null, $import);
+		$result = Importer::walk($page, [
+			'input' => $import
+		]);
+
 		$this->assertEquals($expected, $result);
 	}
 
@@ -440,7 +462,10 @@ final class ImporterTest extends TestCase
 			'text' => '{{ test1 }}(link: https://example.com rel: {{ test2 }} text: {{ test3 }})'
 		];
 
-		$result = Importer::walk($page, null, $import);
+		$result = Importer::walk($page, [
+			'input' => $import
+		]);
+
 		$this->assertEquals($expected, $result);
 	}
 }

@@ -22,32 +22,35 @@ class Importer extends Walker
 		return $text;
 	}
 
-	public static function walk(ModelWithContent $model, string $lang = null, $input = [])
+	public static function walk(ModelWithContent $model, $context = [])
 	{
 		if (kirby()->multilang()) {
-			$lang = kirby()->defaultLanguage()->code();
+			$context['lang'] = kirby()->defaultLanguage()->code();
 		}
 
-		return parent::walk($model, $lang, $input);
+		return parent::walk($model, $context);
 	}
 
-	protected static function walkField(Field $field, array $settings, $input)
+	protected static function walkField(Field $field, $context)
 	{
-		if ($settings['translate'] !== false) {
-			return parent::walkField($field, $settings, $input);
+		if ($context['blueprint']['translate'] !== false) {
+			return parent::walkField($field, $context);
 		} else {
 			return $field->value();
 		}
 	}
 
-	protected static function walkFieldDefault($field, $settings, $input)
+	protected static function walkFieldDefault($field, $context)
 	{
+		$input = $context['input'];
 		return !empty($input) ? static::walkText($input) : $field->value();
 	}
 
-	protected static function walkFieldStructure($field, $settings, $input)
+	protected static function walkFieldStructure($field, $context)
 	{
 		$data = null;
+		$context['fields'] = $context['blueprint']['fields'];
+		$input = $context['input'];
 
 		if (is_array($input)) {
 			$input = array_column($input, null, 'id');
@@ -56,22 +59,26 @@ class Importer extends Walker
 		foreach ($field->toStructure() as $key => $entry) {
 			// `$key` is either an integer or a string, depending on whether the
 			// structure entry has an `id` field or not.
-			$data[] = static::walkContent($entry->content(), $settings['fields'], $input[$key] ?? null);
+			$entryContext = $context;
+			$entryContext['input'] = $input[$key] ?? null;
+
+			$data[] = static::walkContent($entry->content(), $entryContext);
 		}
 
 		return $data;
 	}
 
-	protected static function walkFieldBlocks($field, $settings, $input)
+	protected static function walkFieldBlocks($field, $context)
 	{
 		$data = [];
+		$input = $context['input'];
 
 		if (is_array($input)) {
 			$input = array_column($input, null, 'id');
 		}
 
 		$blocks = $field->toBlocks();
-		$sets = FormField::factory('blocks', $settings)->fieldsets();
+		$sets = FormField::factory('blocks', $context['blueprint'])->fieldsets();
 
 		foreach ($blocks as $id => $block) {
 			$set = $sets->get($block->type());
@@ -80,17 +87,22 @@ class Importer extends Walker
 				throw new Error('Missing fieldset for block type: "' . $block->type() . '"');
 			}
 
+			$childContext = $context;
+			$childContext['fields'] = $set->fields();
+			$childContext['input'] = $input[$id]['content'] ?? null;
+
 			$childData = $block->toArray();
-			$childData['content'] = static::walkContent($block->content(), $set->fields(), $input[$id]['content'] ?? null);
+			$childData['content'] = static::walkContent($block->content(), $childContext);
 			$data[] = $childData;
 		}
 
 		return $data;
 	}
 
-	protected static function walkFieldEditor($field, $settings, $input)
+	protected static function walkFieldEditor($field, $context)
 	{
 		$data = Json::decode($field->value());
+		$input = $context['input'];
 
 		if (is_array($input)) {
 			$input = array_column($input, null, 'id');
@@ -108,10 +120,10 @@ class Importer extends Walker
 		return $data;
 	}
 
-	protected static function walkFieldLink($field, $settings, $input)
+	protected static function walkFieldLink($field, $context)
 	{
-		$data = parent::walkFieldLink($field, $settings, $input);
-		$text = $input['text'] ?? null;
+		$data = parent::walkFieldLink($field, $context);
+		$text = $context['input']['text'] ?? null;
 
 		if (!empty($text)) {
 			$data['text'] = static::walkText($text);

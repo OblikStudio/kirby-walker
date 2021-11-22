@@ -22,21 +22,22 @@ class Walker
 	/**
 	 * Walks over the content of a model in a certain language.
 	 */
-	public static function walk(ModelWithContent $model, string $lang = null, $input = [])
+	public static function walk(ModelWithContent $model, $context = [])
 	{
-		$content = $model->content($lang);
-		$blueprint = $model->blueprint()->fields();
+		$content = $model->content($content['lang'] ?? null);
+		$fields = $model->blueprint()->fields();
 
 		if (is_a($model, Page::class) || is_a($model, Site::class)) {
-			$blueprint = array_replace([
-				'title' => [
+			if (empty($fields['title'])) {
+				$fields['title'] = [
 					'type' => 'text'
-				]
-			], $blueprint);
+				];
+			}
 		}
 
 		try {
-			return static::walkContent($content, $blueprint, $input);
+			$context['fields'] = $fields;
+			return static::walkContent($content, $context);
 		} catch (Throwable $e) {
 			$id = $model->id();
 			$error = $e->getMessage();
@@ -49,20 +50,27 @@ class Walker
 	 * Iterates over the fields in a Content object based on a blueprint array and
 	 * returns data for each field.
 	 */
-	public static function walkContent(Content $content, array $blueprint = [], $input = [])
+	public static function walkContent(Content $content, $context)
 	{
 		$data = null;
 
-		foreach ($blueprint as $key => $settings) {
-			$field = $content->get($key);
-			$fieldInput = $input[$key] ?? null;
+		if (empty($context['fields'])) {
+			throw new Error('Missing fields context');
+		}
 
-			if (!isset($settings['translate'])) {
-				$settings['translate'] = true;
+		foreach ($context['fields'] as $key => $blueprint) {
+			$field = $content->get($key);
+
+			if (!isset($blueprint['translate'])) {
+				$blueprint['translate'] = true;
 			}
 
+			$fieldContext = $context;
+			$fieldContext['blueprint'] = $blueprint;
+			$fieldContext['input'] = $context['input'][$key] ?? null;
+
 			try {
-				$fieldData = static::walkField($field, $settings, $fieldInput);
+				$fieldData = static::walkField($field, $fieldContext);
 			} catch (Throwable $e) {
 				$fieldName = $field->key();
 				$errorName = $e->getMessage();
@@ -81,11 +89,11 @@ class Walker
 	/**
 	 * How to walk over the currently iterated field.
 	 */
-	protected static function walkField(Field $field, array $settings, $input)
+	protected static function walkField(Field $field, $context)
 	{
-		$method = 'walkField' . ucfirst($settings['type']);
+		$method = 'walkField' . ucfirst($context['blueprint']['type']);
 		$method = method_exists(static::class, $method) ? $method : 'walkFieldDefault';
-		return static::$method($field, $settings, $input);
+		return static::$method($field, $context);
 	}
 
 	/**
@@ -96,27 +104,28 @@ class Walker
 		return $text;
 	}
 
-	protected static function walkFieldDefault($field, $settings, $input)
+	protected static function walkFieldDefault($field, $context)
 	{
 		return static::walkText($field->value());
 	}
 
-	protected static function walkFieldStructure($field, $settings, $input)
+	protected static function walkFieldStructure($field, $context)
 	{
 		$data = null;
+		$context['fields'] = $context['blueprint']['fields'];
 
 		foreach ($field->toStructure() as $entry) {
-			$data[] = static::walkContent($entry->content(), $settings['fields']);
+			$data[] = static::walkContent($entry->content(), $context);
 		}
 
 		return $data;
 	}
 
-	protected static function walkFieldBlocks($field, $settings, $input)
+	protected static function walkFieldBlocks($field, $context)
 	{
 		$data = [];
 		$blocks = $field->toBlocks();
-		$sets = FormField::factory('blocks', $settings)->fieldsets();
+		$sets = FormField::factory('blocks', $context['blueprint'])->fieldsets();
 
 		foreach ($blocks as $block) {
 			$set = $sets->get($block->type());
@@ -125,15 +134,18 @@ class Walker
 				throw new Error('Missing fieldset for block type: "' . $block->type() . '"');
 			}
 
+			$childContext = $context;
+			$childContext['fields'] = $set->fields();
+
 			$childData = $block->toArray();
-			$childData['content'] = static::walkContent($block->content(), $set->fields());
+			$childData['content'] = static::walkContent($block->content(), $childContext);
 			$data[] = $childData;
 		}
 
 		return $data;
 	}
 
-	protected static function walkFieldEditor($field, $settings, $input)
+	protected static function walkFieldEditor($field, $context)
 	{
 		$blocks = Json::decode($field->value());
 
@@ -146,22 +158,23 @@ class Walker
 		return $blocks;
 	}
 
-	protected static function walkFieldTags($field)
+	protected static function walkFieldTags($field, $context)
 	{
 		return $field->split();
 	}
 
-	protected static function walkFieldToggle($field)
+	protected static function walkFieldToggle($field, $context)
 	{
 		return $field->toBool();
 	}
 
-	protected static function walkFieldEntity($field, $settings, $input)
+	protected static function walkFieldEntity($field, $context)
 	{
-		return static::walkContent($field->toEntity(), $settings['fields'], $input);
+		$context['fields'] = $context['blueprint']['fields'];
+		return static::walkContent($field->toEntity(), $context);
 	}
 
-	protected static function walkFieldLink($field, $settings, $input)
+	protected static function walkFieldLink($field, $context)
 	{
 		$data = Yaml::decode($field->value());
 
@@ -172,7 +185,7 @@ class Walker
 		return $data;
 	}
 
-	protected static function walkFieldJson($field, $settings, $input)
+	protected static function walkFieldJson($field, $context)
 	{
 		return Json::decode($field->value());
 	}
