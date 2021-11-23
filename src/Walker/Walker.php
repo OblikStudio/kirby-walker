@@ -13,6 +13,7 @@ use Kirby\Cms\Site;
 use Kirby\Data\Json;
 use Kirby\Data\Yaml;
 use Kirby\Form\Field as FormField;
+use Kirby\Toolkit\Str;
 
 /**
  * Base class for walkers that need to recursively iterate over Kirby models.
@@ -36,6 +37,7 @@ class Walker
 		}
 
 		$context['fields'] = $fields;
+		$context['model'] = $model;
 
 		try {
 			return static::walkContent($content, $context);
@@ -150,6 +152,19 @@ class Walker
 	 */
 	protected static function walkText(string $text, $context)
 	{
+		if ($context['options']['replace'] ?? null) {
+			$data = [
+				'kirby' => kirby(),
+				'site' => site()
+			];
+
+			if (is_a($context['model'], Page::class)) {
+				$data['page'] = $context['model'];
+			}
+
+			$text = Str::template($text, $data);
+		}
+
 		return $text;
 	}
 

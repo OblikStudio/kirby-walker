@@ -11,6 +11,8 @@ class Importer extends Walker
 {
 	protected static function walkText(string $text, $context)
 	{
+		$text = parent::walkText($text, $context);
+
 		$text = KirbyTags::encode($text);
 		$text = Template::encode($text);
 

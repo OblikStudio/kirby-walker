@@ -10,6 +10,8 @@ class Exporter extends Walker
 {
 	protected static function walkText(string $text, $context)
 	{
+		$text = parent::walkText($text, $context);
+
 		$text = Template::decode($text);
 		$text = KirbyTags::decode($text);
 
