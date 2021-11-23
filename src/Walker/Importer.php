@@ -3,7 +3,6 @@
 namespace Oblik\Walker\Walker;
 
 use Kirby\Cms\Field;
-use Kirby\Cms\ModelWithContent;
 use Kirby\Data\Json;
 use Oblik\Walker\Serialize\KirbyTags;
 use Oblik\Walker\Serialize\Template;
@@ -16,15 +15,6 @@ class Importer extends Walker
 		$text = Template::encode($text);
 
 		return $text;
-	}
-
-	public static function walk(ModelWithContent $model, $context = [])
-	{
-		if (kirby()->multilang()) {
-			$context['lang'] = kirby()->defaultLanguage()->code();
-		}
-
-		return parent::walk($model, $context);
 	}
 
 	protected static function walkField(Field $field, $context)
