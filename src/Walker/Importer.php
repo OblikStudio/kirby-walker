@@ -28,9 +28,7 @@ class Importer extends Walker
 
 	protected static function walkFieldDefault($field, $context)
 	{
-		$input = $context['input'] ?? null;
-
-		if (!empty($input)) {
+		if (!empty($input = $context['input'] ?? null)) {
 			return is_string($input) ? static::walkText($input, $context) : $input;
 		} else {
 			return $field->value();
@@ -50,7 +48,7 @@ class Importer extends Walker
 			$id = $block['id'];
 			$inputContent = $input[$id]['content'] ?? null;
 
-			if (!empty($inputContent)) {
+			if (is_string($inputContent)) {
 				$block['content'] = static::walkText($inputContent, $context);
 			}
 		}
@@ -61,9 +59,8 @@ class Importer extends Walker
 	protected static function walkFieldLink($field, $context)
 	{
 		$data = parent::walkFieldLink($field, $context);
-		$text = $context['input']['text'] ?? null;
 
-		if (!empty($text)) {
+		if (is_string($text = $context['input']['text'] ?? null)) {
 			$data['text'] = static::walkText($text, $context);
 		}
 

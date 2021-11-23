@@ -142,7 +142,7 @@ class Walker
 
 	protected static function walkFieldDefault($field, $context)
 	{
-		return static::walkText($field->value(), $context);
+		return is_string($value = $field->value()) ? static::walkText($value, $context) : $value;
 	}
 
 	/**
@@ -197,8 +197,8 @@ class Walker
 		$blocks = Json::decode($field->value());
 
 		foreach ($blocks as &$block) {
-			if (!empty($block['content'])) {
-				$block['content'] = static::walkText($block['content'], $context);
+			if (is_string($content = $block['content'] ?? null)) {
+				$block['content'] = static::walkText($content, $context);
 			}
 		}
 
@@ -225,8 +225,8 @@ class Walker
 	{
 		$data = Yaml::decode($field->value());
 
-		if (!empty($data['text'])) {
-			$data['text'] = static::walkText($data['text'], $context);
+		if (is_string($text = $data['text'] ?? null)) {
+			$data['text'] = static::walkText($text, $context);
 		}
 
 		return $data;
