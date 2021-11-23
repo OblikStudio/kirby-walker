@@ -115,7 +115,7 @@ class Walker
 		$type = $context['blueprint']['type'] ?? null;
 		$idField = $context['blueprint']['fields']['id'] ?? null;
 
-		if ($type === 'blocks' || ($type === 'structure' && $idField)) {
+		if ($type === 'blocks' || ($type === 'structure' && $idField) || $type === 'editor') {
 			foreach ($data as $entry) {
 				if (($entry['id'] ?? null) === $key) {
 					if ($type === 'blocks') {
@@ -194,15 +194,30 @@ class Walker
 
 	protected static function walkFieldEditor($field, $context)
 	{
+		$data = [];
 		$blocks = Json::decode($field->value());
 
-		foreach ($blocks as &$block) {
-			if (is_string($content = $block['content'] ?? null)) {
-				$block['content'] = static::walkText($content, $context);
+		foreach ($blocks as $block) {
+			if (is_string($id = $block['id'] ?? null)) {
+				$blockContext = static::subcontext($id, $context);
+				$blockData = static::walkFieldEditorBlock($block, $blockContext);
+
+				if (!empty($blockData)) {
+					$data[] = $blockData;
+				}
 			}
 		}
 
-		return $blocks;
+		return $data;
+	}
+
+	protected static function walkFieldEditorBlock($block, $context)
+	{
+		if (is_string($content = $block['content'] ?? null)) {
+			$block['content'] = static::walkText($content, $context);
+		}
+
+		return $block;
 	}
 
 	protected static function walkFieldTags($field, $context)

@@ -35,25 +35,13 @@ class Importer extends Walker
 		}
 	}
 
-	protected static function walkFieldEditor($field, $context)
+	protected static function walkFieldEditorBlock($block, $context)
 	{
-		$data = Json::decode($field->value());
-		$input = $context['input'];
-
-		if (is_array($input)) {
-			$input = array_column($input, null, 'id');
+		if (is_string($content = $context['input']['content'] ?? null)) {
+			$block['content'] = static::walkText($content, $context);
 		}
 
-		foreach ($data as &$block) {
-			$id = $block['id'];
-			$inputContent = $input[$id]['content'] ?? null;
-
-			if (is_string($inputContent)) {
-				$block['content'] = static::walkText($inputContent, $context);
-			}
-		}
-
-		return $data;
+		return $block;
 	}
 
 	protected static function walkFieldLink($field, $context)
