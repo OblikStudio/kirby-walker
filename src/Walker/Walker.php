@@ -24,7 +24,7 @@ class Walker
 	 */
 	public static function walk(ModelWithContent $model, $context = [])
 	{
-		$content = $model->content($content['lang'] ?? null);
+		$content = $model->content($context['lang'] ?? null);
 		$fields = $model->blueprint()->fields();
 
 		if (is_a($model, Page::class) || is_a($model, Site::class)) {
