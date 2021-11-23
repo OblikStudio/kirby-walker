@@ -181,14 +181,22 @@ class Walker
 				throw new Error('Missing fieldset for block type: "' . $block->type() . '"');
 			}
 
-			$childContext = static::subcontext($id, $context);
-			$childContext['fields'] = $set->fields();
+			$blockContext = static::subcontext($id, $context);
+			$blockContext['fields'] = $set->fields();
+			$blockData = static::walkFieldBlocksBlock($block, $blockContext);
 
-			$childData = $block->toArray();
-			$childData['content'] = static::walkContent($block->content(), $childContext);
-			$data[] = $childData;
+			if (!empty($blockData)) {
+				$data[] = $blockData;
+			}
 		}
 
+		return $data;
+	}
+
+	protected static function walkFieldBlocksBlock($block, $context)
+	{
+		$data = $block->toArray();
+		$data['content'] = static::walkContent($block->content(), $context);
 		return $data;
 	}
 

@@ -36,21 +36,18 @@ class Exporter extends Walker
 		}
 	}
 
-	protected static function walkFieldBlocks($field, $context)
+	protected static function walkFieldBlocksBlock($block, $context)
 	{
-		$data = parent::walkFieldBlocks($field, $context);
+		$block = parent::walkFieldBlocksBlock($block, $context);
 
-		foreach ($data as $i => &$block) {
-			if (empty($block['content'])) {
-				array_splice($data, $i, 1);
-				continue;
-			}
-
-			unset($block['isHidden']);
-			unset($block['type']);
+		if (empty($block['content'] ?? null)) {
+			return null;
 		}
 
-		return $data;
+		unset($block['isHidden']);
+		unset($block['type']);
+
+		return $block;
 	}
 
 	protected static function walkFieldEditorBlock($block, $context)
