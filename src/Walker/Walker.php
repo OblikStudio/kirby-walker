@@ -116,6 +116,7 @@ class Walker
 		}
 
 		$type = $context['blueprint']['type'] ?? null;
+		$result = null;
 
 		if (
 			$type === 'blocks' ||
@@ -124,24 +125,24 @@ class Walker
 		) {
 			foreach ($data as $entry) {
 				if (($entry['id'] ?? null) === $key) {
-					$data = $entry;
+					$result = $entry;
 					break;
 				}
 			}
 		} else {
 			foreach ($data as $i => $entry) {
 				if ($i === $key) {
-					$data = $entry;
+					$result = $entry;
 					break;
 				}
 			}
 		}
 
 		if ($type === 'blocks') {
-			$data = $data['content'] ?? null;
+			$result = $result['content'] ?? null;
 		}
 
-		return $data;
+		return $result;
 	}
 
 	/**
