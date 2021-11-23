@@ -158,7 +158,7 @@ class Walker
 	/**
 	 * How to handle text in all fields. Can be extended to parse KirbyTags.
 	 */
-	protected static function walkText($text)
+	protected static function walkText(string $text)
 	{
 		return $text;
 	}

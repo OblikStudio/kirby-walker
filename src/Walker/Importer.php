@@ -10,12 +10,10 @@ use Oblik\Walker\Serialize\Template;
 
 class Importer extends Walker
 {
-	protected static function walkText($text)
+	protected static function walkText(string $text)
 	{
-		if (is_string($text)) {
-			$text = KirbyTags::encode($text);
-			$text = Template::encode($text);
-		}
+		$text = KirbyTags::encode($text);
+		$text = Template::encode($text);
 
 		return $text;
 	}
@@ -40,8 +38,13 @@ class Importer extends Walker
 
 	protected static function walkFieldDefault($field, $context)
 	{
-		$input = $context['input'];
-		return !empty($input) ? static::walkText($input) : $field->value();
+		$input = $context['input'] ?? null;
+
+		if (!empty($input)) {
+			return is_string($input) ? static::walkText($input) : $input;
+		} else {
+			return $field->value();
+		}
 	}
 
 	protected static function walkFieldEditor($field, $context)
