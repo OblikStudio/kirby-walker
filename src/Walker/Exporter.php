@@ -12,8 +12,13 @@ class Exporter extends Walker
 	{
 		$text = parent::walkText($text, $context);
 
-		$text = Template::decode($text);
-		$text = KirbyTags::decode($text);
+		if ($context['options']['parseTemplates'] ?? null) {
+			$text = Template::decode($text);
+		}
+
+		if ($context['options']['parseKirbyTags'] ?? null) {
+			$text = KirbyTags::decode($text);
+		}
 
 		return $text;
 	}

@@ -463,7 +463,11 @@ final class ImporterTest extends TestCase
 		];
 
 		$result = Importer::walk($page, [
-			'input' => $import
+			'input' => $import,
+			'options' => [
+				'parseKirbyTags' => true,
+				'parseTemplates' => true
+			]
 		]);
 
 		$this->assertEquals($expected, $result);

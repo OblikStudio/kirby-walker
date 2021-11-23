@@ -164,7 +164,7 @@ final class ExporterTest extends TestCase
 
 	public function testSerialization()
 	{
-		$data = Exporter::walk(new Page([
+		$page = new Page([
 			'slug' => 'test',
 			'content' => [
 				'text' => '{{ test1 }}(link: https://example.com rel: {{ test2 }} text: {{ test3 }})'
@@ -176,7 +176,14 @@ final class ExporterTest extends TestCase
 					]
 				]
 			]
-		]));
+		]);
+
+		$data = Exporter::walk($page, [
+			'options' => [
+				'parseKirbyTags' => true,
+				'parseTemplates' => true
+			]
+		]);
 
 		$this->assertEquals('<meta template=" test1 "/><kirby link="https://example.com" rel="&lt;meta template=&quot; test2 &quot;/&gt;"><value name="text"><meta template=" test3 "/></value></kirby>', $data['text']);
 	}

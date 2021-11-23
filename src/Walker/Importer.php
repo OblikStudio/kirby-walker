@@ -3,7 +3,6 @@
 namespace Oblik\Walker\Walker;
 
 use Kirby\Cms\Field;
-use Kirby\Data\Json;
 use Oblik\Walker\Serialize\KirbyTags;
 use Oblik\Walker\Serialize\Template;
 
@@ -13,8 +12,13 @@ class Importer extends Walker
 	{
 		$text = parent::walkText($text, $context);
 
-		$text = KirbyTags::encode($text);
-		$text = Template::encode($text);
+		if ($context['options']['parseKirbyTags'] ?? null) {
+			$text = KirbyTags::encode($text);
+		}
+
+		if ($context['options']['parseTemplates'] ?? null) {
+			$text = Template::encode($text);
+		}
 
 		return $text;
 	}
