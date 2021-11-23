@@ -35,8 +35,9 @@ class Walker
 			}
 		}
 
+		$context['fields'] = $fields;
+
 		try {
-			$context['fields'] = $fields;
 			return static::walkContent($content, $context);
 		} catch (Throwable $e) {
 			$id = $model->id();
@@ -139,17 +140,17 @@ class Walker
 		return static::$method($field, $context);
 	}
 
+	protected static function walkFieldDefault($field, $context)
+	{
+		return static::walkText($field->value());
+	}
+
 	/**
 	 * How to handle text in all fields. Can be extended to parse KirbyTags.
 	 */
 	protected static function walkText(string $text)
 	{
 		return $text;
-	}
-
-	protected static function walkFieldDefault($field, $context)
-	{
-		return static::walkText($field->value());
 	}
 
 	protected static function walkFieldStructure($field, $context)

@@ -8,12 +8,10 @@ use Oblik\Walker\Serialize\Template;
 
 class Exporter extends Walker
 {
-	protected static function walkText($text)
+	protected static function walkText(string $text)
 	{
-		if (is_string($text)) {
-			$text = Template::decode($text);
-			$text = KirbyTags::decode($text);
-		}
+		$text = Template::decode($text);
+		$text = KirbyTags::decode($text);
 
 		return $text;
 	}
