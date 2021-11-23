@@ -98,7 +98,7 @@ class Walker
 	{
 		$input = $context['input'] ?? null;
 
-		if (!empty($input)) {
+		if (is_array($input)) {
 			$context['input'] = static::findMatchingEntry($key, $input, $context);
 		}
 
@@ -109,40 +109,24 @@ class Walker
 	 * Attempts to find a key in an array of data using different strategies,
 	 * depending on the field's blueprint type, as given by the context.
 	 */
-	protected static function findMatchingEntry($key, $data, $context)
+	protected static function findMatchingEntry($key, array $data, array $context)
 	{
-		if (!is_array($data)) {
-			return null;
-		}
-
 		$type = $context['blueprint']['type'] ?? null;
-		$result = null;
+		$idField = $context['blueprint']['fields']['id'] ?? null;
 
-		if (
-			$type === 'blocks' ||
-			($type === 'structure' &&
-				!empty($context['blueprint']['fields']['id']))
-		) {
+		if ($type === 'blocks' || ($type === 'structure' && $idField)) {
 			foreach ($data as $entry) {
 				if (($entry['id'] ?? null) === $key) {
-					$result = $entry;
-					break;
+					if ($type === 'blocks') {
+						return $entry['content'] ?? null;
+					} else {
+						return $entry;
+					}
 				}
 			}
 		} else {
-			foreach ($data as $i => $entry) {
-				if ($i === $key) {
-					$result = $entry;
-					break;
-				}
-			}
+			return $data[$key] ?? null;
 		}
-
-		if ($type === 'blocks') {
-			$result = $result['content'] ?? null;
-		}
-
-		return $result;
 	}
 
 	/**
