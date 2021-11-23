@@ -142,13 +142,13 @@ class Walker
 
 	protected static function walkFieldDefault($field, $context)
 	{
-		return static::walkText($field->value());
+		return static::walkText($field->value(), $context);
 	}
 
 	/**
 	 * How to handle text in all fields. Can be extended to parse KirbyTags.
 	 */
-	protected static function walkText(string $text)
+	protected static function walkText(string $text, $context)
 	{
 		return $text;
 	}
@@ -198,7 +198,7 @@ class Walker
 
 		foreach ($blocks as &$block) {
 			if (!empty($block['content'])) {
-				$block['content'] = static::walkText($block['content']);
+				$block['content'] = static::walkText($block['content'], $context);
 			}
 		}
 
@@ -226,7 +226,7 @@ class Walker
 		$data = Yaml::decode($field->value());
 
 		if (!empty($data['text'])) {
-			$data['text'] = static::walkText($data['text']);
+			$data['text'] = static::walkText($data['text'], $context);
 		}
 
 		return $data;
