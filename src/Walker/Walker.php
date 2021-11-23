@@ -22,7 +22,7 @@ class Walker
 	/**
 	 * Walks over the content of a model in a certain language.
 	 */
-	public static function walk(ModelWithContent $model, $context = [])
+	public static function walk(ModelWithContent $model, array $context = [])
 	{
 		$content = $model->content($context['lang'] ?? null);
 		$fields = $model->blueprint()->fields();
@@ -51,7 +51,7 @@ class Walker
 	 * Iterates over the fields in a Content object based on a blueprint array and
 	 * returns data for each field.
 	 */
-	public static function walkContent(Content $content, $context)
+	public static function walkContent(Content $content, array $context)
 	{
 		$data = null;
 
