@@ -68,6 +68,11 @@ class Walker
 
 		foreach ($context['fields'] as $key => $blueprint) {
 			$field = $content->get($key);
+			$blueprintOptions = $blueprint['walker'] ?? null;
+
+			if ($blueprintOptions === false) {
+				continue;
+			}
 
 			if (!isset($blueprint['translate'])) {
 				$blueprint['translate'] = true;
@@ -75,6 +80,13 @@ class Walker
 
 			$fieldContext = static::subcontext($key, $context);
 			$fieldContext['blueprint'] = $blueprint;
+
+			if (is_array($blueprintOptions)) {
+				$fieldContext['options'] = array_replace_recursive(
+					$fieldContext['options'] ?? [],
+					$blueprintOptions
+				);
+			}
 
 			try {
 				$fieldData = static::walkField($field, $fieldContext);
