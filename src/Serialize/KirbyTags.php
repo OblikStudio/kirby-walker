@@ -109,12 +109,7 @@ class KirbyTag extends KirbyTagNative
 	}
 }
 
-class KirbyTagsParser extends KirbyTagsNative
-{
-	protected static $tagClass = KirbyTag::class;
-}
-
-class KirbyTags
+class KirbyTags extends KirbyTagsNative
 {
 	public static $defaults = [
 		/**
@@ -129,13 +124,15 @@ class KirbyTags
 		'externalAttributes' => []
 	];
 
+	protected static $tagClass = KirbyTag::class;
+
 	/**
 	 * Replaces all valid kirbytags with their XML representation.
 	 */
 	public static function decode(string $text, array $options = [])
 	{
 		$options = array_replace(static::$defaults, $options);
-		return KirbyTagsParser::parse($text, [], $options);
+		return static::parse($text, [], $options);
 	}
 
 	/**
