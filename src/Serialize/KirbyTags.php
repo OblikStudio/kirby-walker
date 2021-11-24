@@ -5,111 +5,10 @@ namespace Oblik\Walker\Serialize;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
-use Kirby\Text\KirbyTag as KirbyTagNative;
-use Kirby\Text\KirbyTags as KirbyTagsNative;
+use Kirby\Text\KirbyTag as BaseKirbyTag;
+use Kirby\Text\KirbyTags as BaseKirbyTags;
 
-class DOM
-{
-	public static function loadText(string $text)
-	{
-		$document = new DOMDocument();
-		$flag = libxml_use_internal_errors(true);
-		$document->loadHTML('<?xml version="1.0" encoding="utf-8" ?><body>' . $text . '</body>');
-		libxml_use_internal_errors($flag);
-		return $document->getElementsByTagName('body')->item(0);
-	}
-
-	public static function appendHTML(DOMNode $node, string $source)
-	{
-		$body = static::loadText($source);
-
-		foreach ($body->childNodes as $child) {
-			$child = $node->ownerDocument->importNode($child, true);
-
-			if ($child) {
-				$node->appendChild($child);
-			}
-		}
-	}
-
-	public static function innerHTML(DOMNode $node)
-	{
-		$html = '';
-
-		foreach ($node->childNodes as $child) {
-			$html .= $child->ownerDocument->saveHTML($child);
-		}
-
-		return $html;
-	}
-}
-
-class KirbyTag extends KirbyTagNative
-{
-	/**
-	 * Adds `index` attributes to <value> tags inside <kirby> to ensure that
-	 * upon decoding, the tag can preserve the initial order of its settings.
-	 */
-	public static function index(DOMElement $kirby, array $orderedNames)
-	{
-		// Since attribute values are decoded first, indices of <value> tags
-		// start after the length of all present attributes.
-		$index = $kirby->attributes->length;
-
-		foreach ($kirby->childNodes as $value) {
-			$name = $value->getAttribute('name');
-			$originalIndex = array_search($name, $orderedNames);
-
-			if ($originalIndex !== $index) {
-				$value->setAttribute('index', $originalIndex);
-			}
-
-			$index++;
-		}
-	}
-
-	public function render(): string
-	{
-		$parts = array_merge([
-			$this->type => $this->value
-		], $this->attrs);
-
-		$document = new DOMDocument('1.0', 'utf-8');
-		$element = $document->createElement('kirby');
-		$document->appendChild($element);
-
-		foreach ($parts as $key => $value) {
-			if (in_array($key, $this->options['externalAttributes'])) {
-				$child = $document->createElement('value');
-				$child->setAttribute('name', $key);
-
-				if ($this->options['encodeEntities']) {
-					// Entities in text nodes are automatically encoded.
-					$text = $document->createTextNode($value);
-					$child->appendChild($text);
-				} else {
-					DOM::appendHTML($child, $value);
-				}
-
-				$element->appendChild($child);
-			} else {
-				// Entities in attributes are automatically encoded by saveXML,
-				// so $encodeEntities is irrelevant.
-				$element->setAttribute($key, $value);
-			}
-		}
-
-		static::index($element, array_keys($parts));
-
-		// saveXML() is used instead of saveHTML() because it saves empty tags
-		// as self-closing tags.
-		$content = $document->saveXML($document->documentElement);
-
-		return $content;
-	}
-}
-
-class KirbyTags extends KirbyTagsNative
+class KirbyTags extends BaseKirbyTags
 {
 	public static $defaults = [
 		/**
@@ -224,5 +123,106 @@ class KirbyTags extends KirbyTagsNative
 			},
 			$text
 		);
+	}
+}
+
+class KirbyTag extends BaseKirbyTag
+{
+	/**
+	 * Adds `index` attributes to <value> tags inside <kirby> to ensure that
+	 * upon decoding, the tag can preserve the initial order of its settings.
+	 */
+	public static function index(DOMElement $kirby, array $orderedNames)
+	{
+		// Since attribute values are decoded first, indices of <value> tags
+		// start after the length of all present attributes.
+		$index = $kirby->attributes->length;
+
+		foreach ($kirby->childNodes as $value) {
+			$name = $value->getAttribute('name');
+			$originalIndex = array_search($name, $orderedNames);
+
+			if ($originalIndex !== $index) {
+				$value->setAttribute('index', $originalIndex);
+			}
+
+			$index++;
+		}
+	}
+
+	public function render(): string
+	{
+		$parts = array_merge([
+			$this->type => $this->value
+		], $this->attrs);
+
+		$document = new DOMDocument('1.0', 'utf-8');
+		$element = $document->createElement('kirby');
+		$document->appendChild($element);
+
+		foreach ($parts as $key => $value) {
+			if (in_array($key, $this->options['externalAttributes'])) {
+				$child = $document->createElement('value');
+				$child->setAttribute('name', $key);
+
+				if ($this->options['encodeEntities']) {
+					// Entities in text nodes are automatically encoded.
+					$text = $document->createTextNode($value);
+					$child->appendChild($text);
+				} else {
+					DOM::appendHTML($child, $value);
+				}
+
+				$element->appendChild($child);
+			} else {
+				// Entities in attributes are automatically encoded by saveXML,
+				// so $encodeEntities is irrelevant.
+				$element->setAttribute($key, $value);
+			}
+		}
+
+		static::index($element, array_keys($parts));
+
+		// saveXML() is used instead of saveHTML() because it saves empty tags
+		// as self-closing tags.
+		$content = $document->saveXML($document->documentElement);
+
+		return $content;
+	}
+}
+
+class DOM
+{
+	public static function loadText(string $text)
+	{
+		$document = new DOMDocument();
+		$flag = libxml_use_internal_errors(true);
+		$document->loadHTML('<?xml version="1.0" encoding="utf-8" ?><body>' . $text . '</body>');
+		libxml_use_internal_errors($flag);
+		return $document->getElementsByTagName('body')->item(0);
+	}
+
+	public static function appendHTML(DOMNode $node, string $source)
+	{
+		$body = static::loadText($source);
+
+		foreach ($body->childNodes as $child) {
+			$child = $node->ownerDocument->importNode($child, true);
+
+			if ($child) {
+				$node->appendChild($child);
+			}
+		}
+	}
+
+	public static function innerHTML(DOMNode $node)
+	{
+		$html = '';
+
+		foreach ($node->childNodes as $child) {
+			$html .= $child->ownerDocument->saveHTML($child);
+		}
+
+		return $html;
 	}
 }
