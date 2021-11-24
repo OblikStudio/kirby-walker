@@ -6,15 +6,12 @@ use PHPUnit\Framework\TestCase;
 
 final class KirbyTagsTest extends TestCase
 {
-	public function serialize($input, $expected)
+	public function serialize($input, $expected, $options = [])
 	{
-		$xml = KirbyTags::decode($input);
+		$xml = KirbyTags::decode($input, $options);
 		$this->assertEquals($expected, $xml);
-		$text = KirbyTags::encode($xml);
+		$text = KirbyTags::encode($xml, $options);
 		$this->assertEquals($input, $text);
-
-		KirbyTags::$externalAttrs = ['text'];
-		KirbyTags::$encodeEntities = false;
 	}
 
 	public function testInvalidTag()
@@ -37,7 +34,8 @@ final class KirbyTagsTest extends TestCase
 	{
 		$this->serialize(
 			'(link: text:)',
-			'<kirby link=""><value name="text"/></kirby>'
+			'<kirby link=""><value name="text"/></kirby>',
+			['externalAttributes' => ['text']]
 		);
 	}
 
@@ -53,34 +51,32 @@ final class KirbyTagsTest extends TestCase
 	{
 		$this->serialize(
 			'(link: https://example.com/ text: hello text)',
-			'<kirby link="https://example.com/"><value name="text">hello text</value></kirby>'
+			'<kirby link="https://example.com/"><value name="text">hello text</value></kirby>',
+			['externalAttributes' => ['text']]
 		);
 	}
 
 	public function testTagsOrder()
 	{
-		KirbyTags::$externalAttrs = ['link', 'target'];
-
 		$this->serialize(
 			'(link: https://example.com/ text: foo target: _blank)',
-			'<kirby text="foo"><value name="link" index="0">https://example.com/</value><value name="target">_blank</value></kirby>'
+			'<kirby text="foo"><value name="link" index="0">https://example.com/</value><value name="target">_blank</value></kirby>',
+			['externalAttributes' => ['link', 'target']]
 		);
 
-		KirbyTags::$externalAttrs = ['link', 'text'];
-
 		$this->serialize(
 			'(link: https://example.com/ text: foo target: _blank)',
-			'<kirby target="_blank"><value name="link" index="0">https://example.com/</value><value name="text" index="1">foo</value></kirby>'
+			'<kirby target="_blank"><value name="link" index="0">https://example.com/</value><value name="text" index="1">foo</value></kirby>',
+			['externalAttributes' => ['link', 'text']]
 		);
 	}
 
 	public function testAllExternal()
 	{
-		KirbyTags::$externalAttrs = ['link', 'text'];
-
 		$this->serialize(
 			'(link: #example text: random: yes)',
-			'<kirby><value name="link">#example</value><value name="text">random: yes</value></kirby>'
+			'<kirby><value name="link">#example</value><value name="text">random: yes</value></kirby>',
+			['externalAttributes' => ['link', 'text']]
 		);
 	}
 
@@ -88,17 +84,17 @@ final class KirbyTagsTest extends TestCase
 	{
 		$this->serialize(
 			'(link: #т§رト text: тест§اختبار テスト)',
-			'<kirby link="#т§رト"><value name="text">тест§اختبار テスト</value></kirby>'
+			'<kirby link="#т§رト"><value name="text">тест§اختبار テスト</value></kirby>',
+			['externalAttributes' => ['text']]
 		);
 	}
 
 	public function testEntitiesEncode()
 	{
-		KirbyTags::$encodeEntities = true;
-
 		$this->serialize(
 			'(link: ">\' text: \'"<>&&gt;)',
-			'<kirby link="&quot;&gt;\'"><value name="text">\'"&lt;&gt;&amp;&amp;gt;</value></kirby>'
+			'<kirby link="&quot;&gt;\'"><value name="text">\'"&lt;&gt;&amp;&amp;gt;</value></kirby>',
+			['externalAttributes' => ['text'], 'encodeEntities' => true]
 		);
 	}
 
@@ -110,7 +106,8 @@ final class KirbyTagsTest extends TestCase
 	{
 		$this->serialize(
 			"(link: # text: <div>text<br></div>)",
-			"<kirby link=\"#\"><value name=\"text\"><div>text<br/></div></value></kirby>"
+			"<kirby link=\"#\"><value name=\"text\"><div>text<br/></div></value></kirby>",
+			['externalAttributes' => ['text']]
 		);
 	}
 }

@@ -79,11 +79,11 @@ class KirbyTag extends KirbyTagNative
 		$document->appendChild($element);
 
 		foreach ($parts as $key => $value) {
-			if (in_array($key, KirbyTags::$externalAttrs)) {
+			if (in_array($key, $this->options['externalAttributes'])) {
 				$child = $document->createElement('value');
 				$child->setAttribute('name', $key);
 
-				if (KirbyTags::$encodeEntities) {
+				if ($this->options['encodeEntities']) {
 					// Entities in text nodes are automatically encoded.
 					$text = $document->createTextNode($value);
 					$child->appendChild($text);
@@ -116,31 +116,34 @@ class KirbyTagsParser extends KirbyTagsNative
 
 class KirbyTags
 {
-	/**
-	 * Array of tags that should be rendered in their own <value> XML tags,
-	 * instead of being attributes of the <kirby> tag.
-	 */
-	public static $externalAttrs = ['text'];
+	public static $defaults = [
+		/**
+		 * Encode HTML entities in external tags?
+		 */
+		'encodeEntities' => false,
 
-	/**
-	 * Encode HTML entities in external tags?
-	 */
-	public static $encodeEntities = false;
+		/**
+		 * Array of tags that should be rendered in their own <value> XML tags,
+		 * instead of being attributes of the <kirby> tag.
+		 */
+		'externalAttributes' => []
+	];
 
 	/**
 	 * Replaces all valid kirbytags with their XML representation.
 	 */
-	public static function decode(string $text)
+	public static function decode(string $text, array $options = [])
 	{
-		return KirbyTagsParser::parse($text);
+		$options = array_replace(static::$defaults, $options);
+		return KirbyTagsParser::parse($text, [], $options);
 	}
 
 	/**
 	 * Turns the XML representation of a kirbytag to a valid kirbytag.
 	 */
-	protected static function encodeTag(string $xml)
+	protected static function encodeTag(string $xml, array $options)
 	{
-		if (!static::$encodeEntities) {
+		if (!$options['encodeEntities']) {
 			// If no entities are placed by encode(), entities in the original
 			// content must be escaped, otherwise the parser will consume them.
 			$xml = str_replace('&', '&amp;', $xml);
@@ -207,16 +210,22 @@ class KirbyTags
 	/**
 	 * Turns all kirbytags to their text form.
 	 */
-	public static function encode(string $text)
+	public static function encode(string $text, array $options = [])
 	{
-		return preg_replace_callback('/<kirby(?:[^<]*\/>|.*?<\/kirby>)/s', function ($matches) {
-			$text = $matches[0];
+		$options = array_replace(static::$defaults, $options);
 
-			if ($tag = static::encodeTag($text)) {
-				return $tag;
-			} else {
-				return $text;
-			}
-		}, $text);
+		return preg_replace_callback(
+			'/<kirby(?:[^<]*\/>|.*?<\/kirby>)/s',
+			function ($matches) use ($options) {
+				$text = $matches[0];
+
+				if ($tag = static::encodeTag($text, $options)) {
+					return $tag;
+				} else {
+					return $text;
+				}
+			},
+			$text
+		);
 	}
 }

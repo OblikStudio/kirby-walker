@@ -12,8 +12,8 @@ class Importer extends Walker
 	{
 		$text = parent::walkText($text, $context);
 
-		if ($context['options']['parseKirbyTags'] ?? null) {
-			$text = KirbyTags::encode($text);
+		if ($option = $context['options']['parseKirbyTags'] ?? null) {
+			$text = KirbyTags::encode($text, is_array($option) ? $option : []);
 		}
 
 		if ($context['options']['parseTemplates'] ?? null) {

@@ -180,8 +180,10 @@ final class ExporterTest extends TestCase
 
 		$data = Exporter::walk($page, [
 			'options' => [
-				'parseKirbyTags' => true,
-				'parseTemplates' => true
+				'parseTemplates' => true,
+				'parseKirbyTags' => [
+					'externalAttributes' => ['text']
+				]
 			]
 		]);
 

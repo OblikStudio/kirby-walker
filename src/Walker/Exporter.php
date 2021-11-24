@@ -16,8 +16,8 @@ class Exporter extends Walker
 			$text = Template::decode($text);
 		}
 
-		if ($context['options']['parseKirbyTags'] ?? null) {
-			$text = KirbyTags::decode($text);
+		if ($option = $context['options']['parseKirbyTags'] ?? null) {
+			$text = KirbyTags::decode($text, is_array($option) ? $option : []);
 		}
 
 		return $text;
