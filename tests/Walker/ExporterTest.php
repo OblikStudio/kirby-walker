@@ -167,12 +167,22 @@ final class ExporterTest extends TestCase
 		$page = new Page([
 			'slug' => 'test',
 			'content' => [
-				'text' => '{{ test1 }}(link: https://example.com rel: {{ test2 }} text: {{ test3 }})'
+				'text' => '{{ test1 }}(link: https://example.com rel: {{ test2 }} text: {{ test3 }})',
+				'text2' => <<<END
+				# <strong>bold</strong> **bold2**
+
+				- {{ var }}
+				- _underlined_ `code`
+				- (link: https://example.com text: example)
+				END
 			],
 			'blueprint' => [
 				'fields' => [
 					'text' => [
 						'type' => 'text'
+					],
+					'text2' => [
+						'type' => 'textarea'
 					]
 				]
 			]
@@ -180,6 +190,7 @@ final class ExporterTest extends TestCase
 
 		$data = Exporter::walk($page, [
 			'options' => [
+				'parseMarkdown' => true,
 				'parseTemplates' => true,
 				'parseKirbyTags' => [
 					'externalAttributes' => ['text']
@@ -188,5 +199,6 @@ final class ExporterTest extends TestCase
 		]);
 
 		$this->assertEquals('<meta template=" test1 "/><kirby link="https://example.com" rel="&lt;meta template=&quot; test2 &quot;/&gt;"><value name="text"><meta template=" test3 "/></value></kirby>', $data['text']);
+		$this->assertEquals('<h1><strong>bold</strong> <strong>bold2</strong></h1><ul><li><meta template=" var "/></li><li><em>underlined</em> <code>code</code></li><li><kirby link="https://example.com"><value name="text">example</value></kirby></li></ul>', $data['text2']);
 	}
 }

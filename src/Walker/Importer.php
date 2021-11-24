@@ -4,6 +4,7 @@ namespace Oblik\Walker\Walker;
 
 use Kirby\Cms\Field;
 use Oblik\Walker\Serialize\KirbyTags;
+use Oblik\Walker\Serialize\Markdown;
 use Oblik\Walker\Serialize\Template;
 
 class Importer extends Walker
@@ -18,6 +19,13 @@ class Importer extends Walker
 
 		if ($context['options']['parseTemplates'] ?? null) {
 			$text = Template::encode($text);
+		}
+
+		if (
+			($context['options']['parseMarkdown'] ?? null) &&
+			($context['blueprint']['type'] ?? null) === 'textarea'
+		) {
+			$text = Markdown::encode($text);
 		}
 
 		return $text;

@@ -449,22 +449,34 @@ final class ImporterTest extends TestCase
 				'fields' => [
 					'text' => [
 						'type' => 'text'
+					],
+					'text2' => [
+						'type' => 'textarea'
 					]
 				]
 			]
 		]);
 
 		$import = [
-			'text' => '<meta template=" test1 "/><kirby link="https://example.com" rel="&lt;meta template=&quot; test2 &quot;/&gt;"><value name="text"><meta template=" test3 "/></value></kirby>'
+			'text' => '<meta template=" test1 "/><kirby link="https://example.com" rel="&lt;meta template=&quot; test2 &quot;/&gt;"><value name="text"><meta template=" test3 "/></value></kirby>',
+			'text2' => '<h1><strong>bold</strong> <strong>bold2</strong></h1><ul><li><meta template=" var "/></li><li><em>underlined</em> <code>code</code></li><li><kirby link="https://example.com"><value name="text">example</value></kirby></li></ul>'
 		];
 
 		$expected = [
-			'text' => '{{ test1 }}(link: https://example.com rel: {{ test2 }} text: {{ test3 }})'
+			'text' => '{{ test1 }}(link: https://example.com rel: {{ test2 }} text: {{ test3 }})',
+			'text2' => <<<END
+			# **bold** **bold2**
+
+			- {{ var }}
+			- *underlined* `code`
+			- (link: https://example.com text: example)
+			END
 		];
 
 		$result = Importer::walk($page, [
 			'input' => $import,
 			'options' => [
+				'parseMarkdown' => true,
 				'parseKirbyTags' => true,
 				'parseTemplates' => true
 			]

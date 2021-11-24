@@ -19,7 +19,7 @@ class Template
 	 */
 	public static function encode(string $text)
 	{
-		return preg_replace_callback('/<meta template="([^"]*)"\/?>/', function ($matches) {
+		return preg_replace_callback('/<meta\s+template="([^"]*)"\s*\/?>(?:<\/meta>)?/', function ($matches) {
 			return '{{' . $matches[1] . '}}';
 		}, $text);
 	}

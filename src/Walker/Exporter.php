@@ -4,6 +4,7 @@ namespace Oblik\Walker\Walker;
 
 use Kirby\Cms\Field;
 use Oblik\Walker\Serialize\KirbyTags;
+use Oblik\Walker\Serialize\Markdown;
 use Oblik\Walker\Serialize\Template;
 
 class Exporter extends Walker
@@ -18,6 +19,13 @@ class Exporter extends Walker
 
 		if ($option = $context['options']['parseKirbyTags'] ?? null) {
 			$text = KirbyTags::decode($text, is_array($option) ? $option : []);
+		}
+
+		if (
+			($context['options']['parseMarkdown'] ?? null) &&
+			($context['blueprint']['type'] ?? null) === 'textarea'
+		) {
+			$text = Markdown::decode($text);
 		}
 
 		return $text;
