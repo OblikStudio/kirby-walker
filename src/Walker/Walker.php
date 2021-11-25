@@ -77,10 +77,6 @@ class Walker
 				continue;
 			}
 
-			if (!isset($blueprint['translate'])) {
-				$blueprint['translate'] = true;
-			}
-
 			$fieldContext = static::subcontext($key, $context);
 			$fieldContext['blueprint'] = $blueprint;
 

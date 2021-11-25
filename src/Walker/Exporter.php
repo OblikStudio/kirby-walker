@@ -33,7 +33,7 @@ class Exporter extends Walker
 
 	protected static function walkField(Field $field, $context)
 	{
-		if ($field->isNotEmpty() && $context['blueprint']['translate'] !== false) {
+		if ($field->isNotEmpty() && ($context['blueprint']['translate'] ?? true)) {
 			$data = parent::walkField($field, $context);
 
 			if (!empty($data)) {

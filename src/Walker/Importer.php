@@ -33,7 +33,7 @@ class Importer extends Walker
 
 	protected static function walkField(Field $field, $context)
 	{
-		if ($context['blueprint']['translate'] !== false) {
+		if ($context['blueprint']['translate'] ?? true) {
 			return parent::walkField($field, $context);
 		} else {
 			return $field->value();
