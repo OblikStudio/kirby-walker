@@ -29,11 +29,14 @@ class Walker
 		$fields = $model->blueprint()->fields();
 
 		if (is_a($model, Page::class) || is_a($model, Site::class)) {
-			if (empty($fields['title'])) {
-				$fields['title'] = [
+			// Site and pages have a title field by default, regardless of
+			// whether it's present in the blueprint. Also, array_replace() is
+			// used to make sure it's the first field in the result.
+			$fields = array_replace([
+				'title' => [
 					'type' => 'text'
-				];
-			}
+				]
+			], $fields);
 		}
 
 		$context['fields'] = $fields;
