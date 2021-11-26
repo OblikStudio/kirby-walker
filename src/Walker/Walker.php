@@ -191,6 +191,14 @@ class Walker
 			$data[] = static::walkContent($entry->content(), $entryContext);
 		}
 
+		if (empty(array_filter($data))) {
+			// If *all* resulting values are empty, avoid returning an array of
+			// empty values. Otherwise, if there's at least one non-empty value,
+			// leave empty values as-is so they keep their position in the array
+			// and make sure the non-empty ones remain at the correct index.
+			$data = null;
+		}
+
 		return $data;
 	}
 
