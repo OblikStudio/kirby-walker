@@ -74,7 +74,7 @@ final class ImporterTest extends TestCase
 	{
 		$page = new Page([
 			'slug' => 'test',
-			'content' => $original = [
+			'content' => [
 				'text' => 'original'
 			],
 			'blueprint' => [
@@ -93,7 +93,7 @@ final class ImporterTest extends TestCase
 			]
 		]);
 
-		$this->assertEquals($original, $result);
+		$this->assertEquals(null, $result);
 	}
 
 	public function testStructure()

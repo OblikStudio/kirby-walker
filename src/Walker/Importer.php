@@ -36,7 +36,10 @@ class Importer extends Walker
 		if ($context['blueprint']['translate'] ?? true) {
 			return parent::walkField($field, $context);
 		} else {
-			return $field->value();
+			// Technically, the default field value should be returned when
+			// `translate` is `false`, but Kirby will delete it anyways on save.
+			// https://github.com/getkirby/kirby/issues/2790
+			return null;
 		}
 	}
 
