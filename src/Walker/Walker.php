@@ -45,10 +45,7 @@ class Walker
 		try {
 			return static::walkContent($content, $context);
 		} catch (Throwable $e) {
-			$id = $model->id();
-			$error = $e->getMessage();
-
-			throw new Exception("Model \"$id\": $error");
+			throw new Exception('Could not walk model ' . $model->id(), 1, $e);
 		}
 	}
 
@@ -90,10 +87,7 @@ class Walker
 			try {
 				$fieldData = static::walkField($field, $fieldContext);
 			} catch (Throwable $e) {
-				$fieldName = $field->key();
-				$errorName = $e->getMessage();
-
-				throw new Exception("Field \"$fieldName\": $errorName");
+				throw new Exception('Could not walk field ' . $field->key(), 2, $e);
 			}
 
 			if ($fieldData !== null) {
@@ -212,7 +206,7 @@ class Walker
 			$set = $sets->get($block->type());
 
 			if (empty($set)) {
-				throw new Error('Missing fieldset for block type: "' . $block->type() . '"');
+				throw new Error('Missing fieldset for block type ' . $block->type());
 			}
 
 			$blockContext = static::subcontext($id, $context);
