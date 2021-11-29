@@ -170,7 +170,7 @@ final class ExporterTest extends TestCase
 				'text' => '{{ test1 }}(link: https://example.com rel: {{ test2 }} text: {{ test3 }})',
 				'text2' => <<<END
 				# <strong>bold</strong> **bold2**
-
+				
 				- {{ var }}
 				- _underlined_ `code`
 				- (link: https://example.com text: example)

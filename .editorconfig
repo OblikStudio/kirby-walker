@@ -10,3 +10,8 @@ insert_final_newline = false
 [*.md]
 indent_size = 4
 indent_style = space
+
+# Fixes an error with missing whitespace in heredoc strings used in tests:
+# ParseError: Invalid body indentation level
+[/**/tests/**/*.php]
+trim_trailing_whitespace = false
