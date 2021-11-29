@@ -93,7 +93,11 @@ final class ImporterTest extends TestCase
 			]
 		]);
 
-		$this->assertEquals(null, $result);
+		$expected = [
+			'text' => 'original'
+		];
+
+		$this->assertEquals($expected, $result);
 	}
 
 	public function testStructure()
@@ -466,7 +470,7 @@ final class ImporterTest extends TestCase
 			'text' => '{{ test1 }}(link: https://example.com rel: {{ test2 }} text: {{ test3 }})',
 			'text2' => <<<END
 			# **bold** **bold2**
-			
+
 			- {{ var }}
 			- *underlined* `code`
 			- (link: https://example.com text: example)
