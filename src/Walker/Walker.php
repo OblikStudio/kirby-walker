@@ -178,14 +178,19 @@ class Walker
 		$data = null;
 		$context['fields'] = $context['blueprint']['fields'];
 
-		foreach ($field->toStructure() as $key => $entry) {
+		foreach ($field->toStructure() as $key => $object) {
 			// `$key` is either an integer or a string, depending on whether the
-			// structure entry has an `id` field or not.
-			$entryContext = static::subcontext($key, $context);
-			$data[] = static::walkContent($entry->content(), $entryContext);
+			// structure object has an `id` field or not.
+			$objectContext = static::subcontext($key, $context);
+			$data[] = static::walkFieldStructureObject($object, $objectContext);
 		}
 
 		return $data;
+	}
+
+	protected static function walkFieldStructureObject($object, $context)
+	{
+		return static::walkContent($object->content(), $context);
 	}
 
 	protected static function walkFieldBlocks($field, $context)
