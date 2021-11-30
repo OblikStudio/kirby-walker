@@ -2,7 +2,7 @@
 
 namespace Oblik\Walker\Serialize;
 
-use PHPUnit\Framework\TestCase;
+use Oblik\Walker\TestCase;
 
 final class KirbyTagsTest extends TestCase
 {
