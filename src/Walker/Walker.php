@@ -20,11 +20,19 @@ use Kirby\Toolkit\Str;
  */
 class Walker
 {
+	public $context;
+
+	public function __construct(array $context = [])
+	{
+		$this->context = $context;
+	}
+
 	/**
 	 * Walks over the content of a model in a certain language.
 	 */
 	public function walk(ModelWithContent $model, array $context = [])
 	{
+		$context = array_replace($this->context, $context);
 		$content = $model->content($context['lang'] ?? null);
 		$fields = $model->blueprint()->fields();
 
