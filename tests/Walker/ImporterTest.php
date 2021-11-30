@@ -27,7 +27,7 @@ final class ImporterTest extends TestCase
 		]);
 
 		$content = ['text' => 'imported'];
-		$result = Importer::walk($page, [
+		$result = (new Importer())->walk($page, [
 			'input' => $content
 		]);
 
@@ -63,7 +63,7 @@ final class ImporterTest extends TestCase
 		]);
 
 		$content = ['text' => 'imported'];
-		$result = Importer::walk($page, [
+		$result = (new Importer())->walk($page, [
 			'input' => $content
 		]);
 
@@ -87,7 +87,7 @@ final class ImporterTest extends TestCase
 			]
 		]);
 
-		$result = Importer::walk($page, [
+		$result = (new Importer())->walk($page, [
 			'input' => [
 				'text' => 'imported'
 			]
@@ -148,7 +148,7 @@ final class ImporterTest extends TestCase
 			]
 		];
 
-		$result = Importer::walk($page, [
+		$result = (new Importer())->walk($page, [
 			'input' => $import
 		]);
 
@@ -209,7 +209,7 @@ final class ImporterTest extends TestCase
 			]
 		];
 
-		$result = Importer::walk($page, [
+		$result = (new Importer())->walk($page, [
 			'input' => $import
 		]);
 
@@ -312,7 +312,7 @@ final class ImporterTest extends TestCase
 			]
 		];
 
-		$result = Importer::walk($page, [
+		$result = (new Importer())->walk($page, [
 			'input' => $import
 		]);
 
@@ -394,7 +394,7 @@ final class ImporterTest extends TestCase
 			]
 		];
 
-		$result = Importer::walk($page, [
+		$result = (new Importer())->walk($page, [
 			'input' => $import
 		]);
 
@@ -435,7 +435,7 @@ final class ImporterTest extends TestCase
 			]
 		];
 
-		$result = Importer::walk($page, [
+		$result = (new Importer())->walk($page, [
 			'input' => $import
 		]);
 
@@ -477,7 +477,7 @@ final class ImporterTest extends TestCase
 			END
 		];
 
-		$result = Importer::walk($page, [
+		$result = (new Importer())->walk($page, [
 			'input' => $import,
 			'options' => [
 				'parseMarkdown' => true,

@@ -12,13 +12,13 @@ final class ExporterTest extends TestCase
 {
 	public function testTitle()
 	{
-		$siteData = Exporter::walk(new Site([
+		$siteData = (new Exporter())->walk(new Site([
 			'content' => [
 				'title' => 'test'
 			]
 		]));
 
-		$pageData = Exporter::walk(new Page([
+		$pageData = (new Exporter())->walk(new Page([
 			'slug' => 'test',
 			'content' => [
 				'title' => 'test'
@@ -31,7 +31,7 @@ final class ExporterTest extends TestCase
 
 	public function testBlocks()
 	{
-		$result = Exporter::walk(new Page([
+		$result = (new Exporter())->walk(new Page([
 			'slug' => 'test',
 			'content' => [
 				'text' => Json::encode([
@@ -86,7 +86,7 @@ final class ExporterTest extends TestCase
 
 	public function testEditor()
 	{
-		$result = Exporter::walk(new Page([
+		$result = (new Exporter())->walk(new Page([
 			'slug' => 'test',
 			'content' => [
 				'text' => Json::encode([
@@ -127,7 +127,7 @@ final class ExporterTest extends TestCase
 
 	public function testLink()
 	{
-		$result = Exporter::walk(new Page([
+		$result = (new Exporter())->walk(new Page([
 			'slug' => 'test',
 			'content' => [
 				'link' => Yaml::encode([
@@ -188,7 +188,7 @@ final class ExporterTest extends TestCase
 			]
 		]);
 
-		$data = Exporter::walk($page, [
+		$data = (new Exporter())->walk($page, [
 			'options' => [
 				'parseMarkdown' => true,
 				'parseTemplates' => true,

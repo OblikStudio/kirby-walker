@@ -9,7 +9,7 @@ use Oblik\Walker\Serialize\Template;
 
 class Exporter extends Walker
 {
-	protected static function walkText(string $text, $context)
+	protected function walkText(string $text, $context)
 	{
 		$text = parent::walkText($text, $context);
 
@@ -31,7 +31,7 @@ class Exporter extends Walker
 		return $text;
 	}
 
-	protected static function walkField(Field $field, $context)
+	protected function walkField(Field $field, $context)
 	{
 		if ($field->isNotEmpty() && ($context['blueprint']['translate'] ?? true)) {
 			$data = parent::walkField($field, $context);
@@ -42,7 +42,7 @@ class Exporter extends Walker
 		}
 	}
 
-	protected static function walkFieldStructure($field, $context)
+	protected function walkFieldStructure($field, $context)
 	{
 		$data = parent::walkFieldStructure($field, $context);
 
@@ -55,7 +55,7 @@ class Exporter extends Walker
 		}
 	}
 
-	protected static function walkFieldBlocksBlock($block, $context)
+	protected function walkFieldBlocksBlock($block, $context)
 	{
 		$block = parent::walkFieldBlocksBlock($block, $context);
 
@@ -69,7 +69,7 @@ class Exporter extends Walker
 		return $block;
 	}
 
-	protected static function walkFieldEditorBlock($block, $context)
+	protected function walkFieldEditorBlock($block, $context)
 	{
 		if (empty($block['content'] ?? null)) {
 			return null;
@@ -81,7 +81,7 @@ class Exporter extends Walker
 		return $block;
 	}
 
-	protected static function walkFieldLink($field, $context)
+	protected function walkFieldLink($field, $context)
 	{
 		$data = parent::walkFieldLink($field, $context);
 		$text = $data['text'] ?? null;
@@ -91,32 +91,32 @@ class Exporter extends Walker
 		}
 	}
 
-	protected static function walkFieldToggle($field, $context)
+	protected function walkFieldToggle($field, $context)
 	{
 		return null;
 	}
 
-	protected static function walkFieldDate()
+	protected function walkFieldDate()
 	{
 		return null;
 	}
 
-	protected static function walkFieldPages()
+	protected function walkFieldPages()
 	{
 		return null;
 	}
 
-	protected static function walkFieldFiles()
+	protected function walkFieldFiles()
 	{
 		return null;
 	}
 
-	protected static function walkFieldUrl()
+	protected function walkFieldUrl()
 	{
 		return null;
 	}
 
-	protected static function walkFieldNumber()
+	protected function walkFieldNumber()
 	{
 		return null;
 	}
