@@ -24,11 +24,6 @@
 		"phpunit/phpunit": "^8",
 		"oblik/kirby-link-field": "^3.0"
 	},
-	"autoload": {
-		"psr-4": {
-			"Oblik\\Walker\\": "src/"
-		}
-	},
 	"extra": {
 		"installer-name": "walker"
 	}
