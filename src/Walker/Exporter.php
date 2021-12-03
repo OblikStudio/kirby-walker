@@ -71,6 +71,8 @@ class Exporter extends Walker
 
 	protected function walkFieldEditorBlock($block, $context)
 	{
+		$block = parent::walkFieldEditorBlock($block, $context);
+
 		if (empty($block['content'] ?? null)) {
 			return null;
 		}
