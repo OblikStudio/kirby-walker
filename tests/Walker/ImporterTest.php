@@ -410,11 +410,15 @@ final class ImporterTest extends TestCase
 					'type' => 'url',
 					'value' => 'https://example.com',
 					'text' => 'original'
-				])
+				]),
+				'link2' => null
 			],
 			'blueprint' => [
 				'fields' => [
 					'link' => [
+						'type' => 'link'
+					],
+					'link2' => [
 						'type' => 'link'
 					]
 				]
@@ -423,6 +427,9 @@ final class ImporterTest extends TestCase
 
 		$import = [
 			'link' => [
+				'text' => 'imported'
+			],
+			'link2' => [
 				'text' => 'imported'
 			]
 		];

@@ -65,7 +65,7 @@ class Importer extends Walker
 	{
 		$data = parent::walkFieldLink($field, $context);
 
-		if (is_string($text = $context['input']['text'] ?? null)) {
+		if (!empty($data['text']) && is_string($text = $context['input']['text'] ?? null)) {
 			$data['text'] = $this->walkText($text, $context);
 		}
 
