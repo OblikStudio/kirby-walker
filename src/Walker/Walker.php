@@ -285,7 +285,9 @@ class Walker
 			$data['text'] = $this->walkText($text, $context);
 		}
 
-		return $data;
+		// If the field has value `null` (not the string `"null"`), the result
+		// from Yaml::decode() is an empty array, which is undesirable.
+		return !empty($data) ? $data : null;
 	}
 
 	protected function walkFieldJson($field, $context)
