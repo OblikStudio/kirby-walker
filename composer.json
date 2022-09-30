@@ -1,15 +1,33 @@
 {
 	"name": "oblik/kirby-walker",
-	"description": "Kirby plugin for exporting, importing, and iterating over site content.",
-	"type": "kirby-plugin",
+	"description": "Kirby 3 plugin for exporting, importing, and iterating over site content.",
 	"license": "MIT",
+	"version": "3.0.0",
+	"type": "kirby-plugin",
+	"keywords": [
+		"kirby",
+		"kirby-plugin",
+		"export",
+		"import",
+		"traverse",
+		"walk"
+	],
 	"authors": [
 		{
+			"name": "Oblik Studio",
+			"email": "hello@oblik.studio",
+			"homepage": "https://oblik.studio/"
+		},
+		{
 			"name": "Hristiyan Dodov",
-			"email": "h.dodov@gmail.com",
-			"homepage": "https://dodov.me"
+			"email": "hello@dodov.dev",
+			"homepage": "https://dodov.dev/"
 		}
 	],
+	"support": {
+		"issues": "https://github.com/OblikStudio/kirby-walker/issues",
+		"source": "https://github.com/OblikStudio/kirby-walker"
+	},
 	"scripts": {
 		"test": "phpunit"
 	},
