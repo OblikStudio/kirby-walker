@@ -69,6 +69,21 @@ class Exporter extends Walker
 		return $block;
 	}
 
+	protected function walkFieldLayout($block, $context)
+	{
+		$data = parent::walkFieldLayout($block, $context);
+
+		if (is_array($data)) {
+			foreach ($data as &$layout) {
+				foreach ($layout['columns'] as &$column) {
+					unset($column['width']);
+				}
+			}
+		}
+
+		return $data;
+	}
+
 	protected function walkFieldEditorBlock($block, $context)
 	{
 		$block = parent::walkFieldEditorBlock($block, $context);

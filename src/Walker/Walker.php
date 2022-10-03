@@ -82,7 +82,7 @@ class Walker
 				continue;
 			}
 
-			$fieldContext = $this->subcontext($key, $context);
+			$fieldContext = $this->subcontext('key', $key, $context);
 			$fieldContext['blueprint'] = $blueprint;
 
 			if (is_array($blueprintOptions)) {
@@ -110,38 +110,32 @@ class Walker
 	 * Prepares the context for that of a child entry, such as an item in a
 	 * structure field or a block in a blocks field.
 	 */
-	protected function subcontext($key, $context)
+	protected function subcontext($strategy, $key, $context)
 	{
 		$input = $context['input'] ?? null;
 
 		if (is_array($input)) {
-			$context['input'] = $this->findMatchingEntry($key, $input, $context);
+			$context['input'] = $this->findMatchingEntry($strategy, $key, $input);
 		}
 
 		return $context;
 	}
 
 	/**
-	 * Attempts to find a key in an array of data using different strategies,
-	 * depending on the field's blueprint type, as given by the context.
+	 * Attempts to find a key in an array of data using different strategies.
 	 */
-	protected function findMatchingEntry($key, array $data, array $context)
+	protected function findMatchingEntry($strategy, $key, array $data)
 	{
-		$type = $context['blueprint']['type'] ?? null;
-		$idField = $context['blueprint']['fields']['id'] ?? null;
+		if ($strategy === 'key') {
+			return $data[$key] ?? null;
+		}
 
-		if ($type === 'blocks' || ($type === 'structure' && $idField) || $type === 'editor') {
+		if ($strategy === 'id') {
 			foreach ($data as $entry) {
 				if (($entry['id'] ?? null) === $key) {
-					if ($type === 'blocks') {
-						return $entry['content'] ?? null;
-					} else {
-						return $entry;
-					}
+					return $entry;
 				}
 			}
-		} else {
-			return $data[$key] ?? null;
 		}
 	}
 
@@ -185,11 +179,12 @@ class Walker
 	{
 		$data = null;
 		$context['fields'] = $context['blueprint']['fields'];
+		$idField = $context['blueprint']['fields']['id'] ?? null;
 
 		foreach ($field->toStructure() as $key => $object) {
 			// `$key` is either an integer or a string, depending on whether the
 			// structure object has an `id` field or not.
-			$objectContext = $this->subcontext($key, $context);
+			$objectContext = $this->subcontext($idField ? 'id' : 'key', $key, $context);
 			$data[] = $this->walkFieldStructureObject($object, $objectContext);
 		}
 
@@ -214,9 +209,10 @@ class Walker
 				throw new Error('Missing fieldset for block type ' . $block->type());
 			}
 
-			$blockContext = $this->subcontext($id, $context);
-			$blockContext['fields'] = $set->fields();
-			$blockData = $this->walkFieldBlocksBlock($block, $blockContext);
+			$blockContext = $this->subcontext('id', $id, $context);
+			$blockContentContext = $this->subcontext('key', 'content', $blockContext);
+			$blockContentContext['fields'] = $set->fields();
+			$blockData = $this->walkFieldBlocksBlock($block, $blockContentContext);
 
 			if (!empty($blockData)) {
 				$data[] = $blockData;
@@ -233,6 +229,60 @@ class Walker
 		return $data;
 	}
 
+	protected function walkFieldLayout($field, $context)
+	{
+		$data = [];
+		$layouts = $field->toLayouts();
+
+		$formField = FormField::factory('layout', $context['blueprint']);
+		$settingsFieldsets = $formField->settings();
+		$blocksFieldsets = $formField->fieldsets();
+
+		foreach ($layouts as $idLayout => $layout) {
+			$layoutContext = $this->subcontext('id', $idLayout, $context);
+			$columnsContext = $this->subcontext('key', 'columns', $layoutContext);
+			$columnsData = [];
+
+			foreach ($layout->columns() as $idColumn => $column) {
+				$columnContext = $this->subcontext('id', $idColumn, $columnsContext);
+				$blocksContext = $this->subcontext('key', 'blocks', $columnContext);
+				$blocksData = [];
+
+				foreach ($column->blocks() as $idBlock => $block) {
+					$set = $blocksFieldsets->get($block->type());
+
+					if (empty($set)) {
+						throw new Error('Missing fieldset for block type ' . $block->type());
+					}
+
+					$blockContext = $this->subcontext('id', $idBlock, $blocksContext);
+					$blockContentContext = $this->subcontext('key', 'content', $blockContext);
+					$blockContentContext['fields'] = $set->fields();
+					$blockData = $this->walkFieldBlocksBlock($block, $blockContentContext);
+
+					if (!empty($blockData)) {
+						$blocksData[] = $blockData;
+					}
+				}
+
+				$columnEntry = $column->toArray();
+				$columnEntry['blocks'] = $blocksData;
+				$columnsData[] = $columnEntry;
+			}
+
+			$attrsContext = $this->subcontext('key', 'attrs', $layoutContext);
+			$attrsContext['fields'] = $settingsFieldsets->fields();
+
+			$layoutEntry = $layout->toArray();
+			$layoutEntry['attrs'] = $this->walkContent($layout->attrs(), $attrsContext);
+			$layoutEntry['columns'] = $columnsData;
+
+			$data[] = array_filter($layoutEntry); // remove empty attrs/columns keys
+		}
+
+		return $data;
+	}
+
 	protected function walkFieldEditor($field, $context)
 	{
 		$data = [];
@@ -240,7 +290,7 @@ class Walker
 
 		foreach ($blocks as $block) {
 			if (is_string($id = $block['id'] ?? null)) {
-				$blockContext = $this->subcontext($id, $context);
+				$blockContext = $this->subcontext('id', $id, $context);
 				$blockData = $this->walkFieldEditorBlock($block, $blockContext);
 
 				if (!empty($blockData)) {
