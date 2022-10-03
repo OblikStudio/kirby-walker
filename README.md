@@ -23,4 +23,52 @@ composer require oblik/kirby-walker
 
 #### Exporting
 
+You can use the `Exporter` class to export content:
+
+```php
+use Oblik\Walker\Walker\Exporter;
+
+$exporter = new Exporter();
+$result = $exporter->walk(page('home'));
+echo json_encode($result, JSON_PRETTY_PRINT);
+```
+
+```json
+{
+    "title": "Home",
+    "headline": "Welcome to Kirby's Starterkit",
+    "subheadline": "A fully documented example project"
+}
+```
+
 #### Importing
+
+You can use the `Importer` class to merge input content with the current model content.
+
+```php
+use Oblik\Walker\Walker\Importer;
+
+$importer = new Importer();
+$model = page('home');
+$result = $importer->walk($model, [
+	'input' => [
+		'headline' => 'Updated headline!'
+	]
+]);
+echo json_encode($data, JSON_PRETTY_PRINT);
+```
+
+```json
+{
+    "title": "Home",
+    "headline": "Updated headline!",
+    "subheadline": "A fully documented example project"
+}
+```
+
+After merging the data, you can use the resulting array to apply the changes to the model:
+
+```php
+kirby()->impersonate('kirby');
+$model->update($result);
+```
