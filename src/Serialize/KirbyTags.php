@@ -5,8 +5,11 @@ namespace Oblik\Walker\Serialize;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
+use Exception;
+use Kirby\Exception\InvalidArgumentException;
 use Kirby\Text\KirbyTag as BaseKirbyTag;
 use Kirby\Text\KirbyTags as BaseKirbyTags;
+use Kirby\Toolkit\Str;
 
 class KirbyTags extends BaseKirbyTags
 {
@@ -30,8 +33,41 @@ class KirbyTags extends BaseKirbyTags
 	 */
 	public static function decode(string $text, array $options = [])
 	{
+		$data = [];
 		$options = array_replace(static::$defaults, $options);
-		return static::parse($text, [], $options);
+
+		// The code below is the same as the base class' `decode()` method. The
+		// only difference is that it uses the customized `KirbyTag` class and
+		// calls its custom `render()` method.
+
+		$regex = '!
+            (?=[^\]])               # positive lookahead that matches a group after the main expression without including ] in the result
+            (?=\([a-z0-9_-]+:)      # positive lookahead that requires starts with ( and lowercase ASCII letters, digits, underscores or hyphens followed with : immediately to the right of the current location
+            (\(                     # capturing group 1
+                (?:[^()]+|(?1))*+   # repetitions of any chars other than ( and ) or the whole group 1 pattern (recursed)
+            \))                     # end of capturing group 1
+        !isx';
+
+		return preg_replace_callback($regex, function ($match) use ($data, $options) {
+			$debug = $options['debug'] ?? false;
+
+			try {
+				return KirbyTag::parse($match[0], $data, $options)->render();
+			} catch (InvalidArgumentException $e) {
+				// stay silent in production and ignore non-existing tags
+				if ($debug !== true || Str::startsWith($e->getMessage(), 'Undefined tag type:') === true) {
+					return $match[0];
+				}
+
+				throw $e;
+			} catch (Exception $e) {
+				if ($debug === true) {
+					throw $e;
+				}
+
+				return $match[0];
+			}
+		}, $text ?? '');
 	}
 
 	/**
