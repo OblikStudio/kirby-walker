@@ -72,3 +72,77 @@ After merging the data, you can use the resulting array to apply the changes to 
 kirby()->impersonate('kirby');
 $model->update($result);
 ```
+
+## Extending
+
+You can easily extend the base classes to add custom behaviors. For example, you could return the character lengths of each field like so:
+
+```php
+use Oblik\Walker\Walker\Walker;
+
+class CustomWalker extends Walker
+{
+	protected function walkText(string $text, $context)
+	{
+		return strlen($text);
+	}
+}
+
+$walker = new CustomWalker();
+$data = $walker->walk(page('home'));
+echo json_encode($data, JSON_PRETTY_PRINT);
+```
+
+```json
+{
+    "title": 4,
+    "headline": 29,
+    "subheadline": 34
+}
+```
+
+You could also use values from each field's blueprint:
+
+```php
+class CustomWalker extends Walker
+{
+	protected function walkField(Field $field, $context)
+	{
+		return $context['blueprint']['label'] ?? 'NONE';
+	}
+}
+```
+
+```json
+{
+    "title": "NONE",
+    "headline": "Headline",
+    "gap": "Gap",
+    "subheadline": "Subheadline"
+}
+```
+
+The cool part is that parsing YAML for structure fields and JSON for layout and blocks fields is already handled. Your custom logic will work in all nested fields automatically.
+
+### Separate logic for field types
+
+You can have different logic for different field types by adding a `walkField{{ field type }}` method. For example, you can change the behavior for just the `gap` fields by adding `walkFieldGap`:
+
+```php
+class CustomWalker extends Walker
+{
+	protected function walkFieldGap($field, $context)
+	{
+		return 'Mind the gap!';
+	}
+}
+```
+
+```json
+{
+    "title": "Home",
+    "headline": "Welcome to Kirby's Starterkit",
+    "gap": "Mind the gap!",
+    "subheadline": "A fully documented example project"
+}
+```
