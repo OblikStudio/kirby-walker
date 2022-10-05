@@ -73,6 +73,114 @@ kirby()->impersonate('kirby');
 $model->update($result);
 ```
 
+## Options
+
+There are a few options that allow you to transform the raw content to make it more suitable for other systems. Then, the plugin can turn that reformatted content back to its original format, while keeping any changes made to it.
+
+### Parse KirbyTags
+
+Turns KirbyTags to XML:
+
+```
+Subheadline: A fully (link: https://getkirby.com/docs/guide text: documented target: _blank) example project
+```
+
+```php
+$exporter->walk(page('home'), [
+	'options' => [
+		'parseKirbyTags' => true
+	]
+]);
+```
+
+```json
+{
+    "subheadline": "A fully <kirby link=\"https://getkirby.com/docs/guide\" text=\"documented\" target=\"_blank\"/> example project"
+}
+```
+
+By default, KirbyTag attributes are encoded as XML attributes. If the consuming system needs to operate on those values (e.g. translate them), you might need to put their contents out of the tags. Instead of this:
+
+```xml
+<kirby link="https://getkirby.com/docs/guide" text="documented" target="_blank"/>
+```
+
+…you might need this:
+
+```xml
+<kirby link="https://getkirby.com/docs/guide" target="_blank">
+    <value name="text" index="1">documented</value>
+</kirby>
+```
+
+To do this, just use the `externalAttributes` setting:
+
+```php
+$exporter->walk(page('home'), [
+	'options' => [
+		'parseKirbyTags' => [
+			'externalAttributes' => ['text']
+		]
+	]
+]);
+```
+
+```json
+{
+    "subheadline": "A fully <kirby link=\"https://getkirby.com/docs/guide\" target=\"_blank\"><value name=\"text\" index=\"1\">documented</value></kirby> example project"
+}
+```
+
+### Parse Markdown
+
+If the consuming system doesn't understand Markdown, you can turn it to HTML:
+
+```
+Text:
+
+# Hello World
+
+This is a fully **documented** example project!
+```
+
+```php
+$exporter->walk(page('home'), [
+	'options' => [
+		'parseMarkdown' => true
+	]
+]);
+```
+
+```json
+{
+    "text": "<h1>Hello World</h1><p>This is a fully <strong>documented</strong> example project!</p>"
+}
+```
+
+**Note:** This applies only to `textarea` field types.
+
+### Parse templates
+
+Turns content enclosed in curly braces to XML:
+
+```
+Title: {{ site.title }} Home
+```
+
+```php
+$exporter->walk(page('home'), [
+	'options' => [
+		'parseTemplates' => true
+	]
+]);
+```
+
+```json
+{
+    "title": "<meta template=\" site.title \"/> Home"
+}
+```
+
 ## Extending
 
 You can easily extend the base classes to add custom behaviors. For example, you could return the character lengths of each field like so:
