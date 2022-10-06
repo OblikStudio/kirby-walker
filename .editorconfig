@@ -2,12 +2,16 @@
 charset = utf-8
 end_of_line = lf
 
-[*.{php,json,lock,xml}]
+[*.{php,lock,xml}]
 indent_style = tab
 trim_trailing_whitespace = true
 insert_final_newline = false
 
 [*.md]
+indent_size = 4
+indent_style = space
+
+[composer.json]
 indent_size = 4
 indent_style = space
 

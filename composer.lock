@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f8af16d7202780a4a293213373d16c3a",
+    "content-hash": "418f666f69c427896ecf74061adf301f",
     "packages": [
         {
             "name": "claviska/simpleimage",
@@ -1045,44 +1045,6 @@
                 "source": "https://github.com/OblikStudio/kirby-link-field/tree/3.0.3"
             },
             "time": "2021-10-21T08:54:39+00:00"
-        },
-        {
-            "name": "oblik/kirby-variables",
-            "version": "2.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/OblikStudio/kirby-variables.git",
-                "reference": "3c3d96e3a859f60bdf7caee6775855da94a1e037"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/OblikStudio/kirby-variables/zipball/3c3d96e3a859f60bdf7caee6775855da94a1e037",
-                "reference": "3c3d96e3a859f60bdf7caee6775855da94a1e037",
-                "shasum": ""
-            },
-            "require": {
-                "getkirby/composer-installer": "^1.1"
-            },
-            "require-dev": {
-                "oblik/kirby-tester": "^1.2",
-                "phpunit/phpunit": "^8.3"
-            },
-            "type": "kirby-plugin",
-            "extra": {
-                "installer-name": "variables"
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Hristiyan Dodov",
-                    "email": "h.dodov@gmail.com"
-                }
-            ],
-            "description": "Easy language variable management in YAML files for Kirby.",
-            "time": "2020-01-21T12:56:12+00:00"
         },
         {
             "name": "paquettg/php-html-parser",

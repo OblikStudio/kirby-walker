@@ -1,48 +1,47 @@
 {
-	"name": "oblik/kirby-walker",
-	"description": "Kirby 3 plugin for exporting, importing, and iterating over site content.",
-	"license": "MIT",
-	"version": "3.0.0",
-	"type": "kirby-plugin",
-	"keywords": [
-		"kirby",
-		"kirby-plugin",
-		"export",
-		"import",
-		"traverse",
-		"walk"
-	],
-	"authors": [
-		{
-			"name": "Oblik Studio",
-			"email": "hello@oblik.studio",
-			"homepage": "https://oblik.studio/"
-		},
-		{
-			"name": "Hristiyan Dodov",
-			"email": "hello@dodov.dev",
-			"homepage": "https://dodov.dev/"
-		}
-	],
-	"support": {
-		"issues": "https://github.com/OblikStudio/kirby-walker/issues",
-		"source": "https://github.com/OblikStudio/kirby-walker"
-	},
-	"scripts": {
-		"test": "phpunit"
-	},
-	"require": {
-		"getkirby/cms": "^3.4",
-		"getkirby/composer-installer": "^1.1",
-		"league/html-to-markdown": "^4.8"
-	},
-	"require-dev": {
-		"getkirby/editor": "^1.0",
-		"oblik/kirby-variables": "^2.0",
-		"phpunit/phpunit": "^8",
-		"oblik/kirby-link-field": "^3.0"
-	},
-	"extra": {
-		"installer-name": "walker"
-	}
+    "name": "oblik/kirby-walker",
+    "description": "Kirby 3 plugin for exporting, importing, and iterating over site content.",
+    "license": "MIT",
+    "version": "3.0.0",
+    "type": "kirby-plugin",
+    "keywords": [
+        "kirby",
+        "kirby-plugin",
+        "export",
+        "import",
+        "traverse",
+        "walk"
+    ],
+    "authors": [
+        {
+            "name": "Oblik Studio",
+            "email": "hello@oblik.studio",
+            "homepage": "https://oblik.studio/"
+        },
+        {
+            "name": "Hristiyan Dodov",
+            "email": "hello@dodov.dev",
+            "homepage": "https://dodov.dev/"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/OblikStudio/kirby-walker/issues",
+        "source": "https://github.com/OblikStudio/kirby-walker"
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "require": {
+        "getkirby/cms": "^3.4",
+        "getkirby/composer-installer": "^1.1",
+        "league/html-to-markdown": "^4.8"
+    },
+    "require-dev": {
+        "getkirby/editor": "^1.0",
+        "phpunit/phpunit": "^8",
+        "oblik/kirby-link-field": "^3.0"
+    },
+    "extra": {
+        "installer-name": "walker"
+    }
 }
